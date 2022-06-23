@@ -15,12 +15,8 @@ public class Utils {
     // declarations
 
 	// members
-	public static Hashtable<String, Person2> /* m_Persons, replaced by Group */ m_System ;
-	public static Hashtable<String, Hashtable<String, Person2>> m_GroupCollection ;
-	//public static Hashtable<String, ArrayList<String>> m_exportLinesGroup ;
-
-	public static Hashtable<String, Person3> /* m_Persons, replaced by Group */ m_System3 ;
-	public static Hashtable<String, Hashtable<String, Person3>> m_GroupCollection3 ;
+	public static Hashtable<String, Person> /* m_Persons, replaced by Group */ m_System3 ;
+	public static Hashtable<String, Hashtable<String, Person>> m_GroupCollection3 ;
 	public static boolean m_bSys = false ;
 
 	//CONSTANTS
@@ -72,8 +68,6 @@ public class Utils {
 	public static final String IN_HELP = "-h" ; 
 	public static final String IN_VERSION = "-version" ; 
 	public static final String IN_CLEAN = "-clean" ; 
-	public static final String IN_FALSE = "false" ; 
-	public static final String IN_TRUE = "true" ; 
 
 	//out file strings
 	public static final String OUT_FILESEP = "." ;
@@ -154,6 +148,7 @@ public class Utils {
 		final File[] list = dir.listFiles( new FilenameFilter() {
 			@Override
 			public boolean accept( final File dir, final String name ) {
+				//System.out.println( "name:" + name );
 				return (name.endsWith(extension));
 			}
 		} );

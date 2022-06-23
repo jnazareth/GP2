@@ -18,13 +18,13 @@ import java.util.Collections;
 import java.util.Arrays;
 import java.util.HashSet;
 
-public class account3
+public class account
 {
 	// ----------------------------------------------------
 	// Declarations
 	// ----------------------------------------------------
-	//private Hashtable<String, Person2> /* m_Persons, replaced by Group */ m_System ;
-	//private Hashtable<String, Hashtable<String, Person2>> m_GroupCollection ;
+	//private Hashtable<String, Person3> /* m_Persons, replaced by Group */ m_System ;
+	//private Hashtable<String, Hashtable<String, Person3>> m_GroupCollection3 ;
 	private int m_numActive = 0 ;
 	private float m_nTotAmount = 0, m_nSysToAmount ;
 	private ArrayList<String> m_exportLines = null;
@@ -53,10 +53,10 @@ public class account3
 	private int numActive(String sGroupName)
 	{
 		int i = 0 ;
-		Hashtable<String, Person2> aGroup = Utils.m_GroupCollection.get(sGroupName) ;
+		Hashtable<String, Person> aGroup = Utils.m_GroupCollection3.get(sGroupName) ;
 		Enumeration<String> keysPeople = aGroup.keys();
 		while(keysPeople.hasMoreElements()){
-			Person2 person = aGroup.get(keysPeople.nextElement());
+			Person person = aGroup.get(keysPeople.nextElement());
 			if (person.m_active == true) i++ ;
 		}
 		return i ;
@@ -103,18 +103,19 @@ public class account3
 	private void putIndivAmount(String sGroupName, int idx, float fAmount, HashSet<String> indiv)
 	{
 		try {
-			Hashtable<String, Person2> aGroup = Utils.m_GroupCollection.get(sGroupName) ;
+			Hashtable<String, Person> aGroup = Utils.m_GroupCollection3.get(sGroupName) ;
 			Enumeration<String> keysPeople = aGroup.keys();
 			while(keysPeople.hasMoreElements()){
-				Person2 person = aGroup.get(keysPeople.nextElement());
+				Person person = aGroup.get(keysPeople.nextElement());
 				if ( !(indiv.contains(person.m_name)) ) continue ;
-				person.m_amount[idx] += fAmount ;
+                if (idx == Utils._FR) person.incAmount(Person.AccountEntry.FROM, fAmount) ; 
+                if (idx == Utils._TO) person.incAmount(Person.AccountEntry.TO, fAmount) ;
 				if ((idx == Utils._FR) && (m_bClearing == false)) {
-					person.m_amount[person.IND_PAID] += fAmount ;
+                    person.incAmount(Person.AccountEntry.IND_PAID, fAmount) ; 
 				}
 				if ((idx == Utils._TO) && (m_bClearing == false)) {
-					person.m_amount[person.TRANS_AMT] += fAmount ;
-					person.m_amount[person.IND_SUM] += fAmount ;
+                    person.incAmount(Person.AccountEntry.TRANS_AMT, fAmount) ; 
+                    person.incAmount(Person.AccountEntry.IND_SUM, fAmount) ; 
 				}
 				aGroup.put(person.m_name, person) ;
 			}
@@ -126,11 +127,11 @@ public class account3
 	private HashSet<String> getAllActive(String sGroupName)
 	{
 		HashSet<String> allSet = new HashSet<String>() ; 
-		Hashtable<String, Person2> aGroup = Utils.m_GroupCollection.get(sGroupName) ;
+		Hashtable<String, Person> aGroup = Utils.m_GroupCollection3.get(sGroupName) ;
 
 		Enumeration<String> keysPeople = aGroup.keys();
 		while(keysPeople.hasMoreElements()) {
-			Person2 person = aGroup.get(keysPeople.nextElement());
+			Person person = aGroup.get(keysPeople.nextElement());
 			if (person.m_active == true) allSet.add(person.m_name) ;
 		}
 		return allSet ; 
@@ -245,11 +246,15 @@ public class account3
 	// ----------------------------------------------------
 	private void initFromToGroup(String sGroupName)
 	{
-		Hashtable<String, Person2> aGroup = Utils.m_GroupCollection.get(sGroupName) ;
+		Hashtable<String, Person> aGroup = Utils.m_GroupCollection3.get(sGroupName) ;
 		Enumeration<String> keysPeople = aGroup.keys();
 		while(keysPeople.hasMoreElements()){
-			Person2 person = aGroup.get(keysPeople.nextElement());
-			person.m_amount[person.FROM] = person.m_amount[person.TO] = person.m_amount[person.TRANS_AMT]  = person.m_amount[person.CHK_SUM] = person.m_amount[person.CHK_INDSUM] = 0 ;
+			Person person = aGroup.get(keysPeople.nextElement());
+			person.m_amount.put(Person.AccountEntry.FROM, 0.0f);
+            person.m_amount.put(Person.AccountEntry.TO, 0.0f);
+            person.m_amount.put(Person.AccountEntry.TRANS_AMT, 0.0f);
+            person.m_amount.put(Person.AccountEntry.CHK_SUM, 0.0f);
+            person.m_amount.put(Person.AccountEntry.CHK_INDSUM, 0.0f);
 			aGroup.put(person.m_name, person) ;
 		}
 
@@ -257,7 +262,7 @@ public class account3
 		/*
 		iter = m_System.keySet().iterator();
 		while(iter.hasNext()){
-			Person2 aPer = m_System.get(iter.next()) ;
+			Person3 aPer = m_System.get(iter.next()) ;
 			aPer.m_amount[aPer.FROM] = aPer.m_amount[aPer.TO] = aPer.m_amount[aPer.TRANS_AMT] = aPer.m_amount[aPer.CHK_SUM] = aPer.m_amount[aPer.CHK_INDSUM] = 0 ;
 			m_System.put(aPer.m_name, aPer) ;
 		} */
@@ -268,12 +273,12 @@ public class account3
 	// ----------------------------------------------------
 	private void initPersons()
 	{
-		//m_Persons = new Hashtable<String, Person2>() ;
+		//m_Persons = new Hashtable<String, Person>() ;
 		m_nTotAmount = 0;		m_nSysToAmount = 0 ;
 
-		Utils.m_System = new Hashtable<String, Person2>() ;
-		Person2 aPerson = new Person2(Utils._SYS, true) ;
-		Utils.m_System.put(Utils._SYS, aPerson) ;
+		Utils.m_System3 = new Hashtable<String, Person>() ;
+		Person aPerson = new Person(Utils._SYS, true) ;
+		Utils.m_System3.put(Utils._SYS, aPerson) ;
 		Utils.m_bSys = false ;
 	}
 
@@ -288,7 +293,7 @@ public class account3
 		float sysAmount = 0 ;
 		Iterator<String> iter = m_System.keySet().iterator();
 		while(iter.hasNext()){
-			Person2 aPer = m_System.get(iter.next()) ;
+			Person3 aPer = m_System.get(iter.next()) ;
 			if (aPer.m_active == true) aPer.m_amount[aPer.SYS_SUM] += (aPer.m_amount[aPer.FROM] + ((-1)*aPer.m_amount[aPer.TO])) ;
 			sysAmount = aPer.m_amount[aPer.SYS_SUM] ;		m_nSysToAmount += aPer.m_amount[aPer.TO] ;
 			m_System.put(aPer.m_name, aPer) ;
@@ -297,20 +302,26 @@ public class account3
 
 		// person account
 		float nCheckSum = 0, nCheckIndSum = 0 ;
-		Hashtable<String, Person2> aGroup = Utils.m_GroupCollection.get(sGroupName) ;
+		Hashtable<String, Person> aGroup = Utils.m_GroupCollection3.get(sGroupName) ;
 		Enumeration<String> keysPeople = aGroup.keys();
 		while(keysPeople.hasMoreElements()){
-			Person2 person = aGroup.get(keysPeople.nextElement());
-			if (person.m_active == true) person.m_amount[person.SYS_SUM] += (person.m_amount[person.FROM] + ((-1)*person.m_amount[person.TO])) ;
-			person.m_amount[person.FROM] = person.m_amount[person.TO] = 0 ;
+			Person person = aGroup.get(keysPeople.nextElement());
+            if (person.m_active == true) {
+                Float f = person.m_amount.get(Person.AccountEntry.FROM) ;
+                Float t = person.m_amount.get(Person.AccountEntry.TO) ;
+                person.incAmount(Person.AccountEntry.SYS_SUM, (f + ((-1)*t))) ;
 
-			nCheckSum += person.m_amount[person.SYS_SUM] ;
-			if (!action.endsWith(Utils._CLEARING)) nCheckIndSum += person.m_amount[person.IND_SUM] ;
+            }
+            person.m_amount.put(Person.AccountEntry.FROM, 0.0f) ; 
+            person.m_amount.put(Person.AccountEntry.TO, 0.0f) ;
+
+			nCheckSum += person.m_amount.get(Person.AccountEntry.SYS_SUM) ;
+			if (!action.endsWith(Utils._CLEARING)) nCheckIndSum += person.m_amount.get(Person.AccountEntry.IND_SUM) ;
 		}
 		keysPeople = aGroup.keys();
 		while(keysPeople.hasMoreElements()){
-			Person2 person = aGroup.get(keysPeople.nextElement());
-			if (person.m_active == true) person.m_amount[person.CHK_SUM] = (nCheckSum + sysAmount /* adjust for sys account*/);
+			Person person = aGroup.get(keysPeople.nextElement());
+			if (person.m_active == true) person.m_amount.put(Person.AccountEntry.CHK_SUM, (nCheckSum + sysAmount /* adjust for sys account*/));
 			aGroup.put(person.m_name, person) ;
 		}
 
@@ -318,8 +329,8 @@ public class account3
 		m_nTotAmount += amt ;
 		keysPeople = aGroup.keys();
 		while(keysPeople.hasMoreElements()){
-			Person2 person = aGroup.get(keysPeople.nextElement());
-			if (!action.endsWith(Utils._CLEARING)) person.m_amount[person.CHK_INDSUM] = ((m_nTotAmount - m_nSysToAmount) /* this is adjusted for sys account */ - nCheckIndSum) ;
+			Person person = aGroup.get(keysPeople.nextElement());
+			if (!action.endsWith(Utils._CLEARING)) person.m_amount.put(Person.AccountEntry.CHK_INDSUM, ((m_nTotAmount - m_nSysToAmount) /* this is adjusted for sys account */ - nCheckIndSum)) ;
 			aGroup.put(person.m_name, person) ;
 		}
 
@@ -362,10 +373,10 @@ public class account3
 	private void dumpCollection()
 	{
 		System.out.println("--------------------------------------");
-		Enumeration<String> keysGroup = Utils.m_GroupCollection.keys();
+		Enumeration<String> keysGroup = Utils.m_GroupCollection3.keys();
 		while(keysGroup.hasMoreElements()){
 			String groupName = keysGroup.nextElement();
-			Hashtable<String, Person2> aGroup = Utils.m_GroupCollection.get(groupName) ;
+			Hashtable<String, Person> aGroup = Utils.m_GroupCollection3.get(groupName) ;
 			System.out.println("");
 			System.out.println(groupName);
 
@@ -373,17 +384,17 @@ public class account3
 			while(keysPeople.hasMoreElements()){
 				/* two step get
 				String key = keysPeople.nextElement();
-				Person2 person = (Person2)aGroup.get(key);*/
+				Person3 person = (Person3)aGroup.get(key);*/
 				// single step, get
-				Person2 person = aGroup.get(keysPeople.nextElement());
+				Person person = aGroup.get(keysPeople.nextElement());
 				//System.out.println("person: " + person.m_name + ":" + person.m_active);
 				//System.out.println("Value of "+key+" is: "+aGroup.get(key));
 
 				String sTransAmt = "", sPerAmt = "", sIndAmt = "", sIndPaid="" ;
-				sTransAmt +=  Utils.lBr + person.m_name + Utils._AMT_INDICATOR + Utils.roundAmount(person.m_amount[person.TRANS_AMT]) + Utils.rBr ;
-				sPerAmt += Utils.lBr + person.m_name + Utils._AMT_INDICATOR + Utils.roundAmount(person.m_amount[person.SYS_SUM]) + Utils.rBr ;
-				sIndAmt += Utils.lBr + person.m_name + Utils._AMT_INDICATOR + Utils.roundAmount(person.m_amount[person.IND_SUM]) + Utils.rBr ;
-				sIndPaid += Utils.lBr + person.m_name + Utils._AMT_INDICATOR + Utils.roundAmount(person.m_amount[person.IND_PAID]) + Utils.rBr ;
+				sTransAmt +=  Utils.lBr + person.m_name + Utils._AMT_INDICATOR + Utils.roundAmount(person.m_amount.get(Person.AccountEntry.TRANS_AMT)) + Utils.rBr ;
+				sPerAmt += Utils.lBr + person.m_name + Utils._AMT_INDICATOR + Utils.roundAmount(person.m_amount.get(Person.AccountEntry.SYS_SUM)) + Utils.rBr ;
+				sIndAmt += Utils.lBr + person.m_name + Utils._AMT_INDICATOR + Utils.roundAmount(person.m_amount.get(Person.AccountEntry.IND_SUM)) + Utils.rBr ;
+				sIndPaid += Utils.lBr + person.m_name + Utils._AMT_INDICATOR + Utils.roundAmount(person.m_amount.get(Person.AccountEntry.IND_PAID)) + Utils.rBr ;
 				System.out.println(person.m_name + ":" + sTransAmt + Utils._DUMP_SEPARATOR + sPerAmt + Utils._DUMP_SEPARATOR + sIndAmt + Utils._DUMP_SEPARATOR + sIndPaid);
 			}
 		}
@@ -391,11 +402,11 @@ public class account3
 	}
 
 	// getPersons
-	Hashtable<String, Person2> getPersons(String sGrpName)
+	Hashtable<String, Person> getPersons(String sGrpName)
 	{
 		// find group
 		try {
-			Hashtable<String, Person2> persons = Utils.m_GroupCollection.get(sGrpName) ;
+			Hashtable<String, Person> persons = Utils.m_GroupCollection3.get(sGrpName) ;
 			if (persons != null) {
 			} else {
 				// not found, error !
@@ -408,14 +419,14 @@ public class account3
 	}
 
 	// Find_CreateGroup
-	Hashtable<String, Person2> Find_CreateGroup(String sGrpName)
+	Hashtable<String, Person> Find_CreateGroup(String sGrpName)
 	{
 		// find group
 		try {
-			Hashtable<String, Person2> aGrp = Utils.m_GroupCollection.get(sGrpName) ;
+			Hashtable<String, Person> aGrp = Utils.m_GroupCollection3.get(sGrpName) ;
 			if (aGrp == null) {
-				aGrp = new Hashtable<String, Person2>() ;
-				Utils.m_GroupCollection.put(sGrpName, aGrp) ;
+				aGrp = new Hashtable<String, Person>() ;
+				Utils.m_GroupCollection3.put(sGrpName, aGrp) ;
 			} else {
 				// found, do nothing
 			}
@@ -496,7 +507,7 @@ public class account3
 			} // while
 
 			// Create Collections
-			if (Utils.m_GroupCollection == null) Utils.m_GroupCollection = new Hashtable<String, Hashtable<String, Person2>>() ;
+			if (Utils.m_GroupCollection3 == null) Utils.m_GroupCollection3 = new Hashtable<String, Hashtable<String, Person>>() ;
 
 			if (grpActions != null) {
 				for (String aAction : grpActions) {
@@ -517,10 +528,10 @@ public class account3
 						sIndAct = aAction.substring(idS+1, aAction.length()).trim() ;
 
 						try {
-							Hashtable<String, Person2> aGrp = Find_CreateGroup(sGroupName) ;
+							Hashtable<String, Person> aGrp = Find_CreateGroup(sGroupName) ;
 							//System.out.println("sGroupName: " + sGroupName);
 
-							Person2 aPn = aGrp.get(sIndName);
+							Person aPn = aGrp.get(sIndName);
 							if (aPn != null) { // found, flip enable/disable
 								//System.out.println("SEARCH: " + sIndName + " ,FOUND: " + aPn.m_name + ":" + aPn.m_active + ": flip active");
 								if (sIndAct.compareToIgnoreCase(Utils.DISABLE_ITEM) == 0) {
@@ -532,7 +543,7 @@ public class account3
 							} else { // not found, add
 								//System.out.println("SEARCH: " + sIndName + ": NOT found, add");
 								if (sIndAct.compareToIgnoreCase(Utils.ADD_ITEM) == 0) {
-									Person2 aPerson = new Person2(sIndName.trim(), true) ;
+									Person aPerson = new Person(sIndName.trim(), true) ;
 									aGrp.put(sIndName, aPerson) ;
 								}
 							}
@@ -658,7 +669,7 @@ public class account3
 				//if (bExport) exportToCSV(fileName) ;
 				if (bExport) gpF.exportToCSVGroup(fileName) ;
 
-				dumpCollection() ;
+				//dumpCollection() ;
 			} catch (IOException e) {
 				////System.out.println("There was a problem reading:" + fileName);
 			}

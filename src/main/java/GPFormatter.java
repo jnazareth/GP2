@@ -17,7 +17,7 @@ import java.util.Arrays;
 
 public class GPFormatter {
 
-	//public Hashtable<String, Hashtable<String, Person2>> m_gpCollectionToFormat = null ;
+	//public Hashtable<String, Hashtable<String, Person3>> m_gpCollectionToFormat = null ;
 	private Hashtable<String, ArrayList<String>> m_exportLinesGroup = null ;
 
 	public void	GPFormatter() {
@@ -26,7 +26,7 @@ public class GPFormatter {
 	}
 
 	/*
-	public void	GPFormatter(Hashtable<String, Hashtable<String, Person2>> gpF) {
+	public void	GPFormatter(Hashtable<String, Hashtable<String, Person3>> gpF) {
 		//this.m_gpCollectionToFormat = gpF ;
 		m_exportLinesGroup = null ;
 	}*/
@@ -51,7 +51,7 @@ public class GPFormatter {
 		if (m_bSys == true) {
 			iter = m_System.keySet().iterator();
 			while(iter.hasNext()) {
-				Person2 aPer = m_System.get(iter.next()) ;
+				Person3 aPer = m_System.get(iter.next()) ;
 				sSysAmt += lBr + aPer.m_name + Utils._AMT_INDICATOR + roundAmount(aPer.m_amount[aPer.SYS_SUM]) + rBr ;
 			}
 			sSysAmt = Utils.lPAD + sSysAmt + Utils.rPAD + Utils._TAB_SEPARATOR;
@@ -64,18 +64,18 @@ public class GPFormatter {
 		String	sPerAmt = "", sIndAmt = "", sTransAmt = "", sIndPaid = "" ;
 		float cs = 0, indcs = 0 ;
 		/* sort persons, :get the iterator & sort it */
-		Hashtable<String, Person2> aGroup = Utils.m_GroupCollection.get(group) ;
+		Hashtable<String, Person> aGroup = Utils.m_GroupCollection3.get(group) ;
 		List<String> mapKeys = new ArrayList<String>(aGroup.keySet());
 		Collections.sort(mapKeys);
 	    iter = mapKeys.iterator();
 		while (iter.hasNext()) {
-			Person2 person = aGroup.get(iter.next());
-			sTransAmt += Utils._ITEM_SEPARATOR + Utils.lBr + person.m_name + Utils._AMT_INDICATOR + Utils.roundAmount(person.m_amount[person.TRANS_AMT]) + Utils.rBr ;
-			sPerAmt += Utils._ITEM_SEPARATOR + Utils.lBr + person.m_name + Utils._AMT_INDICATOR + Utils.roundAmount(person.m_amount[person.SYS_SUM]) + Utils.rBr ;
-			sIndAmt += Utils._ITEM_SEPARATOR + Utils.lBr + person.m_name + Utils._AMT_INDICATOR + Utils.roundAmount(person.m_amount[person.IND_SUM]) + Utils.rBr ;
-			sIndPaid += Utils._ITEM_SEPARATOR + Utils.lBr + person.m_name + Utils._AMT_INDICATOR + Utils.roundAmount(person.m_amount[person.IND_PAID]) + Utils.rBr ;
-			cs = person.m_amount[person.CHK_SUM] ;
-			indcs = person.m_amount[person.CHK_INDSUM] ;
+			Person person = aGroup.get(iter.next());
+			sTransAmt += Utils._ITEM_SEPARATOR + Utils.lBr + person.m_name + Utils._AMT_INDICATOR + Utils.roundAmount(person.m_amount.get(Person.AccountEntry.TRANS_AMT)) + Utils.rBr ;
+			sPerAmt += Utils._ITEM_SEPARATOR + Utils.lBr + person.m_name + Utils._AMT_INDICATOR + Utils.roundAmount(person.m_amount.get(Person.AccountEntry.SYS_SUM)) + Utils.rBr ;
+			sIndAmt += Utils._ITEM_SEPARATOR + Utils.lBr + person.m_name + Utils._AMT_INDICATOR + Utils.roundAmount(person.m_amount.get(Person.AccountEntry.IND_SUM)) + Utils.rBr ;
+			sIndPaid += Utils._ITEM_SEPARATOR + Utils.lBr + person.m_name + Utils._AMT_INDICATOR + Utils.roundAmount(person.m_amount.get(Person.AccountEntry.IND_PAID)) + Utils.rBr ;
+			cs = person.m_amount.get(Person.AccountEntry.CHK_SUM) ;
+			indcs = person.m_amount.get(Person.AccountEntry.CHK_INDSUM) ;
 		}
 		//System.out.println("prepareToExportGroup::sIndPaid = " + sIndPaid);
 
@@ -176,12 +176,12 @@ public class GPFormatter {
 			String	sPersons = "" ;
 
 			/* sort persons, :get the iterator & sort it */
-			Hashtable<String, Person2> aGroup = Utils.m_GroupCollection.get(group) ;
+			Hashtable<String, Person> aGroup = Utils.m_GroupCollection3.get(group) ;
 			List<String> mapKeys = new ArrayList<String>(aGroup.keySet());
 			Collections.sort(mapKeys);
 			Iterator<String> iter = mapKeys.iterator();
 			while (iter.hasNext()) {
-				Person2 person = aGroup.get(iter.next());
+				Person person = aGroup.get(iter.next());
 				sPersons += sTabs + person.m_name ;
 				sTabs = Utils._TAB_SEPARATOR ;
 			}
@@ -341,14 +341,14 @@ public class GPFormatter {
 
 	public void exportToCSVGroup(String fileName)
 	{
-		Enumeration<String> keysGroup = Utils.m_GroupCollection.keys();
+		Enumeration<String> keysGroup = Utils.m_GroupCollection3.keys();
 		while(keysGroup.hasMoreElements()){
 			String groupName = keysGroup.nextElement();
-			Hashtable<String, Person2> aGroup = Utils.m_GroupCollection.get(groupName) ;
+			Hashtable<String, Person> aGroup = Utils.m_GroupCollection3.get(groupName) ;
 
 			Enumeration<String> keysPeople = aGroup.keys();
 			while(keysPeople.hasMoreElements()){
-				Person2 person = aGroup.get(keysPeople.nextElement());
+				Person person = aGroup.get(keysPeople.nextElement());
 				exportToCSV(fileName, groupName) ;
 			}
 		}
