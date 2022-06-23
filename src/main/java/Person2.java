@@ -1,6 +1,20 @@
 //package com.mycompany.GPExplorer;
 
 public class Person2 extends Object {
+	enum AccountEntry {
+		FROM,
+		TO,
+		SYS_SUM,
+		IND_SUM,
+		CHK_SUM,
+		CHK_INDSUM,
+		TRANS_AMT,
+		IND_PAID;
+
+		public static final int size;
+		static { size = values().length; }
+	}
+
 
 	// enum
     public final int FROM = 0;
@@ -18,7 +32,8 @@ public class Person2 extends Object {
 
 	// members
 	String	m_name ;
-	float[] 	m_amount = new float[eSIZE];
+	//float[] m_amount = new float[eSIZE];
+	float[] m_amount = new float[AccountEntry.size + 1];
 	boolean	m_active ;
 
 	// methods

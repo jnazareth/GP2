@@ -1,0 +1,11 @@
+								transaction amounts			(you owe) / owed to you				individual "spent"				individual "paid"
+Item	Category	Vendor	Description	Amount	From	To	Action	am	jn	pv	am	jn	pv	CheckSum	am	jn	pv	IndCheckSum	am	jn	pv
+Sat 05.28	airline	TAP Portugal	"TAP Portugal, EWR - LIS"	1113.07	jn	jn	jn (*:self), am (*:self), pv (*:self), znmd.usd (*:group)	0.00	1113.07	0.00	0.00	0.00	0.00	0.00	0.00	1113.07	0.00	0.00	0.00	1113.07	0.00	
+Mon 05.30	hotel	Porto Central Flats	"Rua Mouzinho da Silveira, May 30 - May 31"	336	am	all		112.00	112.00	112.00	224.00	-112.00	-112.00	0.00	112.00	1225.07	112.00	0.00	336.00	1113.07	0.00	
+Wed 06.01	hotel	Le Meridien	"Le Meridien, Jun 2 - 5"	162.5	am	all		54.17	54.17	54.17	332.33	-166.17	-166.17	0.00	166.17	1279.24	166.17	0.00	498.50	1113.07	0.00	
+Sun 05.29	car	Car rental	"Car rental, May 29 - Jun 1"	166.33	am	all		55.44	55.44	55.44	443.22	-221.61	-221.61	0.00	221.61	1334.68	221.61	0.00	664.83	1113.07	0.00	
+Wed 06.01	airline	RyanAir	"RyanAir, LIS - MAD"	170.1	am	all		56.70	56.70	56.70	556.62	-278.31	-278.31	0.00	278.31	1391.38	278.31	0.00	834.93	1113.07	0.00	
+Wed 06.01	airline	RyanAir	POR - MAD	187.5	am	all		62.50	62.50	62.50	681.62	-340.81	-340.81	0.00	340.81	1453.88	340.81	0.00	1022.43	1113.07	0.00	
+Thu 06.02	airline	RyanAir	"RyanAir, MAD - RAK (old)"	428.4	am	all		142.80	142.80	142.80	967.22	-483.61	-483.61	0.00	483.61	1596.68	483.61	0.00	1450.83	1113.07	0.00	
+Thu 06.02	airline	RyanAir	"RyanAir, MAD - RAK (new)"	302	am	all		100.67	100.67	100.67	1168.55	-584.28	-584.28	0.00	584.28	1697.35	584.28	0.00	1752.83	1113.07	0.00	
+Sun 06.05	Transportation		lyft home	55	jn	jn		0.00	55.00	0.00	1168.55	-584.28	-584.28	0.00	584.28	1752.35	584.28	0.00	1752.83	1168.07	0.00	

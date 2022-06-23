@@ -1,0 +1,31 @@
+java -jar /c/Users/u8005108/"OneDrive - nyu.edu"/personal/projects/gp/enhancements/build/libs/GP2-1.0.0.jar testCases.mint.csv
+java -jar ../build/libs/GP2-1.0.0.jar testCases.mint.csv
+
+
+Fix:
+1. Sat 11.20	Public Transportation	Burgers, etc	dinner & drinks	60	debit	cash	jn	jn:20, cy:10, all
+
+Does not work: If "all:30" is not specified, the calc is incorrect.
+Works:
+	Sat 11.20	Public Transportation	Burgers, etc	dinner & drinks	60	debit	cash	jn	jn:20, cy:10, all:30
+
+2. Sat 11.20	Public Transportation	Burgers, etc	dinner & drinks	120	debit	cash	jn	jn:20, cy:10, all:60, rem
+
+Sat 11.20	Public Transportation	Burgers, etc	dinner & drinks	120	debit	cash	jn	jn:20, cy:10, all, rem:30
+
+Does not work: If "rem:30" is not specified, the calc is incorrect.
+Does not work: If "all:60" is not specified, the calc is incorrect.
+
+Works:
+	Sat 11.20	Public Transportation	Burgers, etc	dinner & drinks	120	debit	cash	jn	jn:20, cy:10, all:60, rem:30
+
+
+
+_____________________________________________
+with InputProcessor addition
+
+cd C:\Users\nazarethj\"OneDrive - Broadridge Financial Solutions, Inc"\personal\documents\budget\mint\2022\may\znmd\debug
+
+C:\Users\nazarethj\OneDrive - Broadridge Financial Solutions, Inc\personal\documents\budget\mint\2022\may\znmd\debug>
+java -jar ..\..\..\..\..\..\..\projects\gp\enhancements\build\libs\GP2-1.0.0.jar znmd.mint.csv > x
+

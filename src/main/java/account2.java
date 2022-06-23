@@ -205,12 +205,22 @@ public class account2
 	// ----------------------------------------------------
 	// doFromTo
 	// ----------------------------------------------------
-	private void doFromTo(int idx, float amt, String in, String sGroupName)
+	private void doFromTo(String item, int idx, float amt, String in, String sGroupName)
 	{
-		//System.out.println("doFromTo: idx = " + idx + ", sIn = " + in + ", sGroupName = " +  sGroupName);
+		System.out.println("\ndoFromTo: idx = " + idx + ", sIn = " + in + ", sGroupName = " +  sGroupName);
 
 		float amtRem = 0, amtAll = 0 ;
 		int numRem = 0, numAll = numActive(sGroupName) ;
+
+		// added 1/22 - inputBreakDown {
+		//TransactionInput sT = new TransactionInput() ;
+		//sT.processInputTransaction(amt, in) ;
+		// added 1/22 - inputBreakDown }
+	
+		// 2nd implementation {
+		InputProcessor sT = new InputProcessor() ;
+		sT.processFrTo(item, idx, amt, numAll, in) ;
+		// 2nd implementation }
 
 		String sIn[] = in.split(ITEM_SEPARATOR) ;
 
@@ -227,6 +237,7 @@ public class account2
 		if (sIn.length == 1) {
 			amtRem = amtAll = amt ;
 			//if (idx == _TO) System.out.println("START::" + "amtRem:" + amtRem + ",amtAll:" + amtAll + ",numAll:" + numAll + ",numRem:" + numRem + ",numRest:" + numRest) ;
+			//System.out.println("here 0.0::" + "amtRem:" + amtRem + ",amtAll:" + amtAll) ;
 		}
 		else {
 			for (int j = 0; j < sIn.length; j++) {
@@ -245,6 +256,7 @@ public class account2
 				}
 			}
 			amtAll = amt ;
+			//System.out.println("here 0.1::" + "amtRem:" + amtRem + ",amtAll:" + amtAll) ;
 		}
 		//if (idx == _TO) System.out.println("START::" + "amtRem:" + amtRem + ",amtAll:" + amtAll + ",sNonRem:" + sNonRem) ;
 
@@ -260,6 +272,7 @@ public class account2
 					eachName = sEach[k].trim() ;
 					//if (idx == _TO) System.out.println("eachName::" + eachName) ;
 				}
+				//System.out.println("here 1.0::" + "eachName:" + eachName + ",eachAmt:" + eachAmt) ;
 			}
 
 			if ((eachName.compareToIgnoreCase(ALL) == 0) && (in.indexOf(ALL) != -1)) {
@@ -267,7 +280,7 @@ public class account2
 				if (eachAmt != 0) tAmt = eachAmt ;
 				else tAmt = amtAll ;
 				float iAmt = tAmt/numAll ;
-				//System.out.println(ALL + "::" + "eachAmt:" + eachAmt + ",amtAll:" + amtAll + ",numAll:" + numAll + ",tAmt:" + tAmt + ",iAmt:" + iAmt) ;
+				//System.out.println("here 1.1::" + ALL + "::" + "eachAmt:" + eachAmt + ",amtAll:" + amtAll + ",numAll:" + numAll + ",tAmt:" + tAmt + ",iAmt:" + iAmt) ;
 
 				// group impl {
 				Hashtable<String, Person2> aGroup = m_GroupCollection.get(sGroupName) ;
@@ -281,6 +294,7 @@ public class account2
 						//System.out.println("_FR, ALL " + "::" + "iAmt:" + iAmt) ;
 					}
 					if ((idx == _TO) && (m_bClearing == false)) {
+						//System.out.println("_TO, ALL " + "::" + "iAmt:" + iAmt) ;
 						person.m_amount[person.TRANS_AMT] += iAmt ;
 						person.m_amount[person.IND_SUM] += iAmt ;
 					}
@@ -293,7 +307,7 @@ public class account2
 				if (eachAmt != 0) tAmt = eachAmt ;
 				else tAmt = amtAll-amtRem ;
 				float rAmt = tAmt/(numAll-numRem) ;
-				////System.out.println(REM + "::" + "eachAmt:" + eachAmt + ",amtAll:" + amtAll + ",amtRem:" + amtRem + ",numAll:" + numAll + ",numRem:" + numRem + ",tAmt:" + tAmt + ",rAmt:" + rAmt) ;
+				//System.out.println("here 2.0::" + REM + "::" + "eachAmt:" + eachAmt + ",amtAll:" + amtAll + ",amtRem:" + amtRem + ",numAll:" + numAll + ",numRem:" + numRem + ",tAmt:" + tAmt + ",rAmt:" + rAmt) ;
 
 				// group impl {
 				Hashtable<String, Person2> aGroup = m_GroupCollection.get(sGroupName) ;
@@ -308,6 +322,7 @@ public class account2
 						//System.out.println("_FR, REM " + "::" + "rAmt:" + rAmt) ;
 					}
 					if ((idx == _TO) && (m_bClearing == false)) {
+						//System.out.println("_TO, REM " + "::" + "rAmt:" + rAmt) ;
 						person.m_amount[person.TRANS_AMT] += rAmt ;
 						person.m_amount[person.IND_SUM] += rAmt ;
 					}
@@ -345,6 +360,7 @@ public class account2
 						//System.out.println("_FR, else " + "::" + "pAmt:" + pAmt) ;
 					}
 					if ((idx == _TO) && (m_bClearing == false)) {
+						//System.out.println("TO, else " + "::" + "pAmt:" + pAmt) ;
 						person.m_amount[person.TRANS_AMT] += pAmt ;
 						person.m_amount[person.IND_SUM] += pAmt ;
 					}
@@ -480,8 +496,8 @@ public class account2
 			String aFrom = percentageToAmounts(xAmt, from, action) ;
 			String aTo = percentageToAmounts(xAmt, to, action) ;
 
-			doFromTo(_FR, xAmt, aFrom, sGroupName) ;
-			doFromTo(_TO, xAmt, aTo, sGroupName) ;
+			doFromTo(item, _FR, xAmt, aFrom, sGroupName) ;
+			doFromTo(item, _TO, xAmt, aTo, sGroupName) ;
 			sumFromToGroup(xAmt, action, sGroupName) ;
 		} catch (Exception e){
 			System.err.println("Error: " + e.getMessage());
@@ -1003,7 +1019,7 @@ public class account2
 	// ----------------------------------------------------
 	// removeQuotes
 	// ----------------------------------------------------
-	public String removeQuotes(String inString)
+	private String removeQuotes(String inString)
 	{
 		// strip quotes from inString
 		StringBuilder sb = new StringBuilder(inString);
@@ -1106,7 +1122,7 @@ public class account2
 				//if (bExport) exportToCSV(fileName) ;
 				if (bExport) exportToCSVGroup(fileName) ;
 
-				//dumpCollection() ;
+				dumpCollection() ;
 			} catch (IOException e) {
 				////System.out.println("There was a problem reading:" + fileName);
 			}
