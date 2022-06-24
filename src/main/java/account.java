@@ -20,11 +20,55 @@ import java.util.HashSet;
 
 public class account
 {
+	//CONSTANTS
+	// Actions
+	private final String ADD_ITEM = "*" ;
+	private final String ENABLE_ITEM = "+" ;
+	private final String DISABLE_ITEM = "-" ;
+
+	//calculation direction
+	private final int _FR = 0 ;
+	private final int	_TO = 1 ;
+
+	// control row
+	private final char 	CONTROL = '@' ;
+	//private final char 	USE_COLUMN = '+' ;
+	//private final char 	SKIP_COLUMN = '-' ;
+
+	private final String S_ITEM = "item" ;
+	private final String S_CATEGORY = "category" ;
+	private final String S_VENDOR = "vendor" ;
+	private final String S_DESC = "description" ;
+	private final String S_AMOUNT = "amount" ;
+	private final String S_FROM = "from" ;
+	private final String S_TO = "to" ;
+	private final String S_GROUP = "group" ;
+	private final String S_ACTION = "action" ;
+	private final String S_ACTION_QUOTE = "\"" ;
+
+	private int	P_ITEM ;
+	private int	P_CATEGORY ;
+	private int P_VENDOR ;
+	private int	P_DESC ;
+	private int P_AMOUNT ;
+	private int	P_FROM ;
+	private int P_TO ;
+	private int	P_GROUP ;
+	private int	P_ACTION ;
+
+	// id markers
+	private final String _ID_SEPARATOR = ":" ;
+	private final String _SELF = ":self" ;
+	private final String _GROUP = ":group" ;
+	private final String _ID_lR = "(" ;
+	private final String _ID_rR = ")" ;
+	private final String _DEFAULT_GROUP = "default" ;
+
 	// ----------------------------------------------------
 	// Declarations
 	// ----------------------------------------------------
 	//private Hashtable<String, Person3> /* m_Persons, replaced by Group */ m_System ;
-	//private Hashtable<String, Hashtable<String, Person3>> m_GroupCollection3 ;
+	//private Hashtable<String, Hashtable<String, Person3>> m_GroupCollection ;
 	private int m_numActive = 0 ;
 	private float m_nTotAmount = 0, m_nSysToAmount ;
 	private ArrayList<String> m_exportLines = null;
@@ -53,7 +97,7 @@ public class account
 	private int numActive(String sGroupName)
 	{
 		int i = 0 ;
-		Hashtable<String, Person> aGroup = Utils.m_GroupCollection3.get(sGroupName) ;
+		Hashtable<String, Person> aGroup = Utils.m_GroupCollection.get(sGroupName) ;
 		Enumeration<String> keysPeople = aGroup.keys();
 		while(keysPeople.hasMoreElements()){
 			Person person = aGroup.get(keysPeople.nextElement());
@@ -67,31 +111,31 @@ public class account
 	// ----------------------------------------------------
 	private String percentageToAmounts(float amt, String in, String action)
 	{
-		if (in.indexOf(Utils._PERCENTAGE) == -1) return in;
+		if (in.indexOf(Constants._PERCENTAGE) == -1) return in;
 
 		String sOut = "" ;
-		String sIn[] = in.split(Utils._ITEM_SEPARATOR) ;
+		String sIn[] = in.split(Constants._ITEM_SEPARATOR) ;
 
 		String eachName = "" ;
 		float eachPer = 0 ;
 		for (int i = 0; i < sIn.length; i++) {
 			eachName = "";	eachPer = 0 ;
-			String sEach[] = sIn[i].split(Utils._AMT_INDICATOR) ;
+			String sEach[] = sIn[i].split(Constants._AMT_INDICATOR) ;
 			for (int k = 0; k < sEach.length; k++) {
 				int pLoc = -1 ;
-				if ((pLoc = sEach[k].indexOf(Utils._PERCENTAGE)) == -1) {
+				if ((pLoc = sEach[k].indexOf(Constants._PERCENTAGE)) == -1) {
 					try {
 						eachPer = Float.parseFloat(sEach[k]) ;
-						sOut += Utils._AMT_INDICATOR + sEach[k] ;
+						sOut += Constants._AMT_INDICATOR + sEach[k] ;
 					} catch (NumberFormatException e) {
 						eachName = sEach[k].trim() ;
 						if (sOut == "") sOut += sEach[k] ;
-						else sOut += Utils._ITEM_SEPARATOR + sEach[k] ;
+						else sOut += Constants._ITEM_SEPARATOR + sEach[k] ;
 					}
 				} else {
 					eachPer = Float.parseFloat(sEach[k].substring(0, pLoc)) ;
 					float xAmt = amt * eachPer / 100 ;
-					sOut += Utils._AMT_INDICATOR + String.valueOf(xAmt) ;
+					sOut += Constants._AMT_INDICATOR + String.valueOf(xAmt) ;
 				}
 			}
 		}
@@ -103,17 +147,17 @@ public class account
 	private void putIndivAmount(String sGroupName, int idx, float fAmount, HashSet<String> indiv)
 	{
 		try {
-			Hashtable<String, Person> aGroup = Utils.m_GroupCollection3.get(sGroupName) ;
+			Hashtable<String, Person> aGroup = Utils.m_GroupCollection.get(sGroupName) ;
 			Enumeration<String> keysPeople = aGroup.keys();
 			while(keysPeople.hasMoreElements()){
 				Person person = aGroup.get(keysPeople.nextElement());
 				if ( !(indiv.contains(person.m_name)) ) continue ;
-                if (idx == Utils._FR) person.incAmount(Person.AccountEntry.FROM, fAmount) ; 
-                if (idx == Utils._TO) person.incAmount(Person.AccountEntry.TO, fAmount) ;
-				if ((idx == Utils._FR) && (m_bClearing == false)) {
+                if (idx == _FR) person.incAmount(Person.AccountEntry.FROM, fAmount) ; 
+                if (idx == _TO) person.incAmount(Person.AccountEntry.TO, fAmount) ;
+				if ((idx == _FR) && (m_bClearing == false)) {
                     person.incAmount(Person.AccountEntry.IND_PAID, fAmount) ; 
 				}
-				if ((idx == Utils._TO) && (m_bClearing == false)) {
+				if ((idx == _TO) && (m_bClearing == false)) {
                     person.incAmount(Person.AccountEntry.TRANS_AMT, fAmount) ; 
                     person.incAmount(Person.AccountEntry.IND_SUM, fAmount) ; 
 				}
@@ -127,7 +171,7 @@ public class account
 	private HashSet<String> getAllActive(String sGroupName)
 	{
 		HashSet<String> allSet = new HashSet<String>() ; 
-		Hashtable<String, Person> aGroup = Utils.m_GroupCollection3.get(sGroupName) ;
+		Hashtable<String, Person> aGroup = Utils.m_GroupCollection.get(sGroupName) ;
 
 		Enumeration<String> keysPeople = aGroup.keys();
 		while(keysPeople.hasMoreElements()) {
@@ -140,7 +184,7 @@ public class account
 	private HashSet<String> getIndivInput(InputProcessor ip)
 	{
 		HashSet<String> indivInput = new HashSet<String>() ; 
-		InputProcessor._WhoFromTo w = ip._Input.get(Utils._INDIV_key) ;
+		InputProcessor._WhoFromTo w = ip._Input.get(Constants._INDIV_key) ;
 		if (w != null) {
 			Iterator<InputProcessor._NameAmt> iter = w._Collection.iterator();
 			while (iter.hasNext()) {
@@ -233,9 +277,9 @@ public class account
 			InputProcessor sT = new InputProcessor() ;
 			sT.processFrTo(item, idx, amt, numAll, in) ;
 
-			processSetAll(Utils._ALL_key, sGroupName, idx, sT) ;
-			processSetRem(Utils._REM_key, sGroupName, idx, sT) ;
-			processSetIndiv(Utils._INDIV_key, sGroupName, idx, sT) ;
+			processSetAll(Constants._ALL_key, sGroupName, idx, sT) ;
+			processSetRem(Constants._REM_key, sGroupName, idx, sT) ;
+			processSetIndiv(Constants._INDIV_key, sGroupName, idx, sT) ;
 		} catch (Exception e) {
 			System.err.println("Error:doFromTo2::" + e.getMessage()) ;
 		}		
@@ -246,7 +290,7 @@ public class account
 	// ----------------------------------------------------
 	private void initFromToGroup(String sGroupName)
 	{
-		Hashtable<String, Person> aGroup = Utils.m_GroupCollection3.get(sGroupName) ;
+		Hashtable<String, Person> aGroup = Utils.m_GroupCollection.get(sGroupName) ;
 		Enumeration<String> keysPeople = aGroup.keys();
 		while(keysPeople.hasMoreElements()){
 			Person person = aGroup.get(keysPeople.nextElement());
@@ -276,9 +320,9 @@ public class account
 		//m_Persons = new Hashtable<String, Person>() ;
 		m_nTotAmount = 0;		m_nSysToAmount = 0 ;
 
-		Utils.m_System3 = new Hashtable<String, Person>() ;
-		Person aPerson = new Person(Utils._SYS, true) ;
-		Utils.m_System3.put(Utils._SYS, aPerson) ;
+		Utils.m_System = new Hashtable<String, Person>() ;
+		Person aPerson = new Person(Constants._SYS, true) ;
+		Utils.m_System.put(Constants._SYS, aPerson) ;
 		Utils.m_bSys = false ;
 	}
 
@@ -302,7 +346,7 @@ public class account
 
 		// person account
 		float nCheckSum = 0, nCheckIndSum = 0 ;
-		Hashtable<String, Person> aGroup = Utils.m_GroupCollection3.get(sGroupName) ;
+		Hashtable<String, Person> aGroup = Utils.m_GroupCollection.get(sGroupName) ;
 		Enumeration<String> keysPeople = aGroup.keys();
 		while(keysPeople.hasMoreElements()){
 			Person person = aGroup.get(keysPeople.nextElement());
@@ -316,7 +360,7 @@ public class account
             person.m_amount.put(Person.AccountEntry.TO, 0.0f) ;
 
 			nCheckSum += person.m_amount.get(Person.AccountEntry.SYS_SUM) ;
-			if (!action.endsWith(Utils._CLEARING)) nCheckIndSum += person.m_amount.get(Person.AccountEntry.IND_SUM) ;
+			if (!action.endsWith(Constants._CLEARING)) nCheckIndSum += person.m_amount.get(Person.AccountEntry.IND_SUM) ;
 		}
 		keysPeople = aGroup.keys();
 		while(keysPeople.hasMoreElements()){
@@ -330,7 +374,7 @@ public class account
 		keysPeople = aGroup.keys();
 		while(keysPeople.hasMoreElements()){
 			Person person = aGroup.get(keysPeople.nextElement());
-			if (!action.endsWith(Utils._CLEARING)) person.m_amount.put(Person.AccountEntry.CHK_INDSUM, ((m_nTotAmount - m_nSysToAmount) /* this is adjusted for sys account */ - nCheckIndSum)) ;
+			if (!action.endsWith(Constants._CLEARING)) person.m_amount.put(Person.AccountEntry.CHK_INDSUM, ((m_nTotAmount - m_nSysToAmount) /* this is adjusted for sys account */ - nCheckIndSum)) ;
 			aGroup.put(person.m_name, person) ;
 		}
 
@@ -360,8 +404,8 @@ public class account
 			String aFrom = percentageToAmounts(xAmt, from, action) ;
 			String aTo = percentageToAmounts(xAmt, to, action) ;
 
-			doFromTo2(item, Utils._FR, xAmt, aFrom, sGroupName) ;
-			doFromTo2(item, Utils._TO, xAmt, aTo, sGroupName) ;
+			doFromTo2(item, _FR, xAmt, aFrom, sGroupName) ;
+			doFromTo2(item, _TO, xAmt, aTo, sGroupName) ;
 			sumFromToGroup(xAmt, action, sGroupName) ;
 		} catch (Exception e){
 			System.err.println("Error:ProcessTransaction:" + e.getMessage());
@@ -373,10 +417,10 @@ public class account
 	private void dumpCollection()
 	{
 		System.out.println("--------------------------------------");
-		Enumeration<String> keysGroup = Utils.m_GroupCollection3.keys();
+		Enumeration<String> keysGroup = Utils.m_GroupCollection.keys();
 		while(keysGroup.hasMoreElements()){
 			String groupName = keysGroup.nextElement();
-			Hashtable<String, Person> aGroup = Utils.m_GroupCollection3.get(groupName) ;
+			Hashtable<String, Person> aGroup = Utils.m_GroupCollection.get(groupName) ;
 			System.out.println("");
 			System.out.println(groupName);
 
@@ -391,11 +435,11 @@ public class account
 				//System.out.println("Value of "+key+" is: "+aGroup.get(key));
 
 				String sTransAmt = "", sPerAmt = "", sIndAmt = "", sIndPaid="" ;
-				sTransAmt +=  Utils.lBr + person.m_name + Utils._AMT_INDICATOR + Utils.roundAmount(person.m_amount.get(Person.AccountEntry.TRANS_AMT)) + Utils.rBr ;
-				sPerAmt += Utils.lBr + person.m_name + Utils._AMT_INDICATOR + Utils.roundAmount(person.m_amount.get(Person.AccountEntry.SYS_SUM)) + Utils.rBr ;
-				sIndAmt += Utils.lBr + person.m_name + Utils._AMT_INDICATOR + Utils.roundAmount(person.m_amount.get(Person.AccountEntry.IND_SUM)) + Utils.rBr ;
-				sIndPaid += Utils.lBr + person.m_name + Utils._AMT_INDICATOR + Utils.roundAmount(person.m_amount.get(Person.AccountEntry.IND_PAID)) + Utils.rBr ;
-				System.out.println(person.m_name + ":" + sTransAmt + Utils._DUMP_SEPARATOR + sPerAmt + Utils._DUMP_SEPARATOR + sIndAmt + Utils._DUMP_SEPARATOR + sIndPaid);
+				sTransAmt +=  Constants.lBr + person.m_name + Constants._AMT_INDICATOR + Utils.roundAmount(person.m_amount.get(Person.AccountEntry.TRANS_AMT)) + Constants.rBr ;
+				sPerAmt += Constants.lBr + person.m_name + Constants._AMT_INDICATOR + Utils.roundAmount(person.m_amount.get(Person.AccountEntry.SYS_SUM)) + Constants.rBr ;
+				sIndAmt += Constants.lBr + person.m_name + Constants._AMT_INDICATOR + Utils.roundAmount(person.m_amount.get(Person.AccountEntry.IND_SUM)) + Constants.rBr ;
+				sIndPaid += Constants.lBr + person.m_name + Constants._AMT_INDICATOR + Utils.roundAmount(person.m_amount.get(Person.AccountEntry.IND_PAID)) + Constants.rBr ;
+				System.out.println(person.m_name + ":" + sTransAmt + Constants._DUMP_SEPARATOR + sPerAmt + Constants._DUMP_SEPARATOR + sIndAmt + Constants._DUMP_SEPARATOR + sIndPaid);
 			}
 		}
 		System.out.println("--------------------------------------");
@@ -406,7 +450,7 @@ public class account
 	{
 		// find group
 		try {
-			Hashtable<String, Person> persons = Utils.m_GroupCollection3.get(sGrpName) ;
+			Hashtable<String, Person> persons = Utils.m_GroupCollection.get(sGrpName) ;
 			if (persons != null) {
 			} else {
 				// not found, error !
@@ -423,10 +467,10 @@ public class account
 	{
 		// find group
 		try {
-			Hashtable<String, Person> aGrp = Utils.m_GroupCollection3.get(sGrpName) ;
+			Hashtable<String, Person> aGrp = Utils.m_GroupCollection.get(sGrpName) ;
 			if (aGrp == null) {
 				aGrp = new Hashtable<String, Person>() ;
-				Utils.m_GroupCollection3.put(sGrpName, aGrp) ;
+				Utils.m_GroupCollection.put(sGrpName, aGrp) ;
 			} else {
 				// found, do nothing
 			}
@@ -443,7 +487,7 @@ public class account
 		String sAct = "" ;
 		// get action
 		int idS = 0 ;
-		if ( ((idS = sA.indexOf(Utils._ID_SEPARATOR)) != -1) )
+		if ( ((idS = sA.indexOf(_ID_SEPARATOR)) != -1) )
 			sAct = sA.substring(lR+1, idS).trim() ;
 		else
 			System.err.println("Action not specified: " + sA);
@@ -458,30 +502,30 @@ public class account
 	{
 		//System.out.println("action: " + action);
 
-		String sGroupName = Utils._DEFAULT_GROUP ;
+		String sGroupName = _DEFAULT_GROUP ;
 		boolean bGroup = false, bInd = false ;
 		ArrayList<String> grpActions = null, indActions = null ;
 
 		// process Action
 		if (action.length() != 0) {
-			String[] pieces = action.split(Utils._ITEM_SEPARATOR);
-			String sActs = "", sIndAct = Utils.ADD_ITEM, sGrpAct = Utils.ADD_ITEM;
+			String[] pieces = action.split(Constants._ITEM_SEPARATOR);
+			String sActs = "", sIndAct = ADD_ITEM, sGrpAct = ADD_ITEM;
 			for (String p : pieces) {
 				sActs = p ;
 
-				if (sActs.endsWith(Utils._CLEARING)) {	// pay between individuals
+				if (sActs.endsWith(Constants._CLEARING)) {	// pay between individuals
 					m_bClearing = true ;
 				}
 
 				int lR = 0, rR = 0 ;
-				String aName = "", aGroup = Utils._DEFAULT_GROUP ;
-				if ( ((lR = sActs.indexOf(Utils._ID_lR)) != -1) && ((rR = sActs.indexOf(Utils._ID_rR)) != -1) ) {	// valid construct: <name> (*:self or group)
+				String aName = "", aGroup = _DEFAULT_GROUP ;
+				if ( ((lR = sActs.indexOf(_ID_lR)) != -1) && ((rR = sActs.indexOf(_ID_rR)) != -1) ) {	// valid construct: <name> (*:self or group)
 						// get name: self or group
-						if ( (bInd = sActs.contains(Utils._SELF)) ) {
+						if ( (bInd = sActs.contains(_SELF)) ) {
 							aName = sActs.substring(0, lR).trim() ;
 							sIndAct = getAction(lR, sActs) ;
 						}
-						else if ( (bGroup = sActs.contains(Utils._GROUP)) ) {
+						else if ( (bGroup = sActs.contains(_GROUP)) ) {
 							aGroup = sActs.substring(0, lR).trim() ;
 							sGrpAct = getAction(lR, sActs) ;
 						}
@@ -492,27 +536,27 @@ public class account
 				if (bGroup) {
 					if (grpActions == null) {
 						grpActions = new ArrayList<String>() ;
-						grpActions.add(aGroup + Utils._ID_SEPARATOR + sGrpAct) ;
+						grpActions.add(aGroup + _ID_SEPARATOR + sGrpAct) ;
 					} else
-						grpActions.add(aGroup + Utils._ID_SEPARATOR + sGrpAct) ;
+						grpActions.add(aGroup + _ID_SEPARATOR + sGrpAct) ;
 				}
 
 				if (bInd) {
 					if (indActions == null) {
 						indActions = new ArrayList<String>() ;
-						indActions.add(aName + Utils._ID_SEPARATOR + sIndAct) ;
+						indActions.add(aName + _ID_SEPARATOR + sIndAct) ;
 					} else
-						indActions.add(aName + Utils._ID_SEPARATOR + sIndAct) ;
+						indActions.add(aName + _ID_SEPARATOR + sIndAct) ;
 				}
 			} // while
 
 			// Create Collections
-			if (Utils.m_GroupCollection3 == null) Utils.m_GroupCollection3 = new Hashtable<String, Hashtable<String, Person>>() ;
+			if (Utils.m_GroupCollection == null) Utils.m_GroupCollection = new Hashtable<String, Hashtable<String, Person>>() ;
 
 			if (grpActions != null) {
 				for (String aAction : grpActions) {
 					int idS = -1 ;
-					if ( ((idS = aAction.indexOf(Utils._ID_SEPARATOR)) != -1) ) {
+					if ( ((idS = aAction.indexOf(_ID_SEPARATOR)) != -1) ) {
 						sGroupName = aAction.substring(0, idS).trim() ;
 						sGrpAct = aAction.substring(idS+1, aAction.length()).trim() ;
 						Find_CreateGroup(sGroupName) ;
@@ -523,7 +567,7 @@ public class account
 			if (indActions != null) {
 				for (String aAction : indActions) {
 					int idS = -1 ;
-					if ( ((idS = aAction.indexOf(Utils._ID_SEPARATOR)) != -1) ) {
+					if ( ((idS = aAction.indexOf(_ID_SEPARATOR)) != -1) ) {
 						String sIndName = aAction.substring(0, idS).trim() ;
 						sIndAct = aAction.substring(idS+1, aAction.length()).trim() ;
 
@@ -531,18 +575,18 @@ public class account
 							Hashtable<String, Person> aGrp = Find_CreateGroup(sGroupName) ;
 							//System.out.println("sGroupName: " + sGroupName);
 
-							Person aPn = aGrp.get(sIndName);
-							if (aPn != null) { // found, flip enable/disable
-								//System.out.println("SEARCH: " + sIndName + " ,FOUND: " + aPn.m_name + ":" + aPn.m_active + ": flip active");
-								if (sIndAct.compareToIgnoreCase(Utils.DISABLE_ITEM) == 0) {
-									aPn.m_active = false ;
-								} else if (sIndAct.compareToIgnoreCase(Utils.ENABLE_ITEM) == 0) {
-									aPn.m_active = true ;
+							Person person = aGrp.get(sIndName);
+							if (person != null) { // found, flip enable/disable
+								//System.out.println("SEARCH: " + sIndName + " ,FOUND: " + person.m_name + ":" + person.m_active + ": flip active");
+								if (sIndAct.compareToIgnoreCase(DISABLE_ITEM) == 0) {
+									person.m_active = false ;
+								} else if (sIndAct.compareToIgnoreCase(ENABLE_ITEM) == 0) {
+									person.m_active = true ;
 								}
-								aGrp.put(sIndName, aPn) ;
+								aGrp.put(sIndName, person) ;
 							} else { // not found, add
 								//System.out.println("SEARCH: " + sIndName + ": NOT found, add");
-								if (sIndAct.compareToIgnoreCase(Utils.ADD_ITEM) == 0) {
+								if (sIndAct.compareToIgnoreCase(ADD_ITEM) == 0) {
 									Person aPerson = new Person(sIndName.trim(), true) ;
 									aGrp.put(sIndName, aPerson) ;
 								}
@@ -565,7 +609,7 @@ public class account
 		// strip quotes from inString
 		StringBuilder sb = new StringBuilder(inString);
 		int q = -1 ;
-		while ((q = sb.indexOf(Utils.S_ACTION_QUOTE)) != -1) sb.deleteCharAt(q) ;
+		while ((q = sb.indexOf(S_ACTION_QUOTE)) != -1) sb.deleteCharAt(q) ;
 		return sb.toString();
 	}
 
@@ -598,25 +642,25 @@ public class account
 
 				String item="", category="", vendor="", desc="", amt="", from="", to="", group="", action="", def="" ;
 				// stream the input, one line at a time
-				String[] pieces = sLine.split(Utils._READ_SEPARATOR);
+				String[] pieces = sLine.split(Constants._READ_SEPARATOR);
 				int pos = 0 ;
 
 				/* control implementation */
-					if (sLine.charAt(0) == Utils.CONTROL) { // control record, read
+					if (sLine.charAt(0) == CONTROL) { // control record, read
 						for (String p : pieces) {
 							String sColumn = p ;
-							sColumn = sColumn.substring(sColumn.indexOf(Utils.CONTROL) + 1, sColumn.length()) ;
+							sColumn = sColumn.substring(sColumn.indexOf(CONTROL) + 1, sColumn.length()) ;
 							//System.out.println("sColumn:" + sColumn);
 
-							if (sColumn.compareToIgnoreCase(Utils.S_ITEM) == 0) 		Utils.P_ITEM = pos++ ;
-							else if (sColumn.compareToIgnoreCase(Utils.S_CATEGORY) == 0) 	Utils.P_CATEGORY = pos++ ;
-							else if (sColumn.compareToIgnoreCase(Utils.S_VENDOR) == 0) 	Utils.P_VENDOR = pos++ ;
-							else if (sColumn.compareToIgnoreCase(Utils.S_DESC) == 0) 	Utils.P_DESC = pos++ ;
-							else if (sColumn.compareToIgnoreCase(Utils.S_AMOUNT) == 0) 	Utils.P_AMOUNT = pos++ ;
-							else if (sColumn.compareToIgnoreCase(Utils.S_FROM) == 0) 	Utils.P_FROM = pos++ ;
-							else if (sColumn.compareToIgnoreCase(Utils.S_TO) == 0) 		Utils.P_TO = pos++ ;
-							else if (sColumn.compareToIgnoreCase(Utils.S_GROUP) == 0)	Utils.P_GROUP = pos++ ;
-							else if (sColumn.compareToIgnoreCase(Utils.S_ACTION) == 0) 	Utils.P_ACTION = pos++ ;
+							if (sColumn.compareToIgnoreCase(S_ITEM) == 0) 		P_ITEM = pos++ ;
+							else if (sColumn.compareToIgnoreCase(S_CATEGORY) == 0) 	P_CATEGORY = pos++ ;
+							else if (sColumn.compareToIgnoreCase(S_VENDOR) == 0) 	P_VENDOR = pos++ ;
+							else if (sColumn.compareToIgnoreCase(S_DESC) == 0) 	P_DESC = pos++ ;
+							else if (sColumn.compareToIgnoreCase(S_AMOUNT) == 0) 	P_AMOUNT = pos++ ;
+							else if (sColumn.compareToIgnoreCase(S_FROM) == 0) 	P_FROM = pos++ ;
+							else if (sColumn.compareToIgnoreCase(S_TO) == 0) 		P_TO = pos++ ;
+							else if (sColumn.compareToIgnoreCase(S_GROUP) == 0)	P_GROUP = pos++ ;
+							else if (sColumn.compareToIgnoreCase(S_ACTION) == 0) 	P_ACTION = pos++ ;
 							else pos++ ;
 						}
 						//System.out.println("P_ITEM:" + P_ITEM + ", P_CATEGORY:" + P_CATEGORY + ", P_VENDOR:" + P_VENDOR + ", P_DESC:" + P_DESC + ", P_AMOUNT:" + P_AMOUNT + ", P_FROM:" + P_FROM + ", P_TO:" + P_TO + ", P_GROUP:" + P_GROUP + ", P_ACTION:" + P_ACTION);
@@ -624,27 +668,27 @@ public class account
 					}
 
 					for (String p : pieces) {
-						if (pos == Utils.P_ITEM)
+						if (pos == P_ITEM)
 							item = p ;
-						else if (pos == Utils.P_CATEGORY)
+						else if (pos == P_CATEGORY)
 							category = p ;
-						else if (pos == Utils.P_VENDOR)
+						else if (pos == P_VENDOR)
 							vendor = p ;
-						else if (pos == Utils.P_DESC)
+						else if (pos == P_DESC)
 							desc = p ;
-						else if (pos == Utils.P_AMOUNT)
+						else if (pos == P_AMOUNT)
 							amt = p ;
-						else if (pos == Utils.P_FROM) {
+						else if (pos == P_FROM) {
 							from = p ;
 							from = removeQuotes(from) ;
 						}
-						else if (pos == Utils.P_TO) {
+						else if (pos == P_TO) {
 							to = p ;
 							to = removeQuotes(to) ;
 						}
-						else if (pos == Utils.P_GROUP)
+						else if (pos == P_GROUP)
 							group = p ;
-						else if (pos == Utils.P_ACTION) {
+						else if (pos == P_ACTION) {
 							action = p ;
 							action = removeQuotes(action) ;
 						}
@@ -653,11 +697,11 @@ public class account
 					}
 
 					if (sLine.length() == 0) continue ;
-					if (item.charAt(0) == Utils._COMMENT) continue ; // comment, skip
+					if (item.charAt(0) == Constants._COMMENT) continue ; // comment, skip
 
 					//System.out.println("item:" + item + ", category:" + category + ", vendor:" + vendor + ", desc:" + desc + ", amt:" + amt + ", from:" + from + ", to:" + to + ", group:" + group + ", action:" + action);
 
-					if (group.length() == 0) group = Utils._DEFAULT_GROUP ;
+					if (group.length() == 0) group = _DEFAULT_GROUP ;
 					ProcessTransaction(item, desc, amt, from, to, group, action, def) ;
 					//if (bExport) prepareToExport(item, category, vendor, desc, amt, from, to, action, def) ;
 					if (bExport) gpF.prepareToExportGroup(item, category, vendor, desc, amt, from, to, group, action, def) ;
@@ -671,10 +715,10 @@ public class account
 
 				//dumpCollection() ;
 			} catch (IOException e) {
-				////System.out.println("There was a problem reading:" + fileName);
+				System.out.println("There was a problem reading:" + fileName);
 			}
 		} catch (FileNotFoundException e) {
-			////System.out.println("Could not locate a file: " + e.getMessage());
+			System.out.println("Could not locate a file: " + e.getMessage());
 		}
 	}
 

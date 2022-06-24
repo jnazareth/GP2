@@ -63,9 +63,9 @@ public class InputProcessor extends Object {
 					_NameAmt na = iter.next();
 					if (na.m_amount == null) {
 						na.m_amount = (totalAmount 
-									- getTotalAmount(Utils._ALL_key) 
-									- getTotalAmount(Utils._REM_key) 
-									- getTotalAmount(Utils._INDIV_key)) ; 
+									- getTotalAmount(Constants._ALL_key) 
+									- getTotalAmount(Constants._REM_key) 
+									- getTotalAmount(Constants._INDIV_key)) ; 
 						_Input.put(key, w) ;
 					}
 				}
@@ -78,11 +78,11 @@ public class InputProcessor extends Object {
     private void assignAmounts (float totalAmount) {
 		try {
 			if (this._Input == null) return ;
-			assignAmount (Utils._ALL_key, totalAmount) ; 
-			assignAmount (Utils._REM_key, totalAmount) ; 
-			assignAmount (Utils._INDIV_key, totalAmount) ;
+			assignAmount (Constants._ALL_key, totalAmount) ; 
+			assignAmount (Constants._REM_key, totalAmount) ; 
+			assignAmount (Constants._INDIV_key, totalAmount) ;
 			
-			float f = getTotalAmount(Utils._ALL_key) + getTotalAmount(Utils._REM_key) + getTotalAmount(Utils._INDIV_key) ;
+			float f = getTotalAmount(Constants._ALL_key) + getTotalAmount(Constants._REM_key) + getTotalAmount(Constants._INDIV_key) ;
 			if (totalAmount != f)
 				System.out.println("Amounts do not tally: " + totalAmount + " <> " + f) ;
 		} catch (Exception e) {
@@ -95,7 +95,7 @@ public class InputProcessor extends Object {
 			int nullCount = 0 ;
 			if (this._Input == null) return nullCount ;
 
-			String key = Utils._INDIV_key ;
+			String key = Constants._INDIV_key ;
 			_WhoFromTo w = _Input.get(key) ;
 			if (w != null) {
 				Iterator<_NameAmt> iter ;
@@ -117,7 +117,7 @@ public class InputProcessor extends Object {
 			int nullCount = 0 ;
 			if (this._Input == null) return nullCount ;
 
-			String key = Utils._INDIV_key ;
+			String key = Constants._INDIV_key ;
 			_WhoFromTo w = _Input.get(key) ;
 			if (w != null) {
 				Iterator<_NameAmt> iter ;
@@ -141,10 +141,10 @@ public class InputProcessor extends Object {
 		try {
 			if (this._Input == null) return ;
 
-			if ( (_Input.get(Utils._ALL_key) == null) && (_Input.get(Utils._REM_key) == null) ) {
+			if ( (_Input.get(Constants._ALL_key) == null) && (_Input.get(Constants._REM_key) == null) ) {
 				int nNulls = getIndivNullCount() ;
 				if (nNulls != 0) {
-					float nIndivEachAmount = ((totalAmount-getTotalAmount(Utils._INDIV_key)) / nNulls) ;
+					float nIndivEachAmount = ((totalAmount-getTotalAmount(Constants._INDIV_key)) / nNulls) ;
 					//System.out.println("assignAmounts2::nIndivEachAmount::" + nIndivEachAmount) ;
 					putIndivAmount (nIndivEachAmount, nNulls) ;
 				}
@@ -164,7 +164,7 @@ public class InputProcessor extends Object {
 			if (this._Input == null) return ;
 			// _INDIV
 			int indivTotal = 0 ;
-			String k = Utils._INDIV_key ;
+			String k = Constants._INDIV_key ;
 			_WhoFromTo w = _Input.get(k) ;
 			if (w != null) {
 				Iterator<_NameAmt> iter ;
@@ -184,7 +184,7 @@ public class InputProcessor extends Object {
 
 			// _REM
 			int numActive = nActive ;
-			k = Utils._REM_key ; 
+			k = Constants._REM_key ; 
 			w = _Input.get(k) ;
 			if (w != null) {
 				w._Count = (numActive - indivTotal) ;
@@ -192,7 +192,7 @@ public class InputProcessor extends Object {
 			}
 
 			// _ALL
-			k = Utils._ALL_key ; 
+			k = Constants._ALL_key ; 
 			w = _Input.get(k) ;
 			if (w != null) {
 				w._Count = (numActive) ;
@@ -225,20 +225,20 @@ public class InputProcessor extends Object {
 			//System.out.println("==> " + item + "::[" + idx + "][" + amt + "][" + sInput + "]" );
 
 			_NameAmt na = null ;
-			String sIn[] = sInput.split(Utils._ITEM_SEPARATOR) ;
+			String sIn[] = sInput.split(Constants._ITEM_SEPARATOR) ;
 			for (int i = 0; i < sIn.length; i++) {
 				na = splitNameAmount(sIn[i]) ;
 
 				if (_Input == null) _Input = new HashMap<String, _WhoFromTo>();
 
-				if (sIn[i].indexOf(Utils._ALL) != -1) {         // ALL found
-					addItem(Utils._ALL_key, na);
-				} else if (sIn[i].indexOf(Utils._REM) != -1) {  // REM found
-					addItem(Utils._REM_key, na);
+				if (sIn[i].indexOf(Constants._ALL) != -1) {         // ALL found
+					addItem(Constants._ALL_key, na);
+				} else if (sIn[i].indexOf(Constants._REM) != -1) {  // REM found
+					addItem(Constants._REM_key, na);
 				} else if (na.m_name == null) {					// UNKNOWN
-					addItem(Utils._UNKNOWN_key, na);
+					addItem(Constants._UNKNOWN_key, na);
 				} else {                                        // INDIV found
-					addItem(Utils._INDIV_key, na);
+					addItem(Constants._INDIV_key, na);
 				}
 			}
 			//dumpCollection2() ;		// before
@@ -254,7 +254,7 @@ public class InputProcessor extends Object {
         Float fAmt = null;
         String aName = null ;
 
-		String sEach[] = stringToSplit.split(Utils._AMT_INDICATOR) ;
+		String sEach[] = stringToSplit.split(Constants._AMT_INDICATOR) ;
         for (int k = 0; k < sEach.length; k++) {
             try {
                 fAmt = Float.valueOf(sEach[k]) ;

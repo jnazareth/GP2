@@ -58,13 +58,13 @@ public class gp2
 		}
 
         for (parmNo = 0; parmNo < args.length; parmNo++) {
-			if ((Utils.inMatches(args[parmNo], Utils.IN_HELP)) || 
-				(Utils.inMatches(args[parmNo], Utils.IN_VERSION))) {
+			if ((Utils.inMatches(args[parmNo], Constants.IN_HELP)) || 
+				(Utils.inMatches(args[parmNo], Constants.IN_VERSION))) {
 					app.showUsage() ;
 					return;
 			} else {
-				if ((parmNo == 0) && ((Utils.inMatches(args[parmNo], Utils.IN_CLEAN)))) {
-						Utils.deleteFile(Utils.OUT_FOLDER, Utils.OUT_FILE + Utils.OUT_EXTENSION) ; 
+				if ((parmNo == 0) && ((Utils.inMatches(args[parmNo], Constants.IN_CLEAN)))) {
+						Utils.deleteFile(Constants.OUT_FOLDER, Constants.OUT_FILE + Constants.OUT_EXTENSION) ; 
 						return ; 
 					}					
 				}
