@@ -1,7 +1,7 @@
 //package com.mycompany.GPExplorer;
 import java.util.EnumMap;
 
-public class Person3 extends Object {
+public class Person extends Object {
 	public static enum AccountEntry {
 		FROM,
 		TO,
@@ -28,13 +28,13 @@ public class Person3 extends Object {
 		}
     }
 
-	public Person3() {
+	public Person() {
 		m_name = "" ;
 		initAmounts() ;
 		m_active = false ;
 	}
 
-	public Person3(String name, boolean active) {
+	public Person(String name, boolean active) {
 		m_name = name ;
 		initAmounts() ;
 		m_active = active ;

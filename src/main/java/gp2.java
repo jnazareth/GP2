@@ -7,6 +7,7 @@
 -------------------
 history
 -------------------
+v21: Refactor cleanup. Remove multiple classes.
 v20: InputProcessor, -clean, Person(EnumMap) implementation. Refactored.
 v19: read separator switched to comma & quoted strings from tab
 v18: control header
@@ -49,7 +50,6 @@ public class gp2
 
         int parmNo;
         String fileName = "" ;
-		boolean bOld = false ;
 
         //command line optional parameters
         if (args.length == 0 || args.length > 2) {
@@ -58,30 +58,20 @@ public class gp2
 		}
 
         for (parmNo = 0; parmNo < args.length; parmNo++) {
-			if ((Utils.inMatches(args[parmNo], Utils.IN_HELP)) || 
-				(Utils.inMatches(args[parmNo], Utils.IN_VERSION))) {
+			if ((Utils.inMatches(args[parmNo], Constants.IN_HELP)) || 
+				(Utils.inMatches(args[parmNo], Constants.IN_VERSION))) {
 					app.showUsage() ;
 					return;
 			} else {
-					if (parmNo == 0) fileName = args[parmNo] ;
-					if (parmNo == 1) {
-						if ( (Utils.inMatches(args[parmNo], Utils.IN_CLEAN)) ){
-							Utils.deleteFile(Utils.OUT_FOLDER, Utils.OUT_FILE + Utils.OUT_EXTENSION) ; 
-							return ; 
-						} else if ( (Utils.inMatches(args[parmNo], Utils.IN_TRUE)) || (Utils.inMatches(args[parmNo], Utils.IN_FALSE)) ) {
-							bOld = Boolean.parseBoolean(args[parmNo]) ;
-						}					
-					}
-			}
-        }
+				if ((parmNo == 0) && ((Utils.inMatches(args[parmNo], Constants.IN_CLEAN)))) {
+						Utils.deleteFile(Constants.OUT_FOLDER, Constants.OUT_FILE + Constants.OUT_EXTENSION) ; 
+						return ; 
+					}					
+				}
+				if (parmNo == 0) fileName = args[parmNo] ;
+		}
 
-		if (bOld == true) {
-			account2 myAccount2 = new account2() ;
-			myAccount2.ReadAndProcessTransactions(fileName, true) ;	// read input file
-		}
-		else {
-			account4 myAccount4 = new account4() ;
-			myAccount4.ReadAndProcessTransactions(fileName, true) ;	// read input file
-		}
+		account myAccount = new account() ;
+		myAccount.ReadAndProcessTransactions(fileName, true) ;	// read input file
    } // end of main
 } // end of class

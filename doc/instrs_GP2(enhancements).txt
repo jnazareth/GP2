@@ -29,3 +29,11 @@ cd C:\Users\nazarethj\"OneDrive - Broadridge Financial Solutions, Inc"\personal\
 C:\Users\nazarethj\OneDrive - Broadridge Financial Solutions, Inc\personal\documents\budget\mint\2022\may\znmd\debug>
 java -jar ..\..\..\..\..\..\..\projects\gp\enhancements\build\libs\GP2-1.0.0.jar znmd.mint.csv > x
 
+_______________________________________________
+post cleanup
+
+java -jar ..\..\..\..\..\..\..\projects\gp\gp2\build\libs\GP2-1.0.0.jar znmd.mint.debug.csv
+
+java -jar ..\..\..\..\projects\gp\gp2\build\libs\GP-1.0.0.jar znmd.mint.debug.csv
+
+java -jar ..\..\..\..\projects\gp\gp2\build\libs\GP-1.0.0.jar -clean
