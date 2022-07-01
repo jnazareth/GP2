@@ -1,19 +1,11 @@
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.IOException;
-//import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.Set;
 import java.util.List;
 import java.util.Collections;
-import java.util.Arrays;
 
 public class GPFormatter {
 	// output headers
@@ -102,16 +94,6 @@ public class GPFormatter {
 
 		aLine += Constants._TAB_SEPARATOR + sTransAmt + Constants._TAB_SEPARATOR + sSysAmt /*+ Constants._TAB_SEPARATOR*/ + sPerAmt + Utils.roundAmount(cs)+ Constants._TAB_SEPARATOR + sIndAmt + Utils.roundAmount(indcs) + Constants._TAB_SEPARATOR + sIndPaid  ;
 
-		/*
-		if (m_exportLines == null) {
-			m_exportLines = new ArrayList<String>() ;
-			m_exportLines.add(aLine) ;
-		}
-		else
-			m_exportLines.add(aLine) ;
-		*/
-
-		// group impl {
 		// Create Collections
 		if (m_exportLinesGroup == null) m_exportLinesGroup = new Hashtable<String, ArrayList<String>>() ;
 		ArrayList<String> aGrp = m_exportLinesGroup.get(group) ;
@@ -122,7 +104,6 @@ public class GPFormatter {
 		} else {
 			aGrp.add(aLine) ;
 		}
-		// group impl }
 	}
 
 	private String padAmountString(String sNames[], String embededPers, String unpaddedLine)

@@ -1,15 +1,9 @@
 import java.util.Hashtable;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.DirectoryNotEmptyException;
-import java.nio.file.NoSuchFileException;
-import javax.swing.filechooser.FileFilter;
 import java.io.FilenameFilter;
+import java.io.FileNotFoundException;
+
 
 public class Utils {
     // declarations
@@ -17,9 +11,19 @@ public class Utils {
 	// members
 	public static Hashtable<String, Person> /* m_Persons, replaced by Group */ m_System ;
 	public static Hashtable<String, Hashtable<String, Person>> m_GroupCollection ;
+	public static boolean m_bClearing = false ;
 	public static boolean m_bSys = false ;
 	
 	// methods
+	public static String removeQuotes(String inString)
+	{
+		// strip quotes from inString
+		StringBuilder sb = new StringBuilder(inString);
+		int q = -1 ;
+		while ((q = sb.indexOf(Constants.S_ACTION_QUOTE)) != -1) sb.deleteCharAt(q) ;
+		return sb.toString();
+	}
+
 	public static String roundAmount(float f)
 	{
 		try {
@@ -53,5 +57,13 @@ public class Utils {
 			}
 		}
 		return true ; 
+	}
+
+	public static File getFile(String fileName)
+	throws FileNotFoundException
+	{
+		File aFile = new File(fileName);
+		if (aFile.exists()) return aFile;
+		else throw new FileNotFoundException("File  " + fileName + " does not exist.");
 	}
 }

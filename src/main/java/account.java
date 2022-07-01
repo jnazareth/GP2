@@ -1,31 +1,18 @@
 //package com.mycompany.GPExplorer;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.ArrayList;
+import java.io.FileNotFoundException;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.Set;
-import java.util.List;
-import java.util.Collections;
-import java.util.Arrays;
 import java.util.HashSet;
 
-public class account
+public class account extends Object
 {
 	//CONSTANTS
-	// Actions
-	private final String ADD_ITEM = "*" ;
-	private final String ENABLE_ITEM = "+" ;
-	private final String DISABLE_ITEM = "-" ;
-
 	//calculation direction
 	private final int _FR = 0 ;
 	private final int	_TO = 1 ;
@@ -44,7 +31,6 @@ public class account
 	private final String S_TO = "to" ;
 	private final String S_GROUP = "group" ;
 	private final String S_ACTION = "action" ;
-	private final String S_ACTION_QUOTE = "\"" ;
 
 	private int	P_ITEM ;
 	private int	P_CATEGORY ;
@@ -56,55 +42,14 @@ public class account
 	private int	P_GROUP ;
 	private int	P_ACTION ;
 
-	// id markers
-	private final String _ID_SEPARATOR = ":" ;
-	private final String _SELF = ":self" ;
-	private final String _GROUP = ":group" ;
-	private final String _ID_lR = "(" ;
-	private final String _ID_rR = ")" ;
-	private final String _DEFAULT_GROUP = "default" ;
-
 	// ----------------------------------------------------
 	// Declarations
 	// ----------------------------------------------------
-	//private Hashtable<String, Person3> /* m_Persons, replaced by Group */ m_System ;
-	//private Hashtable<String, Hashtable<String, Person3>> m_GroupCollection ;
-	private int m_numActive = 0 ;
 	private float m_nTotAmount = 0, m_nSysToAmount ;
-	private ArrayList<String> m_exportLines = null;
-	//private Hashtable<String, ArrayList<String>> m_exportLinesGroup ;
-	private boolean m_bClearing = false ;
-	//private boolean m_bSys = false ;
 
 	// ----------------------------------------------------
 	// Class body
 	// ----------------------------------------------------
-
-	// ----------------------------------------------------
-	// getFile
-	// ----------------------------------------------------
-	private File getFile(String fileName)
-	throws FileNotFoundException
-	{
-		File aFile = new File(fileName);
-		if (aFile.exists()) return aFile;
-		else throw new FileNotFoundException("File  " + fileName + " does not exist.");
-	}
-
-	// ----------------------------------------------------
-	// numActive
-	// ----------------------------------------------------
-	private int numActive(String sGroupName)
-	{
-		int i = 0 ;
-		Hashtable<String, Person> aGroup = Utils.m_GroupCollection.get(sGroupName) ;
-		Enumeration<String> keysPeople = aGroup.keys();
-		while(keysPeople.hasMoreElements()){
-			Person person = aGroup.get(keysPeople.nextElement());
-			if (person.m_active == true) i++ ;
-		}
-		return i ;
-	}
 
 	// ----------------------------------------------------
 	// percentageToAmounts
@@ -154,10 +99,10 @@ public class account
 				if ( !(indiv.contains(person.m_name)) ) continue ;
                 if (idx == _FR) person.incAmount(Person.AccountEntry.FROM, fAmount) ; 
                 if (idx == _TO) person.incAmount(Person.AccountEntry.TO, fAmount) ;
-				if ((idx == _FR) && (m_bClearing == false)) {
+				if ((idx == _FR) && (Utils.m_bClearing == false)) {
                     person.incAmount(Person.AccountEntry.IND_PAID, fAmount) ; 
 				}
-				if ((idx == _TO) && (m_bClearing == false)) {
+				if ((idx == _TO) && (Utils.m_bClearing == false)) {
                     person.incAmount(Person.AccountEntry.TRANS_AMT, fAmount) ; 
                     person.incAmount(Person.AccountEntry.IND_SUM, fAmount) ; 
 				}
@@ -267,12 +212,12 @@ public class account
 		}		
 	}
 
-	private void doFromTo2(String item, int idx, float amt, String in, String sGroupName)
+	private void doFromTo(String item, int idx, float amt, String in, String sGroupName)
 	{
 		try {
-			//System.out.println("\ndoFromTo2: idx = " + idx + ", sIn = " + in + ", sGroupName = " +  sGroupName);
+			//System.out.println("\ndoFromTo: idx = " + idx + ", sIn = " + in + ", sGroupName = " +  sGroupName);
 
-			int numAll = numActive(sGroupName) ;
+			int numAll = getAllActive(sGroupName).size() ;					
 
 			InputProcessor sT = new InputProcessor() ;
 			sT.processFrTo(item, idx, amt, numAll, in) ;
@@ -281,14 +226,14 @@ public class account
 			processSetRem(Constants._REM_key, sGroupName, idx, sT) ;
 			processSetIndiv(Constants._INDIV_key, sGroupName, idx, sT) ;
 		} catch (Exception e) {
-			System.err.println("Error:doFromTo2::" + e.getMessage()) ;
+			System.err.println("Error:doFromTo::" + e.getMessage()) ;
 		}		
 	}
 
 	// ----------------------------------------------------
-	// 	initFromToGroup
+	// 	initFromTo
 	// ----------------------------------------------------
-	private void initFromToGroup(String sGroupName)
+	private void initFromTo(String sGroupName)
 	{
 		Hashtable<String, Person> aGroup = Utils.m_GroupCollection.get(sGroupName) ;
 		Enumeration<String> keysPeople = aGroup.keys();
@@ -327,9 +272,9 @@ public class account
 	}
 
 	// ----------------------------------------------------
-	// 	sumFromToGroup
+	// 	sumFromTo
 	// ----------------------------------------------------
-	private float sumFromToGroup(float amt, String action, String sGroupName)
+	private float sumFromTo(float amt, String action, String sGroupName)
 	{
 		float sysAmount = 0 ;
 		// sys account pending
@@ -389,24 +334,25 @@ public class account
 		try {
 			//System.out.println("ProcessTransaction::" + "item:" + item + ",amt:" + amt + ",from:" + from + ",to:" + to + ",group:" + group + ",action:" + action) ;
 
-			m_bClearing = false ;
+			Utils.m_bClearing = false ;
 
 			String sGroupName = group ;
-			doGroupAction(action) ;
+			GroupProcessor gp = new GroupProcessor() ;
+			gp.doGroupAction(action) ;
 
 			float xAmt = 0 ;
 			try {
 				xAmt = Float.parseFloat(amt) ;
 			} catch (NumberFormatException e) {
 			}
-			initFromToGroup(sGroupName) ;
+			initFromTo(sGroupName) ;
 
 			String aFrom = percentageToAmounts(xAmt, from, action) ;
 			String aTo = percentageToAmounts(xAmt, to, action) ;
 
-			doFromTo2(item, _FR, xAmt, aFrom, sGroupName) ;
-			doFromTo2(item, _TO, xAmt, aTo, sGroupName) ;
-			sumFromToGroup(xAmt, action, sGroupName) ;
+			doFromTo(item, _FR, xAmt, aFrom, sGroupName) ;
+			doFromTo(item, _TO, xAmt, aTo, sGroupName) ;
+			sumFromTo(xAmt, action, sGroupName) ;
 		} catch (Exception e){
 			System.err.println("Error:ProcessTransaction:" + e.getMessage());
 		}
@@ -426,14 +372,7 @@ public class account
 
 			Enumeration<String> keysPeople = aGroup.keys();
 			while(keysPeople.hasMoreElements()){
-				/* two step get
-				String key = keysPeople.nextElement();
-				Person3 person = (Person3)aGroup.get(key);*/
-				// single step, get
 				Person person = aGroup.get(keysPeople.nextElement());
-				//System.out.println("person: " + person.m_name + ":" + person.m_active);
-				//System.out.println("Value of "+key+" is: "+aGroup.get(key));
-
 				String sTransAmt = "", sPerAmt = "", sIndAmt = "", sIndPaid="" ;
 				sTransAmt +=  Constants.lBr + person.m_name + Constants._AMT_INDICATOR + Utils.roundAmount(person.m_amount.get(Person.AccountEntry.TRANS_AMT)) + Constants.rBr ;
 				sPerAmt += Constants.lBr + person.m_name + Constants._AMT_INDICATOR + Utils.roundAmount(person.m_amount.get(Person.AccountEntry.SYS_SUM)) + Constants.rBr ;
@@ -445,175 +384,6 @@ public class account
 		System.out.println("--------------------------------------");
 	}
 
-	// getPersons
-	Hashtable<String, Person> getPersons(String sGrpName)
-	{
-		// find group
-		try {
-			Hashtable<String, Person> persons = Utils.m_GroupCollection.get(sGrpName) ;
-			if (persons != null) {
-			} else {
-				// not found, error !
-			}
-			return persons ;
-		} catch (Exception e){
-			System.err.println("Error: " + e.getMessage());
-			return null ;
-		}
-	}
-
-	// Find_CreateGroup
-	Hashtable<String, Person> Find_CreateGroup(String sGrpName)
-	{
-		// find group
-		try {
-			Hashtable<String, Person> aGrp = Utils.m_GroupCollection.get(sGrpName) ;
-			if (aGrp == null) {
-				aGrp = new Hashtable<String, Person>() ;
-				Utils.m_GroupCollection.put(sGrpName, aGrp) ;
-			} else {
-				// found, do nothing
-			}
-			return aGrp ;
-		} catch (Exception e){
-			System.err.println("Error: " + e.getMessage());
-			return null ;
-		}
-	}
-
-	// getAction: get specific action
-	String getAction(int lR, String sA)
-	{
-		String sAct = "" ;
-		// get action
-		int idS = 0 ;
-		if ( ((idS = sA.indexOf(_ID_SEPARATOR)) != -1) )
-			sAct = sA.substring(lR+1, idS).trim() ;
-		else
-			System.err.println("Action not specified: " + sA);
-
-		return sAct ;
-	}
-
-	// doGroupAction: process input action
-	// name1 (*/+/-:self), name2 (*/+/-:self): add/enable/disable individuals
-	// group1 (*/+/-:group): add/enable/disable group
-	private String doGroupAction(String action)
-	{
-		//System.out.println("action: " + action);
-
-		String sGroupName = _DEFAULT_GROUP ;
-		boolean bGroup = false, bInd = false ;
-		ArrayList<String> grpActions = null, indActions = null ;
-
-		// process Action
-		if (action.length() != 0) {
-			String[] pieces = action.split(Constants._ITEM_SEPARATOR);
-			String sActs = "", sIndAct = ADD_ITEM, sGrpAct = ADD_ITEM;
-			for (String p : pieces) {
-				sActs = p ;
-
-				if (sActs.endsWith(Constants._CLEARING)) {	// pay between individuals
-					m_bClearing = true ;
-				}
-
-				int lR = 0, rR = 0 ;
-				String aName = "", aGroup = _DEFAULT_GROUP ;
-				if ( ((lR = sActs.indexOf(_ID_lR)) != -1) && ((rR = sActs.indexOf(_ID_rR)) != -1) ) {	// valid construct: <name> (*:self or group)
-						// get name: self or group
-						if ( (bInd = sActs.contains(_SELF)) ) {
-							aName = sActs.substring(0, lR).trim() ;
-							sIndAct = getAction(lR, sActs) ;
-						}
-						else if ( (bGroup = sActs.contains(_GROUP)) ) {
-							aGroup = sActs.substring(0, lR).trim() ;
-							sGrpAct = getAction(lR, sActs) ;
-						}
-						else
-							; //System.err.println("Individual or Group not specified: " + action);
-				}
-
-				if (bGroup) {
-					if (grpActions == null) {
-						grpActions = new ArrayList<String>() ;
-						grpActions.add(aGroup + _ID_SEPARATOR + sGrpAct) ;
-					} else
-						grpActions.add(aGroup + _ID_SEPARATOR + sGrpAct) ;
-				}
-
-				if (bInd) {
-					if (indActions == null) {
-						indActions = new ArrayList<String>() ;
-						indActions.add(aName + _ID_SEPARATOR + sIndAct) ;
-					} else
-						indActions.add(aName + _ID_SEPARATOR + sIndAct) ;
-				}
-			} // while
-
-			// Create Collections
-			if (Utils.m_GroupCollection == null) Utils.m_GroupCollection = new Hashtable<String, Hashtable<String, Person>>() ;
-
-			if (grpActions != null) {
-				for (String aAction : grpActions) {
-					int idS = -1 ;
-					if ( ((idS = aAction.indexOf(_ID_SEPARATOR)) != -1) ) {
-						sGroupName = aAction.substring(0, idS).trim() ;
-						sGrpAct = aAction.substring(idS+1, aAction.length()).trim() ;
-						Find_CreateGroup(sGroupName) ;
-					}
-				}
-			}
-
-			if (indActions != null) {
-				for (String aAction : indActions) {
-					int idS = -1 ;
-					if ( ((idS = aAction.indexOf(_ID_SEPARATOR)) != -1) ) {
-						String sIndName = aAction.substring(0, idS).trim() ;
-						sIndAct = aAction.substring(idS+1, aAction.length()).trim() ;
-
-						try {
-							Hashtable<String, Person> aGrp = Find_CreateGroup(sGroupName) ;
-							//System.out.println("sGroupName: " + sGroupName);
-
-							Person person = aGrp.get(sIndName);
-							if (person != null) { // found, flip enable/disable
-								//System.out.println("SEARCH: " + sIndName + " ,FOUND: " + person.m_name + ":" + person.m_active + ": flip active");
-								if (sIndAct.compareToIgnoreCase(DISABLE_ITEM) == 0) {
-									person.m_active = false ;
-								} else if (sIndAct.compareToIgnoreCase(ENABLE_ITEM) == 0) {
-									person.m_active = true ;
-								}
-								aGrp.put(sIndName, person) ;
-							} else { // not found, add
-								//System.out.println("SEARCH: " + sIndName + ": NOT found, add");
-								if (sIndAct.compareToIgnoreCase(ADD_ITEM) == 0) {
-									Person aPerson = new Person(sIndName.trim(), true) ;
-									aGrp.put(sIndName, aPerson) ;
-								}
-							}
-						} catch (Exception e){
-							System.err.println("Error:doGroupAction " + e.getMessage());
-						}
-					}
-				}
-			}
-		} // action
-		return sGroupName ;
-	}
-
-	// ----------------------------------------------------
-	// removeQuotes
-	// ----------------------------------------------------
-	private String removeQuotes(String inString)
-	{
-		// strip quotes from inString
-		StringBuilder sb = new StringBuilder(inString);
-		int q = -1 ;
-		while ((q = sb.indexOf(S_ACTION_QUOTE)) != -1) sb.deleteCharAt(q) ;
-		return sb.toString();
-	}
-
-
 	// ----------------------------------------------------
 	// ReadAndProcessTransactions
 	// ----------------------------------------------------
@@ -624,15 +394,13 @@ public class account
 		// open logfile
         FileReader fileReader = null;
 		try {
-			fileReader = new FileReader(getFile(fileName));
+			fileReader = new FileReader(Utils.getFile(fileName));
 			//read file
 			BufferedReader buffReader = new BufferedReader(fileReader);
 			String sLine = "";
 
 			initPersons() ;
-			//if (bExport) m_exportLines = null ;
 			if (bExport) {
-				//Utils.m_exportLinesGroup = null ;
 				gpF = new GPFormatter() ;
 				//gpF.m_gpCollectionToFormat = this.m_GroupCollection ;
 			}
@@ -652,14 +420,14 @@ public class account
 							sColumn = sColumn.substring(sColumn.indexOf(CONTROL) + 1, sColumn.length()) ;
 							//System.out.println("sColumn:" + sColumn);
 
-							if (sColumn.compareToIgnoreCase(S_ITEM) == 0) 		P_ITEM = pos++ ;
+							if (sColumn.compareToIgnoreCase(S_ITEM) == 0) 			P_ITEM = pos++ ;
 							else if (sColumn.compareToIgnoreCase(S_CATEGORY) == 0) 	P_CATEGORY = pos++ ;
 							else if (sColumn.compareToIgnoreCase(S_VENDOR) == 0) 	P_VENDOR = pos++ ;
-							else if (sColumn.compareToIgnoreCase(S_DESC) == 0) 	P_DESC = pos++ ;
+							else if (sColumn.compareToIgnoreCase(S_DESC) == 0) 		P_DESC = pos++ ;
 							else if (sColumn.compareToIgnoreCase(S_AMOUNT) == 0) 	P_AMOUNT = pos++ ;
-							else if (sColumn.compareToIgnoreCase(S_FROM) == 0) 	P_FROM = pos++ ;
+							else if (sColumn.compareToIgnoreCase(S_FROM) == 0) 		P_FROM = pos++ ;
 							else if (sColumn.compareToIgnoreCase(S_TO) == 0) 		P_TO = pos++ ;
-							else if (sColumn.compareToIgnoreCase(S_GROUP) == 0)	P_GROUP = pos++ ;
+							else if (sColumn.compareToIgnoreCase(S_GROUP) == 0)		P_GROUP = pos++ ;
 							else if (sColumn.compareToIgnoreCase(S_ACTION) == 0) 	P_ACTION = pos++ ;
 							else pos++ ;
 						}
@@ -680,17 +448,17 @@ public class account
 							amt = p ;
 						else if (pos == P_FROM) {
 							from = p ;
-							from = removeQuotes(from) ;
+							from = Utils.removeQuotes(from) ;
 						}
 						else if (pos == P_TO) {
 							to = p ;
-							to = removeQuotes(to) ;
+							to = Utils.removeQuotes(to) ;
 						}
 						else if (pos == P_GROUP)
 							group = p ;
 						else if (pos == P_ACTION) {
 							action = p ;
-							action = removeQuotes(action) ;
+							action = Utils.removeQuotes(action) ;
 						}
 						else def = def + p ;
 						pos++ ;
@@ -701,16 +469,14 @@ public class account
 
 					//System.out.println("item:" + item + ", category:" + category + ", vendor:" + vendor + ", desc:" + desc + ", amt:" + amt + ", from:" + from + ", to:" + to + ", group:" + group + ", action:" + action);
 
-					if (group.length() == 0) group = _DEFAULT_GROUP ;
+					if (group.length() == 0) group = Constants._DEFAULT_GROUP ;
 					ProcessTransaction(item, desc, amt, from, to, group, action, def) ;
-					//if (bExport) prepareToExport(item, category, vendor, desc, amt, from, to, action, def) ;
 					if (bExport) gpF.prepareToExportGroup(item, category, vendor, desc, amt, from, to, group, action, def) ;
 
 				} // end of while
 				buffReader.close() ;
 				////System.out.println("map: " + m_Transactions.toString()); // dump HashMap
 
-				//if (bExport) exportToCSV(fileName) ;
 				if (bExport) gpF.exportToCSVGroup(fileName) ;
 
 				//dumpCollection() ;

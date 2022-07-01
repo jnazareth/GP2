@@ -10,6 +10,20 @@ interface Constants {
 	String OUT_FILE = ".out" ;
 	String OUT_FOLDER = "." ;
 
+	// Actions
+	String ADD_ITEM = "*" ;
+	String ENABLE_ITEM = "+" ;
+	String DISABLE_ITEM = "-" ;
+
+	// id markers
+	String _ID_SEPARATOR = ":" ;
+	String _SELF = ":self" ;
+	String _GROUP = ":group" ;
+	String _ID_lR = "(" ;
+	String _ID_rR = ")" ;
+	String _DEFAULT_GROUP = "default" ;
+	String S_ACTION_QUOTE = "\"" ;
+
     // transaction indicators
 	String _REM = "rem" ;
 	String _ALL = "all" ;

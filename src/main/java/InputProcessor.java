@@ -7,17 +7,7 @@ public class InputProcessor extends Object {
 	// member
 	HashMap<String, _WhoFromTo> 	_Input = null ;	// String/key = _REM | _ALL | _INDIV | _UNKNOWN
 
-	// constructors
-	private void InputProcessor (String k, _WhoFromTo w) {
-		_Input.put(k, w) ;
-	}
-
 	// functions
-	private HashMap addItem (String k, String s, float f) {
-		_Input.put(k, new _WhoFromTo(s, f)) ;
-		return _Input ;
-	}
-
 	private void addItem (String k, _NameAmt na) {
 		try {
 			_WhoFromTo w = _Input.get(k) ;
@@ -36,15 +26,13 @@ public class InputProcessor extends Object {
 			if (this._Input == null) return fTotal ;
 
 			_WhoFromTo w = _Input.get(key) ;
-			if (w != null) {
-				Iterator<_NameAmt> iter ;
-				iter = w._Collection.iterator() ;
-				while (iter.hasNext()) {
-					_NameAmt na = iter.next();
-					if (na.m_amount != null) {
-						fTotal += na.m_amount ;
-					}
-				}
+			if (w == null) return fTotal ;
+
+			Iterator<_NameAmt> iter ;
+			iter = w._Collection.iterator() ;
+			while (iter.hasNext()) {
+				_NameAmt na = iter.next();
+				if (na.m_amount != null) fTotal += na.m_amount ;
 			}
 			return fTotal ;
 		} catch (Exception e) {
@@ -56,18 +44,18 @@ public class InputProcessor extends Object {
     private void assignAmount (String key, float totalAmount) {
 		try {
 			_WhoFromTo w = _Input.get(key) ;
-			if (w != null) {
-				Iterator<_NameAmt> iter ;
-				iter = w._Collection.iterator() ;
-				while (iter.hasNext()) {
-					_NameAmt na = iter.next();
-					if (na.m_amount == null) {
-						na.m_amount = (totalAmount 
-									- getTotalAmount(Constants._ALL_key) 
-									- getTotalAmount(Constants._REM_key) 
-									- getTotalAmount(Constants._INDIV_key)) ; 
-						_Input.put(key, w) ;
-					}
+			if (w == null) return ;
+
+			Iterator<_NameAmt> iter ;
+			iter = w._Collection.iterator() ;
+			while (iter.hasNext()) {
+				_NameAmt na = iter.next();
+				if (na.m_amount == null) {
+					na.m_amount = (totalAmount 
+								- getTotalAmount(Constants._ALL_key) 
+								- getTotalAmount(Constants._REM_key) 
+								- getTotalAmount(Constants._INDIV_key)) ; 
+					_Input.put(key, w) ;
 				}
 			}
 		} catch (Exception e) {
@@ -97,13 +85,13 @@ public class InputProcessor extends Object {
 
 			String key = Constants._INDIV_key ;
 			_WhoFromTo w = _Input.get(key) ;
-			if (w != null) {
-				Iterator<_NameAmt> iter ;
-				iter = w._Collection.iterator() ;
-				while (iter.hasNext()) {
-					_NameAmt na = iter.next();
-					if (na.m_amount == null) nullCount++ ;
-				}
+			if (w == null) return nullCount ; 
+			
+			Iterator<_NameAmt> iter ;
+			iter = w._Collection.iterator() ;
+			while (iter.hasNext()) {
+				_NameAmt na = iter.next();
+				if (na.m_amount == null) nullCount++ ;
 			}
 			return nullCount ; 
 		} catch (Exception e) {
@@ -119,17 +107,16 @@ public class InputProcessor extends Object {
 
 			String key = Constants._INDIV_key ;
 			_WhoFromTo w = _Input.get(key) ;
-			if (w != null) {
-				Iterator<_NameAmt> iter ;
-				iter = w._Collection.iterator() ;
-				while (iter.hasNext()) {
-					_NameAmt na = iter.next();
-					if (na.m_amount == null) na.m_amount = nAmount ;
-				}
-				w._Count += nCount ;
-				nullCount = w._Count ; 
-				//System.out.println("putIndivAmount::w._Count::" + w._Count) ;
+			if (w == null) return nullCount ;
+			
+			Iterator<_NameAmt> iter ;
+			iter = w._Collection.iterator() ;
+			while (iter.hasNext()) {
+				_NameAmt na = iter.next();
+				if (na.m_amount == null) na.m_amount = nAmount ;
 			}
+			w._Count += nCount ;
+			nullCount = w._Count ; 
 			return nullCount ; 
 		} catch (Exception e) {
 			System.err.println("Error:putIndivAmount::" + e.getMessage()) ;
@@ -145,7 +132,6 @@ public class InputProcessor extends Object {
 				int nNulls = getIndivNullCount() ;
 				if (nNulls != 0) {
 					float nIndivEachAmount = ((totalAmount-getTotalAmount(Constants._INDIV_key)) / nNulls) ;
-					//System.out.println("assignAmounts2::nIndivEachAmount::" + nIndivEachAmount) ;
 					putIndivAmount (nIndivEachAmount, nNulls) ;
 				}
 			}
@@ -207,7 +193,7 @@ public class InputProcessor extends Object {
 		try {
 			/*
 				1. skip all entries in _UNKNOWN
-				2. for _INDIV entries, if null amount, ignore entry
+				2. for _INDIV entries, if null amount, calculate each amount
 				3. if (total_amount != sum(all,rem,indiv)) = error(ammounts do not tally)
 				4. balance = total_amount - sum(all,rem,indiv). Assign balance in order (of those specified): (all,rem,indiv)
 			*/
@@ -241,10 +227,8 @@ public class InputProcessor extends Object {
 					addItem(Constants._INDIV_key, na);
 				}
 			}
-			//dumpCollection2() ;		// before
-
 			processFrToExtended(amt, nActive) ;
-			//dumpCollection2() ;			// after
+			//dumpCollection() ;
 		} catch (Exception e) {
 			System.err.println("Error:processFrTo::" + e.getMessage()) ;
 		}
@@ -265,30 +249,13 @@ public class InputProcessor extends Object {
         return (new _NameAmt(aName, fAmt)) ;
     }
 
-	public void dumpCollection2 () {
-		try {
-			if (this._Input != null) {
-				//System.out.println("dumpCollection2 ============") ;
-				for(String key: _Input.keySet()) {
-					System.out.println(key);
-					_WhoFromTo w = _Input.get(key) ;
-					w.dumpCollection() ;
-				}
-			}
-		} catch (Exception e) {
-			System.err.println("Error:dumpCollection2::" + e.getMessage()) ;
-		}
-		return ;
-	}
-
 	public void dumpCollection () {
 		try {
 			if (this._Input != null) {
-				System.out.println("dumpCollection ============") ;
-				Iterator<String> iter = _Input.keySet().iterator();
-				System.out.println("iter::" + iter.toString() + "\t") ;
-				while(iter.hasNext()){
-					_WhoFromTo w = _Input.get(iter.next()) ;
+				//System.out.println("dumpCollection ============") ;
+				for(String key: _Input.keySet()) {
+					System.out.println(key);
+					_WhoFromTo w = _Input.get(key) ;
 					w.dumpCollection() ;
 				}
 			}
