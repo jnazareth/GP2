@@ -1,8 +1,14 @@
+package GP2.utils;
+
+import GP2.person.Person;
+import GP2.group.groupCsvJsonMapping;
+import GP2.cli.Settings;
+
 import java.util.Hashtable;
 import java.math.BigDecimal;
-import java.io.File;
-import java.io.FilenameFilter;
-import java.io.FileNotFoundException;
+//import java.io.File;
+//import java.io.FilenameFilter;
+//import java.io.FileNotFoundException;
 
 
 public class Utils {
@@ -13,7 +19,10 @@ public class Utils {
 	public static Hashtable<String, Hashtable<String, Person>> m_GroupCollection ;
 	public static boolean m_bClearing = false ;
 	public static boolean m_bSys = false ;
-	
+
+	public static groupCsvJsonMapping m_grpCsvJsonMap = null;
+	public static Settings m_settings = null;
+
 	// methods
 	public static String removeQuotes(String inString)
 	{
@@ -36,6 +45,7 @@ public class Utils {
 		}
 	}
 
+	/*
 	public static boolean inMatches(String in, String toCompare)
 	{
 		 return ( (in.length() == toCompare.length()) && (in.compareToIgnoreCase(toCompare) == 0) ) ; 
@@ -65,5 +75,5 @@ public class Utils {
 		File aFile = new File(fileName);
 		if (aFile.exists()) return aFile;
 		else throw new FileNotFoundException("File  " + fileName + " does not exist.");
-	}
+	}*/
 }

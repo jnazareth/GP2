@@ -1,4 +1,19 @@
-//package com.mycompany.GPExplorer;
+package GP2.account;
+
+import GP2.input.InputProcessor;
+import GP2.utils.Constants;
+import GP2.utils.Utils;
+import GP2.utils.fileUtils;
+import GP2.xls._SheetProperties;
+import GP2.person.Person;
+import GP2.group.GroupProcessor;
+import GP2.format.GPFormatter;
+import GP2.group.groupCsvJsonMapping;
+import GP2.group.csvFileJSON;
+import GP2.json.WriteJson;
+import GP2.json.ReadJson;
+import GP2.cli.Settings;
+import GP2.xls.buildXLS;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -97,25 +112,25 @@ public class account extends Object
 			while(keysPeople.hasMoreElements()){
 				Person person = aGroup.get(keysPeople.nextElement());
 				if ( !(indiv.contains(person.m_name)) ) continue ;
-                if (idx == _FR) person.incAmount(Person.AccountEntry.FROM, fAmount) ; 
+                if (idx == _FR) person.incAmount(Person.AccountEntry.FROM, fAmount) ;
                 if (idx == _TO) person.incAmount(Person.AccountEntry.TO, fAmount) ;
 				if ((idx == _FR) && (Utils.m_bClearing == false)) {
-                    person.incAmount(Person.AccountEntry.IND_PAID, fAmount) ; 
+                    person.incAmount(Person.AccountEntry.IND_PAID, fAmount) ;
 				}
 				if ((idx == _TO) && (Utils.m_bClearing == false)) {
-                    person.incAmount(Person.AccountEntry.TRANS_AMT, fAmount) ; 
-                    person.incAmount(Person.AccountEntry.IND_SUM, fAmount) ; 
+                    person.incAmount(Person.AccountEntry.TRANS_AMT, fAmount) ;
+                    person.incAmount(Person.AccountEntry.IND_SUM, fAmount) ;
 				}
 				aGroup.put(person.m_name, person) ;
 			}
 		} catch (Exception e) {
 			System.err.println("Error:putIndivAmount::" + e.getMessage()) ;
-		}		
+		}
 	}
 
 	private HashSet<String> getAllActive(String sGroupName)
 	{
-		HashSet<String> allSet = new HashSet<String>() ; 
+		HashSet<String> allSet = new HashSet<String>() ;
 		Hashtable<String, Person> aGroup = Utils.m_GroupCollection.get(sGroupName) ;
 
 		Enumeration<String> keysPeople = aGroup.keys();
@@ -123,12 +138,12 @@ public class account extends Object
 			Person person = aGroup.get(keysPeople.nextElement());
 			if (person.m_active == true) allSet.add(person.m_name) ;
 		}
-		return allSet ; 
+		return allSet ;
 	}
 
 	private HashSet<String> getIndivInput(InputProcessor ip)
 	{
-		HashSet<String> indivInput = new HashSet<String>() ; 
+		HashSet<String> indivInput = new HashSet<String>() ;
 		InputProcessor._WhoFromTo w = ip._Input.get(Constants._INDIV_key) ;
 		if (w != null) {
 			Iterator<InputProcessor._NameAmt> iter = w._Collection.iterator();
@@ -151,25 +166,25 @@ public class account extends Object
 	{
 		try {
 			InputProcessor._WhoFromTo w = ip._Input.get(key) ;
-			if (w == null) return ; 
+			if (w == null) return ;
 
 			Iterator<InputProcessor._NameAmt> iter = w._Collection.iterator() ;
 			while (iter.hasNext()) {
 				InputProcessor._NameAmt na = iter.next();
-				if (na.m_amount == null) continue ; 
+				if (na.m_amount == null) continue ;
 				float fIndivAmt = na.m_amount / w._Count ;
 				putIndivAmount(sGroupName, idx, fIndivAmt, getAllActive(sGroupName)) ;
 			}
 		} catch (Exception e) {
 			System.err.println("Error:processSetAll::" + e.getMessage()) ;
-		}		
+		}
 	}
 
 	private void processSetRem(String key, String sGroupName, int idx, InputProcessor ip)
 	{
 		try {
 			InputProcessor._WhoFromTo w = ip._Input.get(key) ;
-			if (w == null) return ; 
+			if (w == null) return ;
 
 			HashSet<String> setRem = null ;
 			int rSize = 1 ;
@@ -189,19 +204,19 @@ public class account extends Object
 			}
 		} catch (Exception e) {
 			System.err.println("Error:processSetRem::" + e.getMessage()) ;
-		}		
+		}
 	}
 
 	private void processSetIndiv(String key, String sGroupName, int idx, InputProcessor ip)
 	{
 		try {
 			InputProcessor._WhoFromTo w = ip._Input.get(key) ;
-			if (w == null) return ; 
+			if (w == null) return ;
 
 			Iterator<InputProcessor._NameAmt> iter = w._Collection.iterator() ;
 			while (iter.hasNext()) {
 				InputProcessor._NameAmt na = iter.next();
-				if (na.m_amount == null) continue ; 
+				if (na.m_amount == null) continue ;
 				float fIndivAmt = na.m_amount ;
 				HashSet<String> iSet = new HashSet<String>();
 				iSet.add(na.m_name) ;
@@ -209,7 +224,7 @@ public class account extends Object
 			}
 		} catch (Exception e) {
 			System.err.println("Error:processSetIndiv::" + e.getMessage()) ;
-		}		
+		}
 	}
 
 	private void doFromTo(String item, int idx, float amt, String in, String sGroupName)
@@ -217,7 +232,7 @@ public class account extends Object
 		try {
 			//System.out.println("\ndoFromTo: idx = " + idx + ", sIn = " + in + ", sGroupName = " +  sGroupName);
 
-			int numAll = getAllActive(sGroupName).size() ;					
+			int numAll = getAllActive(sGroupName).size() ;
 
 			InputProcessor sT = new InputProcessor() ;
 			sT.processFrTo(item, idx, amt, numAll, in) ;
@@ -227,7 +242,7 @@ public class account extends Object
 			processSetIndiv(Constants._INDIV_key, sGroupName, idx, sT) ;
 		} catch (Exception e) {
 			System.err.println("Error:doFromTo::" + e.getMessage()) ;
-		}		
+		}
 	}
 
 	// ----------------------------------------------------
@@ -301,7 +316,7 @@ public class account extends Object
                 person.incAmount(Person.AccountEntry.SYS_SUM, (f + ((-1)*t))) ;
 
             }
-            person.m_amount.put(Person.AccountEntry.FROM, 0.0f) ; 
+            person.m_amount.put(Person.AccountEntry.FROM, 0.0f) ;
             person.m_amount.put(Person.AccountEntry.TO, 0.0f) ;
 
 			nCheckSum += person.m_amount.get(Person.AccountEntry.SYS_SUM) ;
@@ -387,39 +402,34 @@ public class account extends Object
 	// ----------------------------------------------------
 	// ReadAndProcessTransactions
 	// ----------------------------------------------------
-	public void ReadAndProcessTransactions(String fileName, boolean bExport)
+	public void ReadAndProcessTransactions(String fileName)
 	{
 		GPFormatter gpF = null ;
-
-		// open logfile
         FileReader fileReader = null;
 		try {
-			fileReader = new FileReader(Utils.getFile(fileName));
+			fileReader = new FileReader(fileUtils.getFile(fileName));
 			//read file
 			BufferedReader buffReader = new BufferedReader(fileReader);
 			String sLine = "";
 
 			initPersons() ;
-			if (bExport) {
+			if (Utils.m_settings.getbExport()) {
 				gpF = new GPFormatter() ;
 				//gpF.m_gpCollectionToFormat = this.m_GroupCollection ;
 			}
 
 			try {
 				while ((sLine = buffReader.readLine()) != null) {
-
-				String item="", category="", vendor="", desc="", amt="", from="", to="", group="", action="", def="" ;
-				// stream the input, one line at a time
-				String[] pieces = sLine.split(Constants._READ_SEPARATOR);
-				int pos = 0 ;
-
-				/* control implementation */
+					String item="", category="", vendor="", desc="", amt="", from="", to="", group="", action="", def="" ;
+					// stream the input, one line at a time
+					String[] pieces = sLine.split(Constants._READ_SEPARATOR);
+					int pos = 0 ;
+					/* control implementation */
 					if (sLine.charAt(0) == CONTROL) { // control record, read
 						for (String p : pieces) {
 							String sColumn = p ;
 							sColumn = sColumn.substring(sColumn.indexOf(CONTROL) + 1, sColumn.length()) ;
 							//System.out.println("sColumn:" + sColumn);
-
 							if (sColumn.compareToIgnoreCase(S_ITEM) == 0) 			P_ITEM = pos++ ;
 							else if (sColumn.compareToIgnoreCase(S_CATEGORY) == 0) 	P_CATEGORY = pos++ ;
 							else if (sColumn.compareToIgnoreCase(S_VENDOR) == 0) 	P_VENDOR = pos++ ;
@@ -436,16 +446,11 @@ public class account extends Object
 					}
 
 					for (String p : pieces) {
-						if (pos == P_ITEM)
-							item = p ;
-						else if (pos == P_CATEGORY)
-							category = p ;
-						else if (pos == P_VENDOR)
-							vendor = p ;
-						else if (pos == P_DESC)
-							desc = p ;
-						else if (pos == P_AMOUNT)
-							amt = p ;
+						if (pos == P_ITEM)					item = p ;
+						else if (pos == P_CATEGORY)			category = p ;
+						else if (pos == P_VENDOR)			vendor = p ;
+						else if (pos == P_DESC)				desc = p ;
+						else if (pos == P_AMOUNT)			amt = p ;
 						else if (pos == P_FROM) {
 							from = p ;
 							from = Utils.removeQuotes(from) ;
@@ -454,8 +459,7 @@ public class account extends Object
 							to = p ;
 							to = Utils.removeQuotes(to) ;
 						}
-						else if (pos == P_GROUP)
-							group = p ;
+						else if (pos == P_GROUP)			group = p ;
 						else if (pos == P_ACTION) {
 							action = p ;
 							action = Utils.removeQuotes(action) ;
@@ -463,7 +467,6 @@ public class account extends Object
 						else def = def + p ;
 						pos++ ;
 					}
-
 					if (sLine.length() == 0) continue ;
 					if (item.charAt(0) == Constants._COMMENT) continue ; // comment, skip
 
@@ -471,15 +474,21 @@ public class account extends Object
 
 					if (group.length() == 0) group = Constants._DEFAULT_GROUP ;
 					ProcessTransaction(item, desc, amt, from, to, group, action, def) ;
-					if (bExport) gpF.prepareToExportGroup(item, category, vendor, desc, amt, from, to, group, action, def) ;
+					if (Utils.m_settings.getbExport()) gpF.prepareToExportGroup(item, category, vendor, desc, amt, from, to, group, action, def) ;
 
 				} // end of while
 				buffReader.close() ;
 				////System.out.println("map: " + m_Transactions.toString()); // dump HashMap
 
-				if (bExport) gpF.exportToCSVGroup(fileName) ;
+				// XLS integration, added
+				//boolean bXLSUsed = true ;
+				//if (bXLSUsed)
+				buildGroupCsvJsonMap(fileName) ;
+				//if (!Utils.m_settings.getXlsFile()) buildGroupCsvJsonMap(fileName) ;
 
+				if (Utils.m_settings.getbExport()) gpF.exportToCSVGroup(fileName) ;
 				//dumpCollection() ;
+
 			} catch (IOException e) {
 				System.out.println("There was a problem reading:" + fileName);
 			}
@@ -488,4 +497,82 @@ public class account extends Object
 		}
 	}
 
+	//filename=sep.mint.csv		nType(0)=default.sep.mint.out.csv		nType(1)=default.sep.mint.out.json
+	private String makeOutFileName (int nType, String sGroupName, String fileName) {
+		String outFilename = "" ;
+		String sExt = (nType == 0 ? Constants.OUT_EXTENSION : Constants.OUT_JSON_EXTENSION) ;
+		int fileExt = fileName.lastIndexOf(Constants.OUT_FILESEP) ;
+		if (fileExt == -1) // not found
+			outFilename += sExt ;
+		else
+			outFilename = sGroupName + Constants.OUT_FILESEP + fileName.substring(0, fileExt) + Constants.OUT_FILE + sExt ;
+		return outFilename ;
+	}
+
+	private groupCsvJsonMapping buildGroupCsvJsonMap(String csvFileName) {
+		Enumeration<String> keysGroup = Utils.m_GroupCollection.keys();
+		while(keysGroup.hasMoreElements()){
+			String groupName = keysGroup.nextElement();
+			Hashtable<String, Person> aGroup = Utils.m_GroupCollection.get(groupName) ;
+
+			String gCSVFile = null, sCSVJSON = null ;
+			csvFileJSON csvFile = null ;
+			_SheetProperties sp = null ;
+
+			if (Utils.m_settings.getbExport()) gCSVFile = makeOutFileName(0, groupName, csvFileName);
+			if (Utils.m_settings.getbViaJson()) {
+				sCSVJSON = makeOutFileName(1, groupName, csvFileName);
+				csvFile = new csvFileJSON() ;
+			}
+
+			if (Utils.m_settings.getPropertyXLS().IsPropertyUsed())  sp = new _SheetProperties() ;
+			//csvFile = makeCSVFile2(g, gCSVFile, n);
+
+			//add to map
+			if (Utils.m_grpCsvJsonMap == null) Utils.m_grpCsvJsonMap = new groupCsvJsonMapping();
+			Utils.m_grpCsvJsonMap.addItem(groupName, gCSVFile, sCSVJSON, csvFile, sp);
+		}
+		return Utils.m_grpCsvJsonMap ;
+	}
+
+	private boolean writeJsonFiles() {
+		if (Utils.m_grpCsvJsonMap == null) return false ;
+		for(String key: Utils.m_grpCsvJsonMap._groupMap.keySet()) {
+			groupCsvJsonMapping._CSV_JSON cj = Utils.m_grpCsvJsonMap._groupMap.get(key) ;
+			WriteJson jFileW = new WriteJson() ;
+			jFileW.writeJSON(cj._sCSVJSONFile, cj._oCSVFileJSON) ;
+		}
+		return true ;
+	}
+
+	private String writeMapFile(String fName) {
+		String mapFile = Utils.m_settings.getMapFileToUse(fName) ;
+		WriteJson jFileW = new WriteJson() ;
+		mapFile = jFileW.writeJSONMapFile(mapFile, fName, Utils.m_grpCsvJsonMap) ;
+		return mapFile;
+	}
+
+	public void writeJson(String fileName) {
+		if (Utils.m_settings.getbViaJson()) {
+			boolean b = writeJsonFiles() ;
+			String mapFile = writeMapFile(fileName) ;
+		}
+	}
+
+	public void buildXLS(String fName) {
+        if (!Utils.m_settings.getbExport()) return ;
+		if (!Utils.m_settings.getPropertyXLS().IsPropertyUsed()) return ;
+
+		buildXLS xls = new buildXLS();
+		File f = xls.InitializeXLS(fName);
+		if (f == null) return ;
+
+		if (Utils.m_settings.getPropertyXLS().IsPropertyUsed()) {
+			if (Utils.m_settings.getbViaJson()) {
+				xls.readFromJSON(fName, f) ;
+			} else {
+				xls.readFromMap(fName, f) ;
+			}
+		}
+    }
 } // end of class

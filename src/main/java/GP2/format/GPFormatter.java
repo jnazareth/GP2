@@ -1,3 +1,13 @@
+package GP2.format;
+
+import GP2.utils.Constants;
+import GP2.utils.Utils;
+import GP2.person.Person;
+import GP2.xls._SheetProperties;
+import GP2.group.csvFileJSON;
+import GP2.group.groupCsvJsonMapping;
+import GP2.cli.Settings;
+
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.util.ArrayList;
@@ -6,6 +16,10 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Collections;
+
+import org.apache.commons.io.FileUtils ;
+import java.io.FileOutputStream ; 
+import java.io.File;
 
 public class GPFormatter {
 	// output headers
@@ -26,6 +40,8 @@ public class GPFormatter {
 
 	//public Hashtable<String, Hashtable<String, Person3>> m_gpCollectionToFormat = null ;
 	private Hashtable<String, ArrayList<String>> m_exportLinesGroup = null ;
+	//private xls._SheetProperties m_SheetProperties = new _SheetProperties() ;
+
 
 	public void	GPFormatter() {
 		//m_gpCollectionToFormat = null ;
@@ -134,7 +150,7 @@ public class GPFormatter {
 		}
 	}
 
-	private String makeOutFilename(String fileName, String group)
+	/*private String makeOutFilename(String fileName, String group)
 	{
 		String outFilename = "" ;
 		int fileExt = fileName.lastIndexOf(Constants.OUT_FILESEP) ;
@@ -144,7 +160,7 @@ public class GPFormatter {
 			outFilename = group + Constants.OUT_FILESEP + fileName.substring(0, fileExt) + Constants.OUT_FILE + Constants.OUT_EXTENSION ;
 
 		return outFilename ;
-	}
+	}*/
 
 	private String padHeader(int nTabs)
 	{
@@ -156,19 +172,45 @@ public class GPFormatter {
 		return xHeader ;
 	}
 
-	private void exportToCSV(String fileName, String group)
+	private int getLocationOf(String s, String sSearchString, int mCol[]) {
+		String aArray[] = s.split(Constants._TAB_SEPARATOR) ;
+		mCol[0] = aArray.length;
+		//m_SheetProperties.maxColums = aArray.length ;
+
+		//System.out.println("totalNumberofColumns:: " + aArray.length);
+		//System.out.println("sSearchString:: " + sSearchString);
+		for (int i = 0; i < aArray.length; i++) {
+			if (aArray[i].indexOf(sSearchString) != -1) return (i+1);
+		}		
+		return -1 ;
+	}
+
+	private void exportToCSV(String fileName, String group, _SheetProperties sp)
 	{
-		String outFilename = makeOutFilename(fileName, group) ;
-		////System.out.println("outFilename: " + outFilename);
+		//String outFilename0 = makeOutFilename(fileName, group) ;
+		String outFilename = Utils.m_grpCsvJsonMap._groupMap.get(group)._sCSVFile ;
+		//System.out.println("outFilename: " + outFilename + " ,outFilename0: " + outFilename0);
 
 		try {
+			//added XLS integration
+			String dirToUse = Utils.m_settings.getDirToUse() ;
+            File f = new File(dirToUse, outFilename);
+            FileOutputStream foS = FileUtils.openOutputStream(f) ;
+            FileWriter fw = new FileWriter(foS.getFD()) ;
+
 			// Create file
-			FileWriter fstream = new FileWriter(outFilename);
+			//FileWriter fstream = new FileWriter(outFilename);
+			FileWriter fstream = fw;
 			BufferedWriter out = new BufferedWriter(fstream);
 
 			// begin Header {
 			String	sTabs = "" ; //Constants._TAB_SEPARATOR ;
 			String	sPersons = "" ;
+
+			// sheetProperties ------------
+			String personToSearch = "" ;
+			int rowCounter = 0, headerCounter = 0 ;
+			// sheetProperties ------------
 
 			/* sort persons, :get the iterator & sort it */
 			Hashtable<String, Person> aGroup = Utils.m_GroupCollection.get(group) ;
@@ -179,6 +221,11 @@ public class GPFormatter {
 				Person person = aGroup.get(iter.next());
 				sPersons += sTabs + person.m_name ;
 				sTabs = Constants._TAB_SEPARATOR ;
+
+				// sheetProperties ------------
+				// get first name
+				if (personToSearch.equalsIgnoreCase("")) personToSearch = person.m_name ;
+				// sheetProperties ------------
 			}
 
 			String sHeader0, sHeader01, sHeader02, sHeader03, sHeader ;
@@ -196,8 +243,33 @@ public class GPFormatter {
 				sHeader += Constants._TAB_SEPARATOR  + sPersons + Constants._TAB_SEPARATOR + Constants._SYS  + Constants._TAB_SEPARATOR + sPersons + Constants._TAB_SEPARATOR + H_CHECKSUM + Constants._TAB_SEPARATOR + sPersons + Constants._TAB_SEPARATOR + H_INDCHECKSUM + Constants._TAB_SEPARATOR + sPersons;
 			else
 				sHeader += Constants._TAB_SEPARATOR /*Constants._SYS + Constants._TAB_SEPARATOR*/ + sPersons + Constants._TAB_SEPARATOR + sPersons + Constants._TAB_SEPARATOR + H_CHECKSUM + Constants._TAB_SEPARATOR + sPersons + Constants._TAB_SEPARATOR + H_INDCHECKSUM + Constants._TAB_SEPARATOR + sPersons ;
-			out.write(sHeader0);	out.newLine();
-			out.write(sHeader);		out.newLine();
+			out.write(sHeader0);	out.newLine();				headerCounter++ ;
+			out.write(sHeader);		out.newLine();				headerCounter++ ;
+
+			// sheetProperties ------------
+			sp.setCsvFileName(outFilename) ;
+			sp.setlHeaders(headerCounter) ;
+			//System.out.println("headerCounter: " + headerCounter);
+
+			int maxCol[] = {0};
+			int amountLocation = getLocationOf(sHeader, H_AMOUNT, maxCol) ;
+			sp.maxColums = maxCol[0];
+
+			int pivotColumnStart = -1, pivotColumnEnd = -1 ;
+			int personLocation = getLocationOf(sHeader, personToSearch, maxCol) ;
+			if (personLocation != -1) {
+				sp.maxColums = maxCol[0];
+				pivotColumnStart = personLocation ;
+				pivotColumnEnd = pivotColumnStart + (aGroup.size()-1);
+			}
+			sp.amountLocation = amountLocation ; 
+			sp.personLocation = personLocation ; 
+			sp.pivotColumnStart = pivotColumnStart ; 
+			sp.pivotColumnEnd = pivotColumnEnd ; 
+			//System.out.println("amountLocation,personLocation,pivotColumnStart,pivotColumnEnd: " + amountLocation + "," + personLocation + "," + pivotColumnStart + "," + pivotColumnEnd);
+
+			// sheetProperties ------------
+
 			// } end Header
 
 			sPersons += Constants._TAB_SEPARATOR ;
@@ -327,8 +399,25 @@ public class GPFormatter {
 				*/
 
 				out.write(sToFile);		out.newLine();
+
+				// sheetProperties ------------
+				rowCounter++ ;
+				// sheetProperties ------------
 			}
 			out.close();		//Close the output stream
+
+			// sheetProperties ------------
+			sp.maxRows = rowCounter ; 
+			//System.out.println("rowCounter: " + rowCounter);
+			sp.build() ;
+			//sp.dump();
+			// sheetProperties ------------
+
+			// close all file handles
+			out.close() ;
+			fstream.close() ;
+			fw.close() ;
+			foS.close() ;
 		} catch (Exception e){
 			System.err.println("Error: " + e.getMessage());
 		}
@@ -336,16 +425,27 @@ public class GPFormatter {
 
 	public void exportToCSVGroup(String fileName)
 	{
+		_SheetProperties sp = null ;
+
 		Enumeration<String> keysGroup = Utils.m_GroupCollection.keys();
-		while(keysGroup.hasMoreElements()){
+		while(keysGroup.hasMoreElements()) {
 			String groupName = keysGroup.nextElement();
 			Hashtable<String, Person> aGroup = Utils.m_GroupCollection.get(groupName) ;
+
+			sp = new _SheetProperties() ;
 
 			Enumeration<String> keysPeople = aGroup.keys();
 			while(keysPeople.hasMoreElements()){
 				Person person = aGroup.get(keysPeople.nextElement());
-				exportToCSV(fileName, groupName) ;
+				exportToCSV(fileName, groupName, sp) ;
 			}
+
+			// update map
+			groupCsvJsonMapping._CSV_JSON cj = Utils.m_grpCsvJsonMap._groupMap.get(groupName) ;
+			csvFileJSON csvFile = new csvFileJSON() ;
+			csvFile = sp.toCsvFileJSON();
+			//csvFile = csvFile.createCSVFileJSON(sp);
+			Utils.m_grpCsvJsonMap.addItem(groupName, cj._sCSVFile, cj._sCSVJSONFile, csvFile, sp) ;
 		}
 	}
 

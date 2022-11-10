@@ -1,4 +1,5 @@
-//package com.mycompany.GPExplorer;
+package GP2.person;
+
 import java.util.EnumMap;
 
 public class Person extends Object {
@@ -17,9 +18,9 @@ public class Person extends Object {
 	}
 
 	// members
-	String	m_name;
-	EnumMap<AccountEntry, Float> m_amount = new EnumMap<AccountEntry, Float>(AccountEntry.class);
-	boolean	m_active;
+	public String	m_name;
+	public EnumMap<AccountEntry, Float> m_amount = new EnumMap<AccountEntry, Float>(AccountEntry.class);
+	public boolean	m_active;
 
 	// methods
 	private void initAmounts() {

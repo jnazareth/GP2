@@ -1,11 +1,16 @@
+package GP2.input;
+
+import GP2.utils.Constants ;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.ArrayList;
 import java.lang.Float;
+import java.lang.Math;
 
 public class InputProcessor extends Object {
 	// member
-	HashMap<String, _WhoFromTo> 	_Input = null ;	// String/key = _REM | _ALL | _INDIV | _UNKNOWN
+	public HashMap<String, _WhoFromTo> 	_Input = null ;	// String/key = _REM | _ALL | _INDIV | _UNKNOWN
 
 	// functions
 	private void addItem (String k, _NameAmt na) {
@@ -71,8 +76,12 @@ public class InputProcessor extends Object {
 			assignAmount (Constants._INDIV_key, totalAmount) ;
 			
 			float f = getTotalAmount(Constants._ALL_key) + getTotalAmount(Constants._REM_key) + getTotalAmount(Constants._INDIV_key) ;
-			if (totalAmount != f)
-				System.out.println("Amounts do not tally: " + totalAmount + " <> " + f) ;
+			if (totalAmount != f) {
+				float f1 = Math.abs(totalAmount-f) ;
+				float f2 = 1/1000 ;	// tolerance	
+				if ( f1 < f2 )
+					System.out.println("Amounts do not tally: " + totalAmount + " <> " + f) ;
+			}
 		} catch (Exception e) {
 			System.err.println("Error:assignAmounts::" + e.getMessage()) ;
 		}
@@ -267,8 +276,8 @@ public class InputProcessor extends Object {
 
 	// --------------------------------------------------------------------------
 	public class _WhoFromTo {
-		int					_Count = 0 ;			// count(_Collection)
-		ArrayList<_NameAmt>	_Collection = null ;	// String/key = name of person. If _REM | _ALL, use literals.
+		public int					_Count = 0 ;			// count(_Collection)
+		public ArrayList<_NameAmt>	_Collection = null ;	// String/key = name of person. If _REM | _ALL, use literals.
 													// float/amount = amount assigned.
 		private _WhoFromTo(String s, Float f) {
 			try {
@@ -317,8 +326,8 @@ public class InputProcessor extends Object {
 
 	// --------------------------------------------------------------------------
 	public class _NameAmt {
-		String m_name = null ;
-		Float m_amount = null ;
+		public String m_name = null ;
+		public Float m_amount = null ;
 	
 		private _NameAmt(String s, Float f) {
 			if (s != null) m_name = new String(s) ;

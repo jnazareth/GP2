@@ -1,0 +1,84 @@
+package GP2.utils;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.io.File;
+import java.io.FilenameFilter;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.Files;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.FileVisitor;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Path;
+import java.nio.file.Paths ;
+import java.nio.file.PathMatcher;
+import java.nio.file.SimpleFileVisitor;
+
+public class fileUtils {
+    public static List<String> searchWithWc(Path rootDir, String pattern) throws IOException {
+	    List<String> matchesList = new ArrayList<String>();
+
+        FileVisitor<Path> matcherVisitor = new SimpleFileVisitor<Path>() {
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attribs) throws IOException {
+                FileSystem fs = FileSystems.getDefault();
+                PathMatcher matcher = fs.getPathMatcher(pattern);
+                Path name = file.getFileName();
+                if (matcher.matches(name)) {
+					//System.out.println( "matches \t\t" + name.toString() );
+                    matchesList.add(name.toString());
+                }
+                return FileVisitResult.CONTINUE;
+            }
+        };
+        Files.walkFileTree(rootDir, matcherVisitor);
+        return matchesList;
+    }
+
+	public static List<String> getFilesToDelete(String path, String pattern)
+	{
+		List<String> actual = null ;
+		try {
+			Path filesPath = FileSystems.getDefault().getPath(path);
+			return searchWithWc(filesPath , pattern);
+		} catch (Exception e) {
+			System.err.println("Exception::" + e.getMessage()) ;
+			return actual ;
+		}
+	}
+
+	public static boolean deleteAFile (String folder, List<String> files2d)
+	{
+		final File dir = new File(folder) ;
+		final File[] list = dir.listFiles( new FilenameFilter() {
+			@Override
+			public boolean accept( final File dir, final String name ) {
+				return files2d.contains(name) ;
+			}
+		} );
+		for ( final File file : list ) {
+			if ( !file.delete() ) {
+				System.err.println( "Can't remove " + file.getAbsolutePath() );
+			} else
+				System.out.println(file + " deleted");
+		}
+		return true ;
+	}
+
+	public static void deleteFile (String path, String pattern)
+	{
+		List<String> f = getFilesToDelete(path, pattern) ;
+		deleteAFile(path, f) ;
+	}
+	
+	public static File getFile(String fileName)
+	throws FileNotFoundException
+	{
+		File aFile = new File(fileName);
+		if (aFile.exists()) return aFile;
+		else throw new FileNotFoundException("File  " + fileName + " does not exist.");
+	}
+}

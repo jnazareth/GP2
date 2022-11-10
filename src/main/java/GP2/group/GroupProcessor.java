@@ -1,3 +1,9 @@
+package GP2.group;
+
+import GP2.person.Person;
+import GP2.utils.Utils;
+import GP2.utils.Constants;
+
 import java.util.Hashtable;
 import java.util.ArrayList;
 
