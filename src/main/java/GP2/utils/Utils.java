@@ -6,10 +6,6 @@ import GP2.cli.Settings;
 
 import java.util.Hashtable;
 import java.math.BigDecimal;
-//import java.io.File;
-//import java.io.FilenameFilter;
-//import java.io.FileNotFoundException;
-
 
 public class Utils {
     // declarations
@@ -44,36 +40,4 @@ public class Utils {
 			return e.getMessage() ;
 		}
 	}
-
-	/*
-	public static boolean inMatches(String in, String toCompare)
-	{
-		 return ( (in.length() == toCompare.length()) && (in.compareToIgnoreCase(toCompare) == 0) ) ; 
-	}
-
-	public static boolean deleteFile (String folder, String extension)
-	{
-		final File dir = new File(folder) ;
-		final File[] list = dir.listFiles( new FilenameFilter() {
-			@Override
-			public boolean accept( final File dir, final String name ) {
-				//System.out.println( "name:" + name );
-				return (name.endsWith(extension));
-			}
-		} );
-		for ( final File file : list ) {
-			if ( !file.delete() ) {
-				System.err.println( "Can't remove " + file.getAbsolutePath() );
-			}
-		}
-		return true ; 
-	}
-
-	public static File getFile(String fileName)
-	throws FileNotFoundException
-	{
-		File aFile = new File(fileName);
-		if (aFile.exists()) return aFile;
-		else throw new FileNotFoundException("File  " + fileName + " does not exist.");
-	}*/
 }

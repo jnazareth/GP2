@@ -46,6 +46,15 @@ dependencies {
 
 	// https://mvnrepository.com/artifact/org.glassfish/javax.json
 	implementation 'org.glassfish:javax.json:1.1.4'
+
+	// https://mvnrepository.com/artifact/org.apache.poi/poi
+	implementation 'org.apache.poi:poi:5.2.0'
+
+	// https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml
+	implementation 'org.apache.poi:poi-ooxml:5.2.0'
+
+	// https://mvnrepository.com/artifact/net.sf.opencsv/opencsv
+	implementation 'net.sf.opencsv:opencsv:2.3'
 }
 
 //create a single Jar with all dependencies

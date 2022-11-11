@@ -2,7 +2,6 @@ package GP2.cli;
 
 import GP2.account.account;
 import GP2.utils.Constants;
-import GP2.cli.Settings;
 import GP2.utils.fileUtils;
 import GP2.utils.Utils;
 
@@ -94,13 +93,46 @@ public class gpcli {
                             }
                         }
                 )
+                .withOption (
+                        new _CommandLine._Option("F", "Flags: -export <true/false>")
+                        .longOption("F")
+                                .argName("boolean=value")
+                                .hasArgs()
+                                .notRequired()
+                                .args(3)       //export=false (=2 params)
+                                //.optionalArg(true)
+                                .valueSeparator('='),
+                        new _CommandLine._Option.Handler() {
+                            @Override
+                            public void onOption(_CommandLine._Option option, String[] values, Properties properties) {
+                                String sKey = "export" ;   // Property:export
+                                final String sSingle = "true" ;
+                                try {
+                                    String c = properties.getProperty(sKey).toString() ;
+                                    Boolean bV = Boolean.valueOf(c);
+                                    if (c.equalsIgnoreCase(sSingle)) Utils.m_settings.setPropertyExport(sKey, true, false);   // value not specified
+                                    else Utils.m_settings.setPropertyExport(sKey, bV, true);
+                                } catch (NullPointerException ne) {
+									Utils.m_settings.setPropertyExport(sKey, true, false);  // not used
+                                }
+                                sKey = "json" ;   // Property:json
+                                try {
+                                    String c = properties.getProperty(sKey).toString() ;
+                                    Boolean bV = Boolean.valueOf(c);
+                                    if (c.equalsIgnoreCase(sSingle)) Utils.m_settings.setPropertyJson(sKey, true, false);   // value not specified
+                                    else Utils.m_settings.setPropertyJson(sKey, bV, true);
+                                } catch (NullPointerException ne) {
+									Utils.m_settings.setPropertyJson(sKey, true, false);  // not used
+                                }
+                            }
+                        }
+                )
                 .onAdditionalArgs(new _CommandLine._Option.Handler2() {
                     @Override
                     public void onOption(_CommandLine._Option option, String[] values) {
                         File[] inputs = new File[values.length];
-                        for (int i = 0; i < values.length; i++)
-                            inputs[i] = new File(values[i]);
-                            Utils.m_settings.setInputs(inputs);
+                        for (int i = 0; i < values.length; i++) inputs[i] = new File(values[i]);
+                        Utils.m_settings.setInputs(inputs);
                     }
                 })
                 .parse(args);
@@ -113,8 +145,7 @@ public class gpcli {
 
         String dirToUse = Utils.m_settings.getDirToUse() ;
         String sPatterns[] = Utils.m_settings.getCleanPatterns().split(Constants._ITEM_SEPARATOR);
-        fileUtils fU = new fileUtils();
-        for (int i = 0; i < sPatterns.length; i++) fU.deleteFile(dirToUse, sPatterns[i]) ;
+        for (int i = 0; i < sPatterns.length; i++) fileUtils.deleteFile(dirToUse, sPatterns[i]) ;
         return true ;
     }
 

@@ -10,16 +10,12 @@ import java.io.File;
 public class Settings {
 
     private File[]  inputs;
-    //private File    xlsFile ;
-    //private String sXlsFile ;
     _CLIParamater   _xls    = new _CLIParamater(); 
-    _CLIParamater   _map    = new  _CLIParamater();
+    _CLIParamater   _map    = new _CLIParamater();
     _CLIParamater   _dir    = new _CLIParamater();
     _CLIParamater   _clean  = new _CLIParamater();
-
-    // internal flags (for now)
-    boolean         bExport = false; 
-    boolean         bViaJson = false;
+    _CLIParamater   _export = new _CLIParamater();
+    _CLIParamater   _json   = new _CLIParamater();
 
     public File[] getInputs() {
         return inputs;
@@ -27,19 +23,6 @@ public class Settings {
     public void setInputs(File[] inputs) {
         this.inputs = inputs;
     }
-
-    /*public File getXlsFile() {
-        return xlsFile;
-    }
-    public void setXlsFile(File xlsFile) {
-        this.xlsFile = xlsFile;
-    }*/
-    /*public String getXlsFileS() {
-        return sXlsFile;
-    }
-    public void setXlsFile(String sFile) {
-        this.sXlsFile = sFile;
-    }*/
 
     public _CLIParamater getPropertyXLS() {
         return _xls;
@@ -88,20 +71,27 @@ public class Settings {
     	return _clean ;
     }
 
-    public boolean getbExport() {
-        return bExport ;
+    public _CLIParamater getPropertyExport() {
+        return _export;
     }
-    public void setbExport(boolean b) {
-        bExport = b;
-    }
-
-    public boolean getbViaJson () {
-        return bViaJson;
-    }
-    public void setbViaJson(boolean b) {
-        bViaJson = b;
+    public _CLIParamater setPropertyExport(String n, Boolean bV, Boolean b) {
+        if (_export == null) _export = new _CLIParamater() ;
+        if (n != null) _export.sPropertyName = n ;
+        _export.bPropertyValue = bV ;
+        _export.bPropertyUsed = b ;
+    	return _export ;
     }
 
+    public _CLIParamater getPropertyJson() {
+        return _json;
+    }
+    public _CLIParamater setPropertyJson(String n, Boolean bV, Boolean b) {
+        if (_json == null) _json = new _CLIParamater() ;
+        if (n != null) _json.sPropertyName = n ;
+        _json.bPropertyValue = bV ;
+        _json.bPropertyUsed = b ;
+    	return _json ;
+    }
     public String getDirToUse() {
         String sDir = Constants.OUT_FOLDER ;
         if ( (this._dir.bPropertyUsed) && (this._dir.sPropertyValue != null) ) sDir = this._dir.sPropertyValue ;
@@ -134,6 +124,18 @@ public class Settings {
         return sXLS ;
     }    
 
+    public Boolean getExportToUse() {
+        Boolean b = true;
+        if ( (this._export.bPropertyUsed) ) b = this._export.bPropertyValue ;
+        return b ;
+    }
+
+    public Boolean getJsonToUse() {
+        Boolean b = true;
+        if ( (this._json.bPropertyUsed) ) b = this._json.bPropertyValue ;
+        return b ;
+    }
+
     public void dump() {
         System.out.print("inputs:[");
         for (int i = 0; i < inputs.length; i++) System.out.print("," + inputs[i]);
@@ -155,13 +157,14 @@ public class Settings {
     public class _CLIParamater {
         String  sPropertyName = "" ;
         String  sPropertyValue = null ;
+        Boolean bPropertyValue = false;
         Boolean bPropertyUsed = false ;
         File    hFile = null ;
 
         private _CLIParamater() {
         }
 
-        private _CLIParamater(String n, String v, Boolean b, File h) {
+        private _CLIParamater(String n, String v, Boolean b, File h, Boolean bV) {
             sPropertyName = n ;
             if (v != null) sPropertyValue = new String(v) ;
             bPropertyUsed = b ;
@@ -173,7 +176,7 @@ public class Settings {
         }
 
         public void dump () {
-            System.out.print(" [" + sPropertyName + "," + sPropertyValue + "," + bPropertyUsed + "," + hFile + "]");
+            System.out.print(" [" + sPropertyName + "," + sPropertyValue + "," + bPropertyUsed + "," + hFile + "," + bPropertyValue + "]");
         }
     }
 

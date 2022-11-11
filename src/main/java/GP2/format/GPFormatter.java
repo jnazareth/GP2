@@ -6,7 +6,6 @@ import GP2.person.Person;
 import GP2.xls._SheetProperties;
 import GP2.group.csvFileJSON;
 import GP2.group.groupCsvJsonMapping;
-import GP2.cli.Settings;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
