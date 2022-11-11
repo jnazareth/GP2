@@ -12,19 +12,19 @@ public class _SheetProperties {
         // table fields
         private _Coordinates sRows ;            //= "[R3:R18]" ;
         private _Coordinates sColumns ;         //= "[C5:C5], [C9:C18]" ;
-		private String sFormat = "_($* #,##0.00_);_($* (#,##0.00);_($* \"-\"??_);_(@_)" ;
+		private String sFormat 			= "_($* #,##0.00_);_($* (#,##0.00);_($* \"-\"??_);_(@_)" ;
         // pivot fields
         private _Coordinates sHeader ;          //= "[R2:R2]" ;
-        private String sArea         = "[R2:R18][C1:C18]" ; // hardcoded for now
+        private String sArea			= "[R2:R18][C1:C18]" ; // hardcoded for now
         private _Coordinates sFormatColumn ;    //= "[C9:C10]" ;
-        private String sFormatFormat = "_($* #,##0.00_);_($* (#,##0.00);_($* \"-\"??_);_(@_)" ;
+        private String sFormatFormat	= "_($* #,##0.00_);_($* (#,##0.00);_($* \"-\"??_);_(@_)" ;
 
-        public int maxColums ; 
+        public int maxColums ;
         public int maxRows ;
-        public int amountLocation ; 
-        public int personLocation ; 
-        public int pivotColumnStart ; 
-        public int pivotColumnEnd ; 
+        public int amountLocation ;
+        public int personLocation ;
+        public int pivotColumnStart ;
+        public int pivotColumnEnd ;
 
         final String sLeftBR = "[" ;
         final String sRightBR = "]" ;
@@ -40,14 +40,6 @@ public class _SheetProperties {
         } ;*/
 
     public _SheetProperties build () {
-        /*
-        sRows = sLeftBR + sRow + String.valueOf((lHeaders+1)) + sRangeSeparator + sRow + String.valueOf(maxRows+lHeaders) + sRightBR ;
-        sColumns = sLeftBR + sColumn + String.valueOf(amountLocation) + sRangeSeparator + sColumn + String.valueOf(amountLocation) + sRightBR ;
-        sColumns += sRangeDelimitter + sLeftBR + sColumn + String.valueOf(pivotColumnStart) + sRangeSeparator + sColumn + String.valueOf(maxColums) + sRightBR ;
-        sHeader = sLeftBR + sRow + String.valueOf(lHeaders) + sRangeSeparator + sRow + String.valueOf(lHeaders) + sRightBR ;
-        sFormatColumn = sLeftBR + sColumn + String.valueOf(pivotColumnStart) + sRangeSeparator + sColumn + String.valueOf(pivotColumnEnd) + sRightBR ;
-        */
-
         String sR = sLeftBR + sRow + String.valueOf((lHeaders+1)) + sRangeSeparator + sRow + String.valueOf(maxRows+lHeaders) + sRightBR ;
         sRows = new _Coordinates(sR);
 
@@ -71,7 +63,7 @@ public class _SheetProperties {
     public String getCsvFileName() {
         return csvFileName;
     }
-        
+
     public void setlHeaders (int lH) {
         lHeaders = lH;
     }
@@ -151,36 +143,16 @@ public class _SheetProperties {
         csvFileJSON aJSON = null;
         try{
             aJSON = new csvFileJSON();
-            /*
-            //String sFormatColumn = "[C9:C10]" ;
-            String sFormatColumn = "" ;
-            sFormatColumn = "[C" + String.valueOf(columnList.get(0)) + ":C" + String.valueOf(columnList.get(columnList.size()-1)) + "]";
-            //System.out.println("sFormatColumn::"+ sFormatColumn);
-
-            //String sCSVFileName = "default.sep.mint.out.csv" ;
-            Long lHeaders = 2L;
-            String sRows = "[R3 - Rn]" ;
-            String sColumns = "[C5, C9 - Cn]" ;
-            String sFormat = "$#,##0.00_);($#,##0.00)" ;
-            
-            String sHeader = "[R2]" ;
-            String sArea = "[R2:C1][Rn:Cn]" ;
-            String sFormatFormat =  "$#,##0.00_);($#,##0.00)" ; //sFormat ;
-            */
-
             aJSON.setCSVFileName(this.getCsvFileName());
             aJSON.setHeaders(Long.valueOf(this.getlHeaders()));
             aJSON.setTable(this.getsRowsAsString(), this.getsColumnsAsString(), this.getsFormat());
             aJSON.setFormat(this.getsFormatColumnAsString(), this.getsFormatFormatAsString());
-
             HashMap oFormat = aJSON.getFormat();
-            //System.out.println("oFormat::"+ oFormat.toString());
-
             aJSON.setPivot(this.getsHeaderAsString(), this.getsArea(), oFormat);
 
             return aJSON;
         } catch (Exception e) {
-            return aJSON ; 
+            return aJSON ;
         }
     }
 

@@ -7,6 +7,13 @@ import GP2.cli.Settings;
 import java.util.Hashtable;
 import java.math.BigDecimal;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Set;
+
 public class Utils {
     // declarations
 
@@ -40,4 +47,31 @@ public class Utils {
 			return e.getMessage() ;
 		}
 	}
+
+	public static List<String> customSort(Set<String> hm) {
+		List<String> sortedMapKeys = new ArrayList<String>(hm);
+		try {
+			final String sDefault = Constants._DEFAULT_GROUP ;
+			if (! hm.contains(sDefault) ) {		// not found, regular sort
+				Collections.sort(sortedMapKeys);
+				return sortedMapKeys ;
+			}
+
+			boolean b = sortedMapKeys.remove(sDefault);
+			if (!b) return sortedMapKeys ;
+
+			List<String> sortedMapKeys2 = new ArrayList<String>(hm.size());
+			sortedMapKeys2.add(sDefault);
+			Collections.sort(sortedMapKeys);
+			for (String i : sortedMapKeys)  sortedMapKeys2.add(i);
+
+			return sortedMapKeys2 ;
+		} catch (Exception e) {
+			System.err.println("Exception::" + e.getMessage());
+		}
+		return sortedMapKeys ;
+	}
+
+
+
 }

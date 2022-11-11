@@ -512,9 +512,7 @@ public class account extends Object
 				sCSVJSON = makeOutFileName(1, groupName, csvFileName);
 				csvFile = new csvFileJSON() ;
 			}
-
 			if (Utils.m_settings.getPropertyXLS().IsPropertyUsed())  sp = new _SheetProperties() ;
-			//csvFile = makeCSVFile2(g, gCSVFile, n);
 
 			//add to map
 			if (Utils.m_grpCsvJsonMap == null) Utils.m_grpCsvJsonMap = new groupCsvJsonMapping();

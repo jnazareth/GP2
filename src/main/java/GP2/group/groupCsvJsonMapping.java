@@ -36,7 +36,7 @@ public class groupCsvJsonMapping extends Object{
 	}
 
     // --------------------------------------------------------------------------
-    public class _CSV_JSON {
+    public class _CSV_JSON extends Object {
         public String _sCSVFile ; 					// exists if bExport == true
         public String _sCSVJSONFile ;				// exists if bViaJson == true
         public csvFileJSON _oCSVFileJSON ;			// exists if bViaJson == true
@@ -46,7 +46,7 @@ public class groupCsvJsonMapping extends Object{
             _sCSVFile = sCsvFile;
             _sCSVJSONFile = sCsvJsonFile;
             _oCSVFileJSON = oCsvJson;
-			_sheetProperties = sp;			
+			_sheetProperties = sp;
         }
 
         public void dumpCollection() {

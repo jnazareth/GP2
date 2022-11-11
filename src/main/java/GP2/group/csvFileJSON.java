@@ -12,23 +12,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 public class csvFileJSON extends Object {
-    /*
-    "csvFileName":"default.sep.mint.out.csv",
-    "headers":2,
-    "pivot":{
-        "header":"header value",
-        "area":"area value",
-        "format":{
-                "columns":"columns value",
-                "format":"format value"
-                }
-            },
-    "table":{
-        "rows":"rows value",
-        "columns":"columns value",
-        "format":"format value"
-        }
-     */
 
     private String sCSVFileName;
     private Long lHeaders ;
@@ -210,33 +193,13 @@ public class csvFileJSON extends Object {
         csvFileJSON aJSON = null;
         try{
             aJSON = new csvFileJSON();
-            /*
-            //String sFormatColumn = "[C9:C10]" ;
-            String sFormatColumn = "" ;
-            sFormatColumn = "[C" + String.valueOf(columnList.get(0)) + ":C" + String.valueOf(columnList.get(columnList.size()-1)) + "]";
-            //System.out.println("sFormatColumn::"+ sFormatColumn);
-
-            //String sCSVFileName = "default.sep.mint.out.csv" ;
-            Long lHeaders = 2L;
-            String sRows = "[R3 - Rn]" ;
-            String sColumns = "[C5, C9 - Cn]" ;
-            String sFormat = "$#,##0.00_);($#,##0.00)" ;
-
-            String sHeader = "[R2]" ;
-            String sArea = "[R2:C1][Rn:Cn]" ;
-            String sFormatFormat =  "$#,##0.00_);($#,##0.00)" ; //sFormat ;
-            */
-            String sArea = "[R2:C1][Rn:Cn]" ;
-
             aJSON.setCSVFileName(sp.getCsvFileName());
             aJSON.setHeaders(Long.valueOf(sp.getlHeaders()));
             aJSON.setTable(sp.getsRowsAsString(), sp.getsColumnsAsString(), sp.getsFormat());
             aJSON.setFormat(sp.getsFormatColumnAsString(), sp.getsFormatFormatAsString());
 
             HashMap oFormat = aJSON.getFormat();
-            //System.out.println("oFormat::"+ oFormat.toString());
-
-            aJSON.setPivot(sp.getsHeaderAsString(), sArea, oFormat);
+            aJSON.setPivot(sp.getsHeaderAsString(), sp.getsArea(), oFormat);
 
             return aJSON;
         } catch (Exception e) {

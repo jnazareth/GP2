@@ -42,8 +42,6 @@ public class gpcli {
                         new _CommandLine._Option.Handler() {
                             @Override
                             public void onOption(_CommandLine._Option option, String[] values, Properties properties) {
-                                //Utils.m_settings.setXlsFile(new File(values[0]));
-                                //Utils.m_settings.setXlsFile(values[0]);
                                 final String nullVal = "null" ;
                                 final String sKey = "xls" ;   // Property:xls
                                 if ( (values.length == 1) && (values[0].equalsIgnoreCase(nullVal)) )
@@ -137,7 +135,7 @@ public class gpcli {
                 })
                 .parse(args);
 
-        return Utils.m_settings ; 
+        return Utils.m_settings ;
     }
 
     private boolean processClean() {
