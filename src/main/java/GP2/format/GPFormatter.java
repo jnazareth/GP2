@@ -22,20 +22,20 @@ import java.io.File;
 
 public class GPFormatter {
 	// output headers
-	private final String H_TRANSACTION_AMOUNTS = "transaction amounts" ;
-	private final String H_OWE = "(you owe) / owed to you" ;
-	private final String H_INDIVIDUAL_TOTALS = "individual \"spent\"" ;
-	private final String H_ITEM = "Item" ;
-	private final String H_CATEGORY = "Category" ;
-	private final String H_VENDOR = "Vendor" ;
-	private final String H_DESCRIPTION = "Description" ;
-	private final String H_AMOUNT = "Amount" ;
-	private final String H_FROM = "From" ;
-	private final String H_TO = "To" ;
-	private final String H_ACTION = "Action" ;
-	private final String H_CHECKSUM = "CheckSum" ;
-	private final String H_INDCHECKSUM = "IndCheckSum" ;
-	private final String H_INDIVIDUAL_PAID = "individual \"paid\"" ;
+	private final String H_TRANSACTION_AMOUNTS	= "transaction amounts" ;
+	private final String H_OWE					= "(you owe) / owed to you" ;
+	private final String H_INDIVIDUAL_TOTALS	= "individual \"spent\"" ;
+	private final String H_ITEM					= "Item" ;
+	private final String H_CATEGORY				= "Category" ;
+	private final String H_VENDOR				= "Vendor" ;
+	private final String H_DESCRIPTION			= "Description" ;
+	private final String H_AMOUNT				= "Amount" ;
+	private final String H_FROM					= "From" ;
+	private final String H_TO					= "To" ;
+	private final String H_ACTION				= "Action" ;
+	private final String H_CHECKSUM				= "CheckSum" ;
+	private final String H_INDCHECKSUM			= "IndCheckSum" ;
+	private final String H_INDIVIDUAL_PAID		= "individual \"paid\"" ;
 
 	//public Hashtable<String, Hashtable<String, Person3>> m_gpCollectionToFormat = null ;
 	private Hashtable<String, ArrayList<String>> m_exportLinesGroup = null ;

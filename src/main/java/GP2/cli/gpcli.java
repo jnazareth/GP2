@@ -7,8 +7,13 @@ import GP2.utils.Utils;
 
 import java.io.File;
 import java.io.InputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.io.IOException;
 import java.util.Properties;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -139,12 +144,22 @@ public class gpcli {
     }
 
     private boolean processClean() {
-        if (!Utils.m_settings._clean.bPropertyUsed) return false ;    // not used
+        try {
+            if (!Utils.m_settings._clean.IsPropertyUsed()) return false ;    // not used
 
-        String dirToUse = Utils.m_settings.getDirToUse() ;
-        String sPatterns[] = Utils.m_settings.getCleanPatterns().split(Constants._ITEM_SEPARATOR);
-        for (int i = 0; i < sPatterns.length; i++) fileUtils.deleteFile(dirToUse, sPatterns[i]) ;
-        return true ;
+            String dirToUse = Utils.m_settings.getDirToUse() ;
+            String sPatterns[] = Utils.m_settings.getCleanPatterns().split(Constants._ITEM_SEPARATOR);
+            for (int i = 0; i < sPatterns.length; i++) fileUtils.deleteFile(dirToUse, sPatterns[i]) ;
+
+            // delete directory, if specifed & empty
+            Path path = Paths.get(dirToUse);
+            if ( (Utils.m_settings._dir.IsPropertyUsed()) && (fileUtils.isEmpty(path)) ) {
+                return fileUtils.deleteDirectory(path.toFile()) ;
+            }
+        } catch (IOException ioe) {
+			System.err.println("Exception::" + ioe.getMessage()) ;
+        }
+        return true;
     }
 
     public void processCommandLine() {

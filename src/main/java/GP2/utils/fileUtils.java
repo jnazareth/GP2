@@ -9,6 +9,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.Files;
+import java.nio.file.DirectoryStream;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.FileVisitor;
@@ -87,6 +88,25 @@ public class fileUtils {
 		if (aFile.exists()) return aFile;
 		else throw new FileNotFoundException("File  " + fileName + " does not exist.");
 	}
+
+	public static boolean isEmpty(Path path) throws IOException {
+		if (Files.isDirectory(path)) {
+			try (DirectoryStream<Path> directory = Files.newDirectoryStream(path)) {
+				return !directory.iterator().hasNext();
+			}
+		}
+		return false;
+	}
+
+	public static boolean deleteDirectory(File directoryToBeDeleted) {
+		File[] allContents = directoryToBeDeleted.listFiles();
+		if (allContents != null) {
+			for (File file : allContents) {
+				deleteDirectory(file);
+			}
+		}
+		return directoryToBeDeleted.delete();
+	}	
 
 	public static FileWriter getFileWriter(String fName) {
 		FileWriter fWriter = null ;
