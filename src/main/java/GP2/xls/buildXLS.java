@@ -28,6 +28,7 @@ import java.io.FileOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.FileReader;
+import java.io.BufferedReader;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.TreeSet;
@@ -35,8 +36,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import au.com.bytecode.opencsv.CSVReader;
-//import com.opencsv.CSVReader;
 import org.apache.commons.lang3.math.NumberUtils;
 
 public class buildXLS {
@@ -89,17 +88,14 @@ public class buildXLS {
     }
 
     private void getCSVData(XSSFWorkbook wb, XSSFSheet sheet, String outCSVFile, String grpName, _SheetProperties sProperties) {
-        CSVReader reader = null;
+        FileReader fileReader = null;
         try {
-            String[] nextLine;
-
 			String dirToUse = Utils.m_settings.getDirToUse() ;
             File f = new File(dirToUse, outCSVFile);
 
-            //2.3.0
-            final char FILE_DELIMITER = '\t';
-            reader = new CSVReader(new FileReader(f), FILE_DELIMITER);
-            //reader = new CSVReader(new FileReader(f));
+            fileReader = new FileReader(f);
+			BufferedReader buffReader = new BufferedReader(fileReader);
+			String sLine = "";
 
             //_SheetProperties sProperties = getSheetProperties() ;
 
@@ -112,31 +108,32 @@ public class buildXLS {
             cellStyle.setDataFormat(format.getFormat(accountingFormat));
 
             int rowNum = 0;
-            while((nextLine = reader.readNext()) != null) {
-                Row currentRow = sheet.createRow(rowNum);
-
-                for(int i=0; i < nextLine.length; i++) {
-                    Cell cell = null;
-                    if (NumberUtils.isCreatable(nextLine[i])) {
-                        cell = currentRow.createCell(i);
-                        cell.setCellValue(Double.parseDouble(nextLine[i]));
-                    } else {
-                        cell = currentRow.createCell(i);
-                        cell.setCellValue(nextLine[i]);
-                    }
-                    if (cellInRange2(rowNum, i, sProperties)) cell.setCellStyle(cellStyle);
-                }
-                rowNum++ ;
-            }
-        } catch(Exception exObj) {
-            System.err.println("Exception In convertCsvToXls() Method?=  " + exObj);
-        } finally {
             try {
-                reader.close();             /**** Closing The CSV File-ReaderObject ****/
-            } catch (IOException ioExObj) {
-                System.err.println("Exception While Closing I/O Objects In convertCsvToXls() Method?=  " + ioExObj);
+                while ((sLine = buffReader.readLine()) != null) {
+                    Row currentRow = sheet.createRow(rowNum);
+
+                    String[] nextLine = sLine.split(Constants._TAB_SEPARATOR);
+                    for(int i=0; i < nextLine.length; i++) {
+                        Cell cell = null;
+                        if (NumberUtils.isCreatable(nextLine[i])) {
+                            cell = currentRow.createCell(i);
+                            cell.setCellValue(Double.parseDouble(nextLine[i]));
+                        } else {
+                            cell = currentRow.createCell(i);
+                            cell.setCellValue(nextLine[i]);
+                        }
+                        if (cellInRange2(rowNum, i, sProperties)) cell.setCellStyle(cellStyle);
+                    }
+                    rowNum++ ;
+                }
+                buffReader.close() ;    
+                fileReader.close();
+            } catch (IOException e) {
+                System.out.println("There was a problem reading:" + outCSVFile);
             }
-        }
+		} catch (FileNotFoundException e) {
+			System.out.println("Could not locate a file: " + e.getMessage());
+		}
     }
 
     private void buildPivot(XSSFSheet sheet, _SheetProperties sProperties) {

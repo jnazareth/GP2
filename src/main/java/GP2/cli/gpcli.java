@@ -97,7 +97,7 @@ public class gpcli {
                         }
                 )
                 .withOption (
-                        new _CommandLine._Option("F", "Flags: -export <true/false>")
+                        new _CommandLine._Option("F", "Flags: -export <true/false>,  -json <true/false>")
                         .longOption("F")
                                 .argName("boolean=value")
                                 .hasArgs()

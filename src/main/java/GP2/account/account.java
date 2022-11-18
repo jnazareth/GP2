@@ -398,6 +398,7 @@ public class account extends Object
 	// ----------------------------------------------------
 	public void ReadAndProcessTransactions(String fileName)
 	{
+		Utils.m_GroupCollection = null ;
 		GPFormatter gpF = null ;
         FileReader fileReader = null;
 		try {

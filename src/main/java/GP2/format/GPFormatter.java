@@ -124,7 +124,7 @@ public class GPFormatter {
 	private String padAmountString(String sNames[], String embededPers, String unpaddedLine)
 	{
 		try {
-			//System.out.println("sNames: " + sNames + ", embededPers: " + embededPers + ", unpaddedLine: " + unpaddedLine);
+			//System.out.println("sNames: " + sNames + ", embededPers: " + embededPers + ", unpaddedLine:[" + unpaddedLine + "]");
 
 			for (int i = 0; i < sNames.length; i++) {
 				int fPos = embededPers.indexOf(sNames[i]) ;
@@ -142,6 +142,7 @@ public class GPFormatter {
 					//System.out.println("unpaddedLine: " + unpaddedLine);
 				}
 			}
+			//System.out.println("unpaddedLine:[" + unpaddedLine + "]" + unpaddedLine.length());
 			return unpaddedLine ;
 		} catch (Exception e){
 			System.err.println("Error: " + e.getMessage());
@@ -259,7 +260,7 @@ public class GPFormatter {
 			for (String aLine : exportLines) {
 				//String unpaddedLine = sPersons.substring(Utils._TAB_SEPARATOR.length(), sPersons.length()) ;
 				String unpaddedLine = sPersons.substring(0, sPersons.length()) ;
-				//System.out.println("unpaddedLine: " + unpaddedLine);
+				//System.out.println("unpaddedLine:[" + unpaddedLine + "]");
 				String sNames[] = unpaddedLine.split(Constants._TAB_SEPARATOR) ;
 
 				String debugLine ;
