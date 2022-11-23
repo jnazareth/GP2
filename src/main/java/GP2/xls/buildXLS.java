@@ -233,11 +233,12 @@ public class buildXLS {
 
             List<String> sortedMapKeys = Utils.customSort(Utils.m_grpCsvJsonMap._groupMap.keySet()) ;
             for (String key: sortedMapKeys) {
-                /*System.out.println("key:" + key);
-                if (!(	(key.equalsIgnoreCase("default"))   ||
+    			// ONLY process one group = testing
+                /*if (!(	(key.equalsIgnoreCase("default"))   ||
                       	(key.equalsIgnoreCase("medical"))   ||
                       	(key.equalsIgnoreCase("planesTrainsAutos"))   ))
-                    continue;*/
+                    continue;
+                System.out.println("key:" + key);*/
                 groupCsvJsonMapping._CSV_JSON cj = Utils.m_grpCsvJsonMap._groupMap.get(key) ;
                 csvFileJSON ocj = jFileR.readJSON(cj._sCSVJSONFile) ;
                 _SheetProperties sp = ocj.toSheetProperties() ;
@@ -253,11 +254,12 @@ public class buildXLS {
 
             List<String> sortedMapKeys = Utils.customSort(Utils.m_grpCsvJsonMap._groupMap.keySet()) ;
             for (String key: sortedMapKeys) {
-                /*System.out.println("key:" + key);
-                if (!(	(key.equalsIgnoreCase("hcg"))   ||
+                // ONLY process one group = testing
+                /*if (!(	(key.equalsIgnoreCase("default"))   ||
                       	(key.equalsIgnoreCase("medical"))   ||
-                      	(key.equalsIgnoreCase("planesTrainsAutos"))))
-                    continue;*/
+                      	(key.equalsIgnoreCase("planesTrainsAutos"))   ))
+                    continue;
+                System.out.println("key:" + key);*/
                 groupCsvJsonMapping._CSV_JSON cj = Utils.m_grpCsvJsonMap._groupMap.get(key) ;
                 _SheetProperties sp = cj._sheetProperties ;
 				buildXLSFile(fName, f, key, cj, sp);

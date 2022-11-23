@@ -79,7 +79,7 @@ public class InputProcessor extends Object {
 			if (totalAmount != f) {
 				float f1 = Math.abs(totalAmount-f) ;
 				float f2 = 1/100 ;	// 1cent = tolerance
-				if ( f1 < f2 )
+				if ( f1 >= f2 )
 					System.out.println("Amounts do not tally: " + totalAmount + " <> " + f) ;
 			}
 		} catch (Exception e) {

@@ -30,12 +30,13 @@ v2: export to csv implementation
 */
 
 // Import log4j classes.
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+//import org.apache.logging.log4j.Logger;
+//import org.apache.logging.log4j.LogManager;
+//import org.apache.logging.log4j.LogEx
 
 public class gp2
 {
-    private static final Logger logger = LogManager.getLogger(gp2.class);
+    //private static final Logger logger = LogManager.getLogger(gp2.class);
 
 	// ----------------------------------------------------
 	// main
@@ -43,7 +44,7 @@ public class gp2
 	public static void main (String[] args)
 	throws Exception
 	{
-        logger.trace("Entering application.");
+        //logger.trace("Entering application.");
 
         gpcli gCLI = new gpcli();
         Utils.m_settings = gCLI.parseCommandLine(args);

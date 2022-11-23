@@ -170,7 +170,7 @@ public class GPFormatter {
 		return -1 ;
 	}
 
-	private void exportToCSV(String fileName, String group, _SheetProperties sp)
+	private void exportToCSV(String group, _SheetProperties sp)
 	{
 		String outFilename = Utils.m_grpCsvJsonMap._groupMap.get(group)._sCSVFile ;
 		//System.out.println("outFilename: " + outFilename + " ,outFilename0: " + outFilename0);
@@ -362,13 +362,8 @@ public class GPFormatter {
 		while(keysGroup.hasMoreElements()) {
 			String groupName = keysGroup.nextElement();
 			Hashtable<String, Person> aGroup = Utils.m_GroupCollection.get(groupName) ;
-
 			sp = new _SheetProperties() ;
-			Enumeration<String> keysPeople = aGroup.keys();
-			while(keysPeople.hasMoreElements()){
-				Person person = aGroup.get(keysPeople.nextElement());
-				exportToCSV(fileName, groupName, sp) ;
-			}
+			exportToCSV(groupName, sp) ;
 
 			// update map
 			groupCsvJsonMapping._CSV_JSON cj = Utils.m_grpCsvJsonMap._groupMap.get(groupName) ;
@@ -377,5 +372,4 @@ public class GPFormatter {
 			Utils.m_grpCsvJsonMap.addItem(groupName, cj._sCSVFile, cj._sCSVJSONFile, csvFile, sp) ;
 		}
 	}
-
 }
