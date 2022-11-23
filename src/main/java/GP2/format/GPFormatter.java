@@ -6,7 +6,6 @@ import GP2.person.Person;
 import GP2.xls._SheetProperties;
 import GP2.group.csvFileJSON;
 import GP2.group.groupCsvJsonMapping;
-import GP2.cli.Settings;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -18,25 +17,25 @@ import java.util.List;
 import java.util.Collections;
 
 import org.apache.commons.io.FileUtils ;
-import java.io.FileOutputStream ; 
+import java.io.FileOutputStream ;
 import java.io.File;
 
 public class GPFormatter {
 	// output headers
-	private final String H_TRANSACTION_AMOUNTS = "transaction amounts" ;
-	private final String H_OWE = "(you owe) / owed to you" ;
-	private final String H_INDIVIDUAL_TOTALS = "individual \"spent\"" ;
-	private final String H_ITEM = "Item" ;
-	private final String H_CATEGORY = "Category" ;
-	private final String H_VENDOR = "Vendor" ;
-	private final String H_DESCRIPTION = "Description" ;
-	private final String H_AMOUNT = "Amount" ;
-	private final String H_FROM = "From" ;
-	private final String H_TO = "To" ;
-	private final String H_ACTION = "Action" ;
-	private final String H_CHECKSUM = "CheckSum" ;
-	private final String H_INDCHECKSUM = "IndCheckSum" ;
-	private final String H_INDIVIDUAL_PAID = "individual \"paid\"" ;
+	private final String H_TRANSACTION_AMOUNTS	= "transaction amounts" ;
+	private final String H_OWE					= "(you owe) / owed to you" ;
+	private final String H_INDIVIDUAL_TOTALS	= "individual \"spent\"" ;
+	private final String H_ITEM					= "Item" ;
+	private final String H_CATEGORY				= "Category" ;
+	private final String H_VENDOR				= "Vendor" ;
+	private final String H_DESCRIPTION			= "Description" ;
+	private final String H_AMOUNT				= "Amount" ;
+	private final String H_FROM					= "From" ;
+	private final String H_TO					= "To" ;
+	private final String H_ACTION				= "Action" ;
+	private final String H_CHECKSUM				= "CheckSum" ;
+	private final String H_INDCHECKSUM			= "IndCheckSum" ;
+	private final String H_INDIVIDUAL_PAID		= "individual \"paid\"" ;
 
 	//public Hashtable<String, Hashtable<String, Person3>> m_gpCollectionToFormat = null ;
 	private Hashtable<String, ArrayList<String>> m_exportLinesGroup = null ;
@@ -54,7 +53,7 @@ public class GPFormatter {
 		m_exportLinesGroup = null ;
 	}*/
 
-    
+
     // ----------------------------------------------------
 	// prepareToExportGroup
 	// ----------------------------------------------------
@@ -125,7 +124,7 @@ public class GPFormatter {
 	private String padAmountString(String sNames[], String embededPers, String unpaddedLine)
 	{
 		try {
-			//System.out.println("sNames: " + sNames + ", embededPers: " + embededPers + ", unpaddedLine: " + unpaddedLine);
+			//System.out.println("sNames: " + sNames + ", embededPers: " + embededPers + ", unpaddedLine:[" + unpaddedLine + "]");
 
 			for (int i = 0; i < sNames.length; i++) {
 				int fPos = embededPers.indexOf(sNames[i]) ;
@@ -143,24 +142,13 @@ public class GPFormatter {
 					//System.out.println("unpaddedLine: " + unpaddedLine);
 				}
 			}
+			//System.out.println("unpaddedLine:[" + unpaddedLine + "]" + unpaddedLine.length());
 			return unpaddedLine ;
 		} catch (Exception e){
 			System.err.println("Error: " + e.getMessage());
 			return unpaddedLine ;
 		}
 	}
-
-	/*private String makeOutFilename(String fileName, String group)
-	{
-		String outFilename = "" ;
-		int fileExt = fileName.lastIndexOf(Constants.OUT_FILESEP) ;
-		if (fileExt == -1) // not found
-			outFilename += Constants.OUT_EXTENSION ;
-		else
-			outFilename = group + Constants.OUT_FILESEP + fileName.substring(0, fileExt) + Constants.OUT_FILE + Constants.OUT_EXTENSION ;
-
-		return outFilename ;
-	}*/
 
 	private String padHeader(int nTabs)
 	{
@@ -176,18 +164,14 @@ public class GPFormatter {
 		String aArray[] = s.split(Constants._TAB_SEPARATOR) ;
 		mCol[0] = aArray.length;
 		//m_SheetProperties.maxColums = aArray.length ;
-
-		//System.out.println("totalNumberofColumns:: " + aArray.length);
-		//System.out.println("sSearchString:: " + sSearchString);
 		for (int i = 0; i < aArray.length; i++) {
 			if (aArray[i].indexOf(sSearchString) != -1) return (i+1);
-		}		
+		}
 		return -1 ;
 	}
 
-	private void exportToCSV(String fileName, String group, _SheetProperties sp)
+	private void exportToCSV(String group, _SheetProperties sp)
 	{
-		//String outFilename0 = makeOutFilename(fileName, group) ;
 		String outFilename = Utils.m_grpCsvJsonMap._groupMap.get(group)._sCSVFile ;
 		//System.out.println("outFilename: " + outFilename + " ,outFilename0: " + outFilename0);
 
@@ -199,7 +183,6 @@ public class GPFormatter {
             FileWriter fw = new FileWriter(foS.getFD()) ;
 
 			// Create file
-			//FileWriter fstream = new FileWriter(outFilename);
 			FileWriter fstream = fw;
 			BufferedWriter out = new BufferedWriter(fstream);
 
@@ -243,13 +226,13 @@ public class GPFormatter {
 				sHeader += Constants._TAB_SEPARATOR  + sPersons + Constants._TAB_SEPARATOR + Constants._SYS  + Constants._TAB_SEPARATOR + sPersons + Constants._TAB_SEPARATOR + H_CHECKSUM + Constants._TAB_SEPARATOR + sPersons + Constants._TAB_SEPARATOR + H_INDCHECKSUM + Constants._TAB_SEPARATOR + sPersons;
 			else
 				sHeader += Constants._TAB_SEPARATOR /*Constants._SYS + Constants._TAB_SEPARATOR*/ + sPersons + Constants._TAB_SEPARATOR + sPersons + Constants._TAB_SEPARATOR + H_CHECKSUM + Constants._TAB_SEPARATOR + sPersons + Constants._TAB_SEPARATOR + H_INDCHECKSUM + Constants._TAB_SEPARATOR + sPersons ;
+			// sheetProperties ------------
 			out.write(sHeader0);	out.newLine();				headerCounter++ ;
 			out.write(sHeader);		out.newLine();				headerCounter++ ;
 
 			// sheetProperties ------------
 			sp.setCsvFileName(outFilename) ;
 			sp.setlHeaders(headerCounter) ;
-			//System.out.println("headerCounter: " + headerCounter);
 
 			int maxCol[] = {0};
 			int amountLocation = getLocationOf(sHeader, H_AMOUNT, maxCol) ;
@@ -262,12 +245,10 @@ public class GPFormatter {
 				pivotColumnStart = personLocation ;
 				pivotColumnEnd = pivotColumnStart + (aGroup.size()-1);
 			}
-			sp.amountLocation = amountLocation ; 
-			sp.personLocation = personLocation ; 
-			sp.pivotColumnStart = pivotColumnStart ; 
-			sp.pivotColumnEnd = pivotColumnEnd ; 
-			//System.out.println("amountLocation,personLocation,pivotColumnStart,pivotColumnEnd: " + amountLocation + "," + personLocation + "," + pivotColumnStart + "," + pivotColumnEnd);
-
+			sp.amountLocation = amountLocation ;
+			sp.personLocation = personLocation ;
+			sp.pivotColumnStart = pivotColumnStart ;
+			sp.pivotColumnEnd = pivotColumnEnd ;
 			// sheetProperties ------------
 
 			// } end Header
@@ -279,14 +260,10 @@ public class GPFormatter {
 			for (String aLine : exportLines) {
 				//String unpaddedLine = sPersons.substring(Utils._TAB_SEPARATOR.length(), sPersons.length()) ;
 				String unpaddedLine = sPersons.substring(0, sPersons.length()) ;
-				//System.out.println("unpaddedLine: " + unpaddedLine);
-
+				//System.out.println("unpaddedLine:[" + unpaddedLine + "]");
 				String sNames[] = unpaddedLine.split(Constants._TAB_SEPARATOR) ;
 
-				//System.out.println("aLine = " + aLine);
-				//out.write(aLine);		out.newLine();
 				String debugLine ;
-
 				// trans amount
 				int fx = aLine.indexOf(Constants.lPAD) + Constants.lPAD.length() ;
 				int tx = aLine.indexOf(Constants.rPAD, fx) ;
@@ -317,8 +294,6 @@ public class GPFormatter {
 				String embededPersons1 = aLine.substring(f1, t1).trim() ;
 				String sNewLine1 = padAmountString(sNames, embededPersons1, unpaddedLine) ;
 				debugLine = "f1 = " + f1 + ", t1 = " + t1 + ", embededPersons1 = " + embededPersons1 + ", sNewLine1 = [" + sNewLine1 + "]" ;
-				//System.out.println("debugLine: " + debugLine);
-				//out.write(debugLine);		out.newLine();
 
 				// individual amounts
 				int f2 = aLine.indexOf(Constants.lPAD, t1 + Constants.rPAD.length()) + Constants.lPAD.length() ;
@@ -326,22 +301,18 @@ public class GPFormatter {
 				String embededPersons2 = aLine.substring(f2, t2).trim() ;
 				String sNewLine2 = padAmountString(sNames, embededPersons2, unpaddedLine) ;
 				debugLine = "f2 = " + f2 + ", t2 = " + t2 + ", embededPersons2 = " + embededPersons2 + ", sNewLine2 = [" + sNewLine2 + "]" ;
-				//out.write(debugLine);		out.newLine();
-				//System.out.println("debugLine: " + debugLine);
 
 				//checksum
 				int f11 = t1 + Constants.rPAD.length() ;
 				int t11 = aLine.indexOf(Constants.lPAD, f11) ;
 				debugLine = "f11 = " + f11 + ", t11 = " + t11;
 				String checkSum = aLine.substring(f11, t11).trim() ;
-				//System.out.println("checkAum: " + debugLine + ":" + checkSum);
 
 				//indchecksum
 				int f21 = t1 + Constants.rPAD.length() ;
 				int t21 = aLine.indexOf(Constants.lPAD, f21) ;
 				debugLine = "f21 = " + f21 + ", t21 = " + t21;
 				String indcheckSum = aLine.substring(f21, t21).trim() ;
-				//System.out.println("indcheckSum: " + debugLine + ":" + indcheckSum);
 
 				//individual paid
 				int f3 = aLine.indexOf(Constants.lPAD, t21 + Constants.rPAD.length()) + Constants.lPAD.length() ;
@@ -351,21 +322,8 @@ public class GPFormatter {
 				debugLine = "f3 = " + f3 + ", t3 = " + t3 + ", embededPersons3 = " + embededPersons3 + ", sNewLine3 = [" + sNewLine3 + "]" ;
 				//System.out.println("debugLine: " + debugLine);
 
-				////System.out.println("here.0");
-				////System.out.println("substring(0, fx - Constants.lPAD.length()," + fx + ", " + Constants.lPAD.length() + aLine.substring(0, fx - Constants.lPAD.length()));
-				//int i1 = tx + Constants.rPAD.length() ;
-				//int i2 = f0 - Constants.lPAD.length() ;
-				////System.out.println("aLine.substring(tx + Constants.rPAD.length(), f0 - Constants.lPAD.length()," + i1 + "," + i2 /*+ ", " + aLine.substring(tx + Constants.rPAD.length(), f0 - Constants.lPAD.length())*/);
-
 				String sToFile = "" ;
 				String outLine = "" ;
-				/*
-				out.write("0: newLines:");		out.newLine();
-				out.write(sNewLinex);		out.newLine();
-				if (m_bSys == true) {out.write(sNewLine0);		out.newLine();}
-				out.write(sNewLine1);		out.newLine();
-				out.write(sNewLine2);		out.newLine();
-				*/
 
 				outLine += aLine.substring(0, fx - Constants.lPAD.length()) + sNewLinex ;
 				if (Utils.m_bSys == true) outLine += sNewLine0  + Constants._TAB_SEPARATOR ;
@@ -373,30 +331,6 @@ public class GPFormatter {
 				outLine += Constants._TAB_SEPARATOR + sNewLine2 + indcheckSum ;
 				outLine += Constants._TAB_SEPARATOR + sNewLine3 ;
 				sToFile = outLine ;
-
-				/*
-				//sToFile += aLine.substring(0, fx - Constants.lPAD.length()) + sNewLinex + aLine.substring(tx + Constants.rPAD.length(), f0 - Constants.lPAD.length()) ;
-				sToFile += aLine.substring(0, fx - Constants.lPAD.length()) + sNewLinex + aLine.substring(f0 - Constants.lPAD.length(), tx + Constants.rPAD.length()) ;
-				debugLine = aLine.substring(0, fx - Constants.lPAD.length()) ;
-				out.write("1:" + debugLine);		out.newLine();
-				int x = f0 - Constants.lPAD.length() ; int y = tx + Constants.rPAD.length() ;
-				out.write("1.1:" + x + "," + y);		out.newLine();
-				debugLine = aLine.substring(f0 - Constants.lPAD.length(), tx + Constants.rPAD.length()) ;
-				out.write("2:" + debugLine);		out.newLine();
-				if (m_bSys == true) { sToFile += sNewLine0 + aLine.substring(t0 + Constants.rPAD.length(), f1 - Constants.lPAD.length()) ;
-					////System.out.println("sToFile1 = [" + sToFile + "]");
-					//out.write(sToFile);		out.newLine();
-				}
-
-				////System.out.println("here.1");
-				sToFile += sNewLine1 + aLine.substring(t1 + Constants.rPAD.length(), f2 - Constants.lPAD.length()) ;
-				////System.out.println("sToFile2 = [" + sToFile + "]");
-				out.write(sToFile);		out.newLine();
-
-				sToFile += sNewLine2 + aLine.substring(t2 + Constants.rPAD.length(), aLine.length()) ;
-				////System.out.println("sToFile3 = [" + sToFile + "]");
-				//out.write(sToFile);		out.newLine();
-				*/
 
 				out.write(sToFile);		out.newLine();
 
@@ -407,10 +341,8 @@ public class GPFormatter {
 			out.close();		//Close the output stream
 
 			// sheetProperties ------------
-			sp.maxRows = rowCounter ; 
-			//System.out.println("rowCounter: " + rowCounter);
+			sp.maxRows = rowCounter ;
 			sp.build() ;
-			//sp.dump();
 			// sheetProperties ------------
 
 			// close all file handles
@@ -426,27 +358,18 @@ public class GPFormatter {
 	public void exportToCSVGroup(String fileName)
 	{
 		_SheetProperties sp = null ;
-
 		Enumeration<String> keysGroup = Utils.m_GroupCollection.keys();
 		while(keysGroup.hasMoreElements()) {
 			String groupName = keysGroup.nextElement();
 			Hashtable<String, Person> aGroup = Utils.m_GroupCollection.get(groupName) ;
-
 			sp = new _SheetProperties() ;
-
-			Enumeration<String> keysPeople = aGroup.keys();
-			while(keysPeople.hasMoreElements()){
-				Person person = aGroup.get(keysPeople.nextElement());
-				exportToCSV(fileName, groupName, sp) ;
-			}
+			exportToCSV(groupName, sp) ;
 
 			// update map
 			groupCsvJsonMapping._CSV_JSON cj = Utils.m_grpCsvJsonMap._groupMap.get(groupName) ;
 			csvFileJSON csvFile = new csvFileJSON() ;
 			csvFile = sp.toCsvFileJSON();
-			//csvFile = csvFile.createCSVFileJSON(sp);
 			Utils.m_grpCsvJsonMap.addItem(groupName, cj._sCSVFile, cj._sCSVJSONFile, csvFile, sp) ;
 		}
 	}
-
 }

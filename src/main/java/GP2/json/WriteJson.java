@@ -1,8 +1,8 @@
 package GP2.json;
 
 import GP2.group.csvFileJSON;
-import GP2.utils.Utils;
 import GP2.group.groupCsvJsonMapping;
+import GP2.utils.fileUtils;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -13,10 +13,6 @@ import java.io.IOException;
 
 import javax.json.JsonObject ;
 import javax.json.Json;
-
-import org.apache.commons.io.FileUtils ;
-import java.io.FileOutputStream ;
-import java.io.File;
 
 public class WriteJson {
     public void writeJSON(String fName, csvFileJSON cjJSON) {
@@ -37,11 +33,11 @@ public class WriteJson {
 		HashMap<String, String> mapTable = cjJSON.getTable() ;
 		for (Map.Entry<String,String> pair : mapTable.entrySet()) {  
 			//System.out.println("Key = " + pair.getKey() + ", Value = " + pair.getValue()); 
-			if (pair.getKey().toString().equalsIgnoreCase("rows")) {
+			if (pair.getKey().toString().equalsIgnoreCase(JSONKeys.keyRows)) {
 				sRows = pair.getValue().toString();
-			} else if (pair.getKey().toString().equalsIgnoreCase("columns")) {
+			} else if (pair.getKey().toString().equalsIgnoreCase(JSONKeys.keyColumns)) {
 				sColumns = pair.getValue().toString();
-			} else if (pair.getKey().toString().equalsIgnoreCase("format")) {
+			} else if (pair.getKey().toString().equalsIgnoreCase(JSONKeys.keyFormat)) {
 				sFormat = pair.getValue().toString();
 			}
 		}
@@ -49,17 +45,17 @@ public class WriteJson {
 		// getting pivot 
 		HashMap<String, Object> mapPivot = cjJSON.getPivot() ;
 		for (Map.Entry<String,Object> pair2 : mapPivot.entrySet()) {  
-				if (pair2.getKey().toString().equalsIgnoreCase("header")) {
+				if (pair2.getKey().toString().equalsIgnoreCase(JSONKeys.keyHeader)) {
 				sHeader = pair2.getValue().toString();
-			} else if (pair2.getKey().toString().equalsIgnoreCase("area")) {
+			} else if (pair2.getKey().toString().equalsIgnoreCase(JSONKeys.keyArea)) {
 				sArea = pair2.getValue().toString();
-			} else if (pair2.getKey().toString().equalsIgnoreCase("format")) {
+			} else if (pair2.getKey().toString().equalsIgnoreCase(JSONKeys.keyFormat)) {
 				HashMap<String, Object> f = (HashMap<String, Object>) pair2.getValue();
 				for (Map.Entry<String,Object> entry : f.entrySet())  {
 					//System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue()); 	
-					if (entry.getKey().toString().equalsIgnoreCase("columns")){
+					if (entry.getKey().toString().equalsIgnoreCase(JSONKeys.keyColumns)){
 						sFormatColumn  = entry.getValue().toString();
-					} else if (entry.getKey().toString().equalsIgnoreCase("format")){
+					} else if (entry.getKey().toString().equalsIgnoreCase(JSONKeys.keyFormat)){
 						sFormatFormat = entry.getValue().toString();
 					}
 				}
@@ -67,40 +63,28 @@ public class WriteJson {
 		}
 
         JsonObject joCSV2 = Json.createObjectBuilder()
-                            .add("csvFileName", csvFileName)
-                            .add("headers", lHeaders)
-                            .add("table", Json.createObjectBuilder()
-                                .add("rows", sRows)
-                                .add("columns", sColumns)
-                                .add("format", sFormat))
-                            .add("pivot", Json.createObjectBuilder()
-                                .add("header", sHeader)
-                                .add("area", sArea)
-                                .add("format", Json.createObjectBuilder()
-                                    .add("columns", sFormatColumn)
-                                    .add("format", sFormatFormat)
+                            .add(JSONKeys.keyCsvFile, csvFileName)
+                            .add(JSONKeys.keyHeaders, lHeaders)
+                            .add(JSONKeys.keyTable, Json.createObjectBuilder()
+                                .add(JSONKeys.keyRows, sRows)
+                                .add(JSONKeys.keyColumns, sColumns)
+                                .add(JSONKeys.keyFormat, sFormat))
+                            .add(JSONKeys.keyPivot, Json.createObjectBuilder()
+                                .add(JSONKeys.keyHeader, sHeader)
+                                .add(JSONKeys.keyArea, sArea)
+                                .add(JSONKeys.keyFormat, Json.createObjectBuilder()
+                                    .add(JSONKeys.keyColumns, sFormatColumn)
+                                    .add(JSONKeys.keyFormat, sFormatFormat)
                                     ))
                             .build();
 
         //Write JSON file
-//		try (FileWriter file = new FileWriter(fName)) {
 		try {
-			String outFilename = fName;
-			String dirToUse = Utils.m_settings.getDirToUse() ;
-            File f = new File(dirToUse, outFilename);
-            FileOutputStream foS = FileUtils.openOutputStream(f) ;
-            FileWriter fw = new FileWriter(foS.getFD()) ;
-			FileWriter file = fw;
-
-			//We can write any JSONArray or JSONObject instance to the file
+			FileWriter file = fileUtils.getFileWriter(fName) ;
             JSONObject jo = new JSONObject(joCSV2);
 			file.write(jo.toJSONString());
 			file.flush();
-
-			// close all file handles
 			file.close();
-			fw.close() ;
-			foS.close() ;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -108,7 +92,7 @@ public class WriteJson {
 
     public String writeJSONMapFile(String mapFile, String sFilename, groupCsvJsonMapping jsonMap) {
 	    JSONObject joFileMap = new JSONObject();
-		joFileMap.put("filename", sFilename);
+		joFileMap.put(JSONKeys.keyFilename, sFilename);
 
 		Map<String, String> mapFiles = new HashMap<>();
         JSONArray joArray = new JSONArray();
@@ -116,34 +100,22 @@ public class WriteJson {
             groupCsvJsonMapping._CSV_JSON cj = jsonMap._groupMap.get(sKey) ;
 
 			mapFiles.clear();
-            mapFiles.put("groupName", sKey);
-			mapFiles.put("csvFile", cj._sCSVFile);
-			mapFiles.put("csvJSONFile", cj._sCSVJSONFile);
+            mapFiles.put(JSONKeys.keyGroupName, sKey);
+			mapFiles.put(JSONKeys.keyCsvFile, cj._sCSVFile);
+			mapFiles.put(JSONKeys.keyCsvJSONFile, cj._sCSVJSONFile);
 		    JSONObject joMap = new JSONObject(mapFiles);
 			joArray.add(joMap);
         }
-        joFileMap.put("mapping", joArray);
+        joFileMap.put(JSONKeys.keyMapping, joArray);
 
         String fName = mapFile ;
         //Write JSON file
-//		try (FileWriter file = new FileWriter(fName)) {
 		try {
-			String outFilename = fName;
-			String dirToUse = Utils.m_settings.getDirToUse() ;
-            File f = new File(dirToUse, outFilename);
-            FileOutputStream foS = FileUtils.openOutputStream(f) ;
-            FileWriter fw = new FileWriter(foS.getFD()) ;
-			FileWriter file = fw;
-
-			//We can write any JSONArray or JSONObject instance to the file
+			FileWriter file = fileUtils.getFileWriter(fName) ;
             JSONObject jo = new JSONObject(joFileMap);
 			file.write(jo.toJSONString());
 			file.flush();
-
-			// close all file handles
 			file.close();
-			fw.close() ;
-			foS.close() ;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

@@ -27,7 +27,7 @@ public class InputProcessor extends Object {
 	private float getTotalAmount (String key)
 	{
 		try {
-			float fTotal = 0 ; 
+			float fTotal = 0 ;
 			if (this._Input == null) return fTotal ;
 
 			_WhoFromTo w = _Input.get(key) ;
@@ -42,7 +42,7 @@ public class InputProcessor extends Object {
 			return fTotal ;
 		} catch (Exception e) {
 			System.err.println("Error:getTotalAmount::" + e.getMessage()) ;
-			return 0 ; 
+			return 0 ;
 		}
 	}
 
@@ -56,30 +56,30 @@ public class InputProcessor extends Object {
 			while (iter.hasNext()) {
 				_NameAmt na = iter.next();
 				if (na.m_amount == null) {
-					na.m_amount = (totalAmount 
-								- getTotalAmount(Constants._ALL_key) 
-								- getTotalAmount(Constants._REM_key) 
-								- getTotalAmount(Constants._INDIV_key)) ; 
+					na.m_amount = (totalAmount
+								- getTotalAmount(Constants._ALL_key)
+								- getTotalAmount(Constants._REM_key)
+								- getTotalAmount(Constants._INDIV_key)) ;
 					_Input.put(key, w) ;
 				}
 			}
 		} catch (Exception e) {
 			System.err.println("Error:assignAmount::" + e.getMessage()) ;
 		}
-	}	
+	}
 
     private void assignAmounts (float totalAmount) {
 		try {
 			if (this._Input == null) return ;
-			assignAmount (Constants._ALL_key, totalAmount) ; 
-			assignAmount (Constants._REM_key, totalAmount) ; 
+			assignAmount (Constants._ALL_key, totalAmount) ;
+			assignAmount (Constants._REM_key, totalAmount) ;
 			assignAmount (Constants._INDIV_key, totalAmount) ;
-			
+
 			float f = getTotalAmount(Constants._ALL_key) + getTotalAmount(Constants._REM_key) + getTotalAmount(Constants._INDIV_key) ;
 			if (totalAmount != f) {
 				float f1 = Math.abs(totalAmount-f) ;
-				float f2 = 1/1000 ;	// tolerance	
-				if ( f1 < f2 )
+				float f2 = 1/100 ;	// 1cent = tolerance
+				if ( f1 >= f2 )
 					System.out.println("Amounts do not tally: " + totalAmount + " <> " + f) ;
 			}
 		} catch (Exception e) {
@@ -94,15 +94,15 @@ public class InputProcessor extends Object {
 
 			String key = Constants._INDIV_key ;
 			_WhoFromTo w = _Input.get(key) ;
-			if (w == null) return nullCount ; 
-			
+			if (w == null) return nullCount ;
+
 			Iterator<_NameAmt> iter ;
 			iter = w._Collection.iterator() ;
 			while (iter.hasNext()) {
 				_NameAmt na = iter.next();
 				if (na.m_amount == null) nullCount++ ;
 			}
-			return nullCount ; 
+			return nullCount ;
 		} catch (Exception e) {
 			System.err.println("Error:getIndivNullCount::" + e.getMessage()) ;
 			return 0 ;
@@ -117,7 +117,7 @@ public class InputProcessor extends Object {
 			String key = Constants._INDIV_key ;
 			_WhoFromTo w = _Input.get(key) ;
 			if (w == null) return nullCount ;
-			
+
 			Iterator<_NameAmt> iter ;
 			iter = w._Collection.iterator() ;
 			while (iter.hasNext()) {
@@ -125,8 +125,8 @@ public class InputProcessor extends Object {
 				if (na.m_amount == null) na.m_amount = nAmount ;
 			}
 			w._Count += nCount ;
-			nullCount = w._Count ; 
-			return nullCount ; 
+			nullCount = w._Count ;
+			return nullCount ;
 		} catch (Exception e) {
 			System.err.println("Error:putIndivAmount::" + e.getMessage()) ;
 			return 0 ;
@@ -179,7 +179,7 @@ public class InputProcessor extends Object {
 
 			// _REM
 			int numActive = nActive ;
-			k = Constants._REM_key ; 
+			k = Constants._REM_key ;
 			w = _Input.get(k) ;
 			if (w != null) {
 				w._Count = (numActive - indivTotal) ;
@@ -187,7 +187,7 @@ public class InputProcessor extends Object {
 			}
 
 			// _ALL
-			k = Constants._ALL_key ; 
+			k = Constants._ALL_key ;
 			w = _Input.get(k) ;
 			if (w != null) {
 				w._Count = (numActive) ;
@@ -328,16 +328,16 @@ public class InputProcessor extends Object {
 	public class _NameAmt {
 		public String m_name = null ;
 		public Float m_amount = null ;
-	
+
 		private _NameAmt(String s, Float f) {
 			if (s != null) m_name = new String(s) ;
 			if (f != null) m_amount = new Float(f) ;
-		}	
-	
+		}
+
 		private _NameAmt(_NameAmt na) {
 			if (na.m_name != null) m_name = new String(na.m_name) ;
 			if (na.m_amount != null) m_amount = new Float(na.m_amount) ;
-		}	
+		}
 
 		public void dumpCollection() {
             System.out.print("\t_NameAmt::["+ this.m_name + "][" + this.m_amount + "]") ;

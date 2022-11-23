@@ -11,10 +11,7 @@ import GP2.format.GPFormatter;
 import GP2.group.groupCsvJsonMapping;
 import GP2.group.csvFileJSON;
 import GP2.json.WriteJson;
-import GP2.json.ReadJson;
-import GP2.cli.Settings;
 import GP2.xls.buildXLS;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -231,9 +228,7 @@ public class account extends Object
 	{
 		try {
 			//System.out.println("\ndoFromTo: idx = " + idx + ", sIn = " + in + ", sGroupName = " +  sGroupName);
-
 			int numAll = getAllActive(sGroupName).size() ;
-
 			InputProcessor sT = new InputProcessor() ;
 			sT.processFrTo(item, idx, amt, numAll, in) ;
 
@@ -348,7 +343,6 @@ public class account extends Object
 	{
 		try {
 			//System.out.println("ProcessTransaction::" + "item:" + item + ",amt:" + amt + ",from:" + from + ",to:" + to + ",group:" + group + ",action:" + action) ;
-
 			Utils.m_bClearing = false ;
 
 			String sGroupName = group ;
@@ -404,6 +398,7 @@ public class account extends Object
 	// ----------------------------------------------------
 	public void ReadAndProcessTransactions(String fileName)
 	{
+		Utils.m_GroupCollection = null ;
 		GPFormatter gpF = null ;
         FileReader fileReader = null;
 		try {
@@ -413,7 +408,7 @@ public class account extends Object
 			String sLine = "";
 
 			initPersons() ;
-			if (Utils.m_settings.getbExport()) {
+			if (Utils.m_settings.getExportToUse()) {
 				gpF = new GPFormatter() ;
 				//gpF.m_gpCollectionToFormat = this.m_GroupCollection ;
 			}
@@ -471,24 +466,18 @@ public class account extends Object
 					if (item.charAt(0) == Constants._COMMENT) continue ; // comment, skip
 
 					//System.out.println("item:" + item + ", category:" + category + ", vendor:" + vendor + ", desc:" + desc + ", amt:" + amt + ", from:" + from + ", to:" + to + ", group:" + group + ", action:" + action);
-
 					if (group.length() == 0) group = Constants._DEFAULT_GROUP ;
 					ProcessTransaction(item, desc, amt, from, to, group, action, def) ;
-					if (Utils.m_settings.getbExport()) gpF.prepareToExportGroup(item, category, vendor, desc, amt, from, to, group, action, def) ;
-
+					if (Utils.m_settings.getExportToUse()) gpF.prepareToExportGroup(item, category, vendor, desc, amt, from, to, group, action, def) ;
 				} // end of while
 				buffReader.close() ;
 				////System.out.println("map: " + m_Transactions.toString()); // dump HashMap
 
 				// XLS integration, added
-				//boolean bXLSUsed = true ;
-				//if (bXLSUsed)
 				buildGroupCsvJsonMap(fileName) ;
-				//if (!Utils.m_settings.getXlsFile()) buildGroupCsvJsonMap(fileName) ;
 
-				if (Utils.m_settings.getbExport()) gpF.exportToCSVGroup(fileName) ;
+				if (Utils.m_settings.getExportToUse()) gpF.exportToCSVGroup(fileName) ;
 				//dumpCollection() ;
-
 			} catch (IOException e) {
 				System.out.println("There was a problem reading:" + fileName);
 			}
@@ -519,14 +508,12 @@ public class account extends Object
 			csvFileJSON csvFile = null ;
 			_SheetProperties sp = null ;
 
-			if (Utils.m_settings.getbExport()) gCSVFile = makeOutFileName(0, groupName, csvFileName);
-			if (Utils.m_settings.getbViaJson()) {
+			if (Utils.m_settings.getExportToUse()) gCSVFile = makeOutFileName(0, groupName, csvFileName);
+			if (Utils.m_settings.getJsonToUse()) {
 				sCSVJSON = makeOutFileName(1, groupName, csvFileName);
 				csvFile = new csvFileJSON() ;
 			}
-
 			if (Utils.m_settings.getPropertyXLS().IsPropertyUsed())  sp = new _SheetProperties() ;
-			//csvFile = makeCSVFile2(g, gCSVFile, n);
 
 			//add to map
 			if (Utils.m_grpCsvJsonMap == null) Utils.m_grpCsvJsonMap = new groupCsvJsonMapping();
@@ -553,14 +540,16 @@ public class account extends Object
 	}
 
 	public void writeJson(String fileName) {
-		if (Utils.m_settings.getbViaJson()) {
+        if (!Utils.m_settings.getExportToUse()) return ;
+
+		if (Utils.m_settings.getJsonToUse()) {
 			boolean b = writeJsonFiles() ;
 			String mapFile = writeMapFile(fileName) ;
 		}
 	}
 
 	public void buildXLS(String fName) {
-        if (!Utils.m_settings.getbExport()) return ;
+        if (!Utils.m_settings.getExportToUse()) return ;
 		if (!Utils.m_settings.getPropertyXLS().IsPropertyUsed()) return ;
 
 		buildXLS xls = new buildXLS();
@@ -568,7 +557,7 @@ public class account extends Object
 		if (f == null) return ;
 
 		if (Utils.m_settings.getPropertyXLS().IsPropertyUsed()) {
-			if (Utils.m_settings.getbViaJson()) {
+			if (Utils.m_settings.getJsonToUse()) {
 				xls.readFromJSON(fName, f) ;
 			} else {
 				xls.readFromMap(fName, f) ;

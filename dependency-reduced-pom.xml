@@ -144,7 +144,6 @@
     <maven.compiler.target>1.8</maven.compiler.target>
     <commons-lang3.version>3.12.0</commons-lang3.version>
     <jmock.version>2.6.0</jmock.version>
-    <net.sf.opencsv.version>2.3</net.sf.opencsv.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <main.class>GP2.gp2</main.class>
     <javax.json.version>1.1.4</javax.json.version>

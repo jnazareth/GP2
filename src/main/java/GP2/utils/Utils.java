@@ -6,10 +6,11 @@ import GP2.cli.Settings;
 
 import java.util.Hashtable;
 import java.math.BigDecimal;
-//import java.io.File;
-//import java.io.FilenameFilter;
-//import java.io.FileNotFoundException;
 
+import java.util.List;
+import java.util.Collections;
+import java.util.ArrayList;
+import java.util.Set;
 
 public class Utils {
     // declarations
@@ -45,35 +46,30 @@ public class Utils {
 		}
 	}
 
-	/*
-	public static boolean inMatches(String in, String toCompare)
-	{
-		 return ( (in.length() == toCompare.length()) && (in.compareToIgnoreCase(toCompare) == 0) ) ; 
-	}
+	public static List<String> customSort(Set<String> hm) {
+		List<String> sortedMapKeys = new ArrayList<String>(hm);
+		try {
+			final String sDefault = Constants._DEFAULT_GROUP ;
+			if (! hm.contains(sDefault) ) {		// not found, regular sort
+				Collections.sort(sortedMapKeys);
+				return sortedMapKeys ;
+			}
 
-	public static boolean deleteFile (String folder, String extension)
-	{
-		final File dir = new File(folder) ;
-		final File[] list = dir.listFiles( new FilenameFilter() {
-			@Override
-			public boolean accept( final File dir, final String name ) {
-				//System.out.println( "name:" + name );
-				return (name.endsWith(extension));
-			}
-		} );
-		for ( final File file : list ) {
-			if ( !file.delete() ) {
-				System.err.println( "Can't remove " + file.getAbsolutePath() );
-			}
+			boolean b = sortedMapKeys.remove(sDefault);
+			if (!b) return sortedMapKeys ;
+
+			List<String> sortedMapKeys2 = new ArrayList<String>(hm.size());
+			sortedMapKeys2.add(sDefault);
+			Collections.sort(sortedMapKeys);
+			for (String i : sortedMapKeys)  sortedMapKeys2.add(i);
+
+			return sortedMapKeys2 ;
+		} catch (Exception e) {
+			System.err.println("Exception::" + e.getMessage());
 		}
-		return true ; 
+		return sortedMapKeys ;
 	}
 
-	public static File getFile(String fileName)
-	throws FileNotFoundException
-	{
-		File aFile = new File(fileName);
-		if (aFile.exists()) return aFile;
-		else throw new FileNotFoundException("File  " + fileName + " does not exist.");
-	}*/
+
+
 }

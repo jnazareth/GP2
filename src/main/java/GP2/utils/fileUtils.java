@@ -5,17 +5,24 @@ import java.util.List;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.Files;
+import java.nio.file.DirectoryStream;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.FileVisitor;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Path;
-import java.nio.file.Paths ;
 import java.nio.file.PathMatcher;
 import java.nio.file.SimpleFileVisitor;
+
+import org.apache.commons.io.FileUtils ;
+
+import java.io.FileOutputStream ;
+import java.io.FileInputStream ;
+import java.io.FileReader;
 
 public class fileUtils {
     public static List<String> searchWithWc(Path rootDir, String pattern) throws IOException {
@@ -73,7 +80,7 @@ public class fileUtils {
 		List<String> f = getFilesToDelete(path, pattern) ;
 		deleteAFile(path, f) ;
 	}
-	
+
 	public static File getFile(String fileName)
 	throws FileNotFoundException
 	{
@@ -81,4 +88,56 @@ public class fileUtils {
 		if (aFile.exists()) return aFile;
 		else throw new FileNotFoundException("File  " + fileName + " does not exist.");
 	}
+
+	public static boolean isEmpty(Path path) throws IOException {
+		if (Files.isDirectory(path)) {
+			try (DirectoryStream<Path> directory = Files.newDirectoryStream(path)) {
+				return !directory.iterator().hasNext();
+			}
+		}
+		return false;
+	}
+
+	public static boolean deleteDirectory(File directoryToBeDeleted) {
+		File[] allContents = directoryToBeDeleted.listFiles();
+		if (allContents != null) {
+			for (File file : allContents) {
+				deleteDirectory(file);
+			}
+		}
+		return directoryToBeDeleted.delete();
+	}	
+
+	public static FileWriter getFileWriter(String fName) {
+		FileWriter fWriter = null ;
+
+		try {
+			String outFilename = fName;
+			String dirToUse = Utils.m_settings.getDirToUse() ;
+			File f = new File(dirToUse, outFilename);
+			FileOutputStream foS = FileUtils.openOutputStream(f) ;
+			FileWriter fw = new FileWriter(foS.getFD()) ;
+			fWriter = fw;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return fWriter ;
+	}
+
+	public static FileReader getFileReader(String fName) {
+		FileReader fReader = null ;
+		try {
+			String inFilename = fName;
+			String dirToUse = Utils.m_settings.getDirToUse() ;
+            File f = new File(dirToUse, inFilename);
+            FileInputStream fiS = FileUtils.openInputStream(f) ;
+            FileReader fr = new FileReader(fiS.getFD()) ;
+            fReader = fr ;
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+		}
+		return fReader ;
+	}
+
 }

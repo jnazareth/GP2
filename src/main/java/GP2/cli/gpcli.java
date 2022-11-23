@@ -2,14 +2,18 @@ package GP2.cli;
 
 import GP2.account.account;
 import GP2.utils.Constants;
-import GP2.cli.Settings;
 import GP2.utils.fileUtils;
 import GP2.utils.Utils;
 
 import java.io.File;
 import java.io.InputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.io.IOException;
 import java.util.Properties;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -43,8 +47,6 @@ public class gpcli {
                         new _CommandLine._Option.Handler() {
                             @Override
                             public void onOption(_CommandLine._Option option, String[] values, Properties properties) {
-                                //Utils.m_settings.setXlsFile(new File(values[0]));
-                                //Utils.m_settings.setXlsFile(values[0]);
                                 final String nullVal = "null" ;
                                 final String sKey = "xls" ;   // Property:xls
                                 if ( (values.length == 1) && (values[0].equalsIgnoreCase(nullVal)) )
@@ -94,28 +96,70 @@ public class gpcli {
                             }
                         }
                 )
+                .withOption (
+                        new _CommandLine._Option("F", "Flags: -export <true/false>,  -json <true/false>")
+                        .longOption("F")
+                                .argName("boolean=value")
+                                .hasArgs()
+                                .notRequired()
+                                .args(3)       //export=false (=2 params)
+                                //.optionalArg(true)
+                                .valueSeparator('='),
+                        new _CommandLine._Option.Handler() {
+                            @Override
+                            public void onOption(_CommandLine._Option option, String[] values, Properties properties) {
+                                String sKey = "export" ;   // Property:export
+                                final String sSingle = "true" ;
+                                try {
+                                    String c = properties.getProperty(sKey).toString() ;
+                                    Boolean bV = Boolean.valueOf(c);
+                                    if (c.equalsIgnoreCase(sSingle)) Utils.m_settings.setPropertyExport(sKey, true, false);   // value not specified
+                                    else Utils.m_settings.setPropertyExport(sKey, bV, true);
+                                } catch (NullPointerException ne) {
+									Utils.m_settings.setPropertyExport(sKey, true, false);  // not used
+                                }
+                                sKey = "json" ;   // Property:json
+                                try {
+                                    String c = properties.getProperty(sKey).toString() ;
+                                    Boolean bV = Boolean.valueOf(c);
+                                    if (c.equalsIgnoreCase(sSingle)) Utils.m_settings.setPropertyJson(sKey, true, false);   // value not specified
+                                    else Utils.m_settings.setPropertyJson(sKey, bV, true);
+                                } catch (NullPointerException ne) {
+									Utils.m_settings.setPropertyJson(sKey, true, false);  // not used
+                                }
+                            }
+                        }
+                )
                 .onAdditionalArgs(new _CommandLine._Option.Handler2() {
                     @Override
                     public void onOption(_CommandLine._Option option, String[] values) {
                         File[] inputs = new File[values.length];
-                        for (int i = 0; i < values.length; i++)
-                            inputs[i] = new File(values[i]);
-                            Utils.m_settings.setInputs(inputs);
+                        for (int i = 0; i < values.length; i++) inputs[i] = new File(values[i]);
+                        Utils.m_settings.setInputs(inputs);
                     }
                 })
                 .parse(args);
 
-        return Utils.m_settings ; 
+        return Utils.m_settings ;
     }
 
     private boolean processClean() {
-        if (!Utils.m_settings._clean.bPropertyUsed) return false ;    // not used
+        try {
+            if (!Utils.m_settings._clean.IsPropertyUsed()) return false ;    // not used
 
-        String dirToUse = Utils.m_settings.getDirToUse() ;
-        String sPatterns[] = Utils.m_settings.getCleanPatterns().split(Constants._ITEM_SEPARATOR);
-        fileUtils fU = new fileUtils();
-        for (int i = 0; i < sPatterns.length; i++) fU.deleteFile(dirToUse, sPatterns[i]) ;
-        return true ;
+            String dirToUse = Utils.m_settings.getDirToUse() ;
+            String sPatterns[] = Utils.m_settings.getCleanPatterns().split(Constants._ITEM_SEPARATOR);
+            for (int i = 0; i < sPatterns.length; i++) fileUtils.deleteFile(dirToUse, sPatterns[i]) ;
+
+            // delete directory, if specifed & empty
+            Path path = Paths.get(dirToUse);
+            if ( (Utils.m_settings._dir.IsPropertyUsed()) && (fileUtils.isEmpty(path)) ) {
+                return fileUtils.deleteDirectory(path.toFile()) ;
+            }
+        } catch (IOException ioe) {
+			System.err.println("Exception::" + ioe.getMessage()) ;
+        }
+        return true;
     }
 
     public void processCommandLine() {

@@ -27,8 +27,6 @@
 		<javax.json.version>1.1.4</javax.json.version>
 		<apache.poi.version>5.2.0</apache.poi.version>
 		<apache.poi.ooxml.version>5.2.0</apache.poi.ooxml.version>
-		<net.sf.opencsv.version>2.3</net.sf.opencsv.version>
-		<!-- <opencsv.version>5.7.1</opencsv.version> -->
 
 		<main.class>GP2.gp2</main.class>
 	</properties>
@@ -82,17 +80,7 @@
 			<artifactId>poi-ooxml</artifactId>
 			<version>${apache.poi.ooxml.version}</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.opencsv/opencsv -->
-		<!--<dependency>
-			<groupId>com.opencsv</groupId>
-			<artifactId>opencsv</artifactId>
-			<version>${opencsv.version}</version>
-		</dependency> -->
-		<dependency>
-			<groupId>net.sf.opencsv</groupId>
-			<artifactId>opencsv</artifactId>
-			<version>${net.sf.opencsv.version}</version>
-		</dependency>
+
 
 		<!-- == Testing ===================================== -->
 		<dependency>

@@ -1,9 +1,9 @@
 package GP2.json;
 
 import GP2.group.csvFileJSON;
-import GP2.utils.Utils;
 import GP2.xls._SheetProperties;
 import GP2.group.groupCsvJsonMapping;
+import GP2.utils.fileUtils;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -18,10 +18,6 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import org.apache.commons.io.FileUtils ;
-import java.io.FileInputStream ;
-import java.io.File;
-
 public class ReadJson {
     public csvFileJSON readJSON(String fName) {
         String sCSVFileName = null;
@@ -35,59 +31,52 @@ public class ReadJson {
         String sFormatColumn = null ;
         String sFormatFormat = null ;
 
-        csvFileJSON csvSettings = new csvFileJSON() ; 
+        csvFileJSON csvSettings = new csvFileJSON() ;
         JSONParser jsonParser = new JSONParser();
 
-//        try (FileReader reader = new FileReader(fName))
         try {
-			String inFilename = fName;
-			String dirToUse = Utils.m_settings.getDirToUse() ;
-            File f = new File(dirToUse, inFilename);
-
-            FileInputStream fiS = FileUtils.openInputStream(f) ;
-            FileReader fr = new FileReader(fiS.getFD()) ;
-            FileReader reader = fr ;
+			FileReader reader = fileUtils.getFileReader(fName) ;
 
             //Read JSON file
             Object oParser = jsonParser.parse(reader);
             JSONObject jo = (JSONObject) oParser;
 
-            sCSVFileName = (String) jo.get("csvFileName");
+            sCSVFileName = (String) jo.get(JSONKeys.keyCsvFile);
             csvSettings.setCSVFileName(sCSVFileName);
-            lHeaders = (Long) jo.get("headers"); 
+            lHeaders = (Long) jo.get(JSONKeys.keyHeaders);
             csvSettings.setHeaders(lHeaders);
 
-            // getting table 
-            Map table = ((Map)jo.get("table"));          
-            Iterator<Map.Entry> itr1 = table.entrySet().iterator(); 
-            while (itr1.hasNext()) { 
-                Map.Entry pair = itr1.next(); 
+            // getting table
+            Map table = ((Map)jo.get(JSONKeys.keyTable));
+            Iterator<Map.Entry> itr1 = table.entrySet().iterator();
+            while (itr1.hasNext()) {
+                Map.Entry pair = itr1.next();
 	           	//System.out.println("table::" + pair.getKey() + ":\t" + pair.getValue());
-                if (pair.getKey().toString().equalsIgnoreCase("rows")) {
+                if (pair.getKey().toString().equalsIgnoreCase(JSONKeys.keyRows)) {
                     csvSettings.setTable(pair.getValue().toString(), null, null);
 					sRows = pair.getValue().toString();
-                } else if (pair.getKey().toString().equalsIgnoreCase("columns")) {
+                } else if (pair.getKey().toString().equalsIgnoreCase(JSONKeys.keyColumns)) {
                     csvSettings.setTable(null, pair.getValue().toString(), null);
 					sColumns = pair.getValue().toString();
-                } else if (pair.getKey().toString().equalsIgnoreCase("format")) {
+                } else if (pair.getKey().toString().equalsIgnoreCase(JSONKeys.keyFormat)) {
                     csvSettings.setTable(null, null, pair.getValue().toString());
 					sFormat = pair.getValue().toString();
                 }
             }
 
-            // getting pivot 
-            Map pivot = ((Map)jo.get("pivot"));          
-            Iterator<Map.Entry> itr2 = pivot.entrySet().iterator(); 
-            while (itr2.hasNext()) { 
-                Map.Entry pair = itr2.next(); 
+            // getting pivot
+            Map pivot = ((Map)jo.get(JSONKeys.keyPivot));
+            Iterator<Map.Entry> itr2 = pivot.entrySet().iterator();
+            while (itr2.hasNext()) {
+                Map.Entry pair = itr2.next();
 				//System.out.println("pivot::" + pair.getKey() + ":\t" + pair.getValue());
-                if (pair.getKey().toString().equalsIgnoreCase("header")) {
+                if (pair.getKey().toString().equalsIgnoreCase(JSONKeys.keyHeader)) {
                     csvSettings.setPivot(pair.getValue().toString(), null, null);
 					sHeader = pair.getValue().toString();
-                } else if (pair.getKey().toString().equalsIgnoreCase("area")) {
+                } else if (pair.getKey().toString().equalsIgnoreCase(JSONKeys.keyArea)) {
                     csvSettings.setPivot(null, pair.getValue().toString(), null);
 					sArea = pair.getValue().toString();
-                } else if (pair.getKey().toString().equalsIgnoreCase("format")) {
+                } else if (pair.getKey().toString().equalsIgnoreCase(JSONKeys.keyFormat)) {
                     JSONObject jo2 = (JSONObject) pair.getValue();
 
 					org.json.JSONObject jObj = new org.json.JSONObject(jo2) ;
@@ -95,25 +84,21 @@ public class ReadJson {
 						Object keyvalue = jObj.get(keyStr);
 
 						//System.out.println("key:"+ keyStr + ",value:\t" + keyvalue);
-						if (keyStr.toString().equalsIgnoreCase("columns")){
+						if (keyStr.toString().equalsIgnoreCase(JSONKeys.keyColumns)){
                             csvSettings.setFormat(keyvalue.toString(), null);
 							sFormatColumn  = keyvalue.toString();
-						} else if (keyStr.toString().equalsIgnoreCase("format")){
+						} else if (keyStr.toString().equalsIgnoreCase(JSONKeys.keyFormat)){
                             csvSettings.setFormat(null, keyvalue.toString());
 							sFormatFormat = keyvalue.toString();
 						}
 					}
 	                HashMap oFormat = csvSettings.getFormat();
-                    csvSettings.setPivot(null, null, oFormat);                
+                    csvSettings.setPivot(null, null, oFormat);
                 }
             }
-
-            // close all file handles
 			reader.close();
-			fr.close() ;
-			fiS.close() ;
 
-            return csvSettings ; 
+            return csvSettings ;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -129,47 +114,35 @@ public class ReadJson {
 
         JSONParser jsonParser = new JSONParser();
 
-//        try (FileReader reader = new FileReader(mapFile))
         try {
-            String inFilename = mapFile;
-            String dirToUse = Utils.m_settings.getDirToUse() ;
-            File f = new File(dirToUse, inFilename);
-    
-            FileInputStream fiS = FileUtils.openInputStream(f) ;
-            FileReader fr = new FileReader(fiS.getFD()) ;
-            FileReader reader = fr ;
+			FileReader reader = fileUtils.getFileReader(mapFile) ;
 
             //Read JSON file
             Object oParser = jsonParser.parse(reader);
             org.json.simple.JSONObject jo = (org.json.simple.JSONObject) oParser;
-            
-            String csvFile  = (String) jo.get("filename"); 
+
+            String csvFile  = (String) jo.get(JSONKeys.keyFilename);
             /*Iterator<String> keys = jo.keySet().iterator();
-            while (keys.hasNext()) { 
+            while (keys.hasNext()) {
                 System.out.println("value: " + keys.next());
             }*/
 
-            JSONArray joMap ; 
-            joMap = (JSONArray)jo.get("mapping");
-            for (int i = 0; i < joMap.size(); i++) {  
-                //System.out.println(joMap.get(i));  
+            JSONArray joMap ;
+            joMap = (JSONArray)jo.get(JSONKeys.keyMapping);
+            for (int i = 0; i < joMap.size(); i++) {
+                //System.out.println(joMap.get(i));
                 JSONObject item = (JSONObject)joMap.get(i);
-                String gName = (String)item.get("groupName");
-                String sFile = (String)item.get("csvFile");
-                String sJSON = (String)item.get("csvJSONFile");
-                //System.out.println("gName:" + gName + "\t\tsFile:" + sFile + "\t\tsJSON:" + sJSON);  
+                String gName = (String)item.get(JSONKeys.keyGroupName);
+                String sFile = (String)item.get(JSONKeys.keyCsvFile);
+                String sJSON = (String)item.get(JSONKeys.keyCsvJSONFile);
+                //System.out.println("gName:" + gName + "\t\tsFile:" + sFile + "\t\tsJSON:" + sJSON);
 
                 csvFileJSON cj = new csvFileJSON();
                 _SheetProperties sp = new _SheetProperties() ;
                 gMapping.addItem(gName, sFile, sJSON, cj, sp);
             }
             //gMapping.dumpCollection();
-
-            // close all file handles
 			reader.close();
-			fr.close() ;
-			fiS.close() ;
-
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -178,5 +151,5 @@ public class ReadJson {
             e.printStackTrace();
         }
         return gMapping ;
-    }    
+    }
 }

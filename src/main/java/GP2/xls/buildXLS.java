@@ -28,6 +28,7 @@ import java.io.FileOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.FileReader;
+import java.io.BufferedReader;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.TreeSet;
@@ -35,77 +36,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import au.com.bytecode.opencsv.CSVReader;
-//import com.opencsv.CSVReader;
 import org.apache.commons.lang3.math.NumberUtils;
 
 public class buildXLS {
-
-	//HashSet<Integer> m_colRange = null ;
-	//HashSet<Integer> m_rowRange = null ;
-
-    /*private int getSheetIndex(XSSFWorkbook workBook, String sheetName) {
-        int index = -1 ;
-        for(Sheet sheet : workBook) {
-            if (sheet.getSheetName().equalsIgnoreCase(sheetName)) {
-                index = workBook.getSheetIndex(sheetName) ;
-                break;
-            }
-        }
-        return index ;
-    }*/
-
-    /*private int getSheetIndex2(XSSFWorkbook workBook, String sheetName) {
-        return workBook.getSheetIndex(sheetName) ;
-    }*/
-
-    /*private void getStartEndRange(String sFormatColumn, int s[], int e[]) {
-        final String sLeftBr = "[";
-        final String sRightBr = "]";
-        final String sRange = ":";
-        final String sSeparator = ",";
-
-        String sStart = "", sEnd = "" ;
-        //String sFormatColumn = "[C9:C10]" ;
-        int nStart = sFormatColumn.indexOf(sLeftBr) ;
-        int nRange = sFormatColumn.indexOf(sRange) ;
-        int nEnd = -1 ;
-        if ((nStart != -1) && (nRange != -1)) {
-            sStart = sFormatColumn.substring(nStart + 2 / * skip column indicator: 'C' * /, nRange) ;
-
-            nEnd = sFormatColumn.indexOf(sRightBr);
-            if (nEnd != -1){
-                sEnd = sFormatColumn.substring(nRange + 2, nEnd) ;
-            }
-        }
-        //System.out.println("nStart,nRange,nEnd,sStart,sEnd:" + nStart + "," + nRange + "," + nEnd + "," + sStart + "," + sEnd);
-        int x = Integer.parseInt(sStart);
-        s[0] = x ;
-        x = Integer.parseInt(sEnd) ;
-        e[0] = x ;
-    }*/
-
-	/*private void buildTablesRanges(String rowRange, String colRange) {
-		m_colRange = new HashSet<Integer>();
-		m_colRange = buildRange(colRange) ;	//"[C5:C5], [C9:C18]"
-
-		m_rowRange = new HashSet<Integer>();
-		m_rowRange = buildRange(rowRange) ; //"[R3:R18]"
-	}
-
-	private HashSet<Integer> buildRange(String sRange) {
-        HashSet<Integer> aRange = new HashSet<Integer>() ;
-        final String _ITEM_SEPARATOR = "," ;
-        String[] pieces = sRange.split(_ITEM_SEPARATOR);
-        for (String p : pieces) {
-            int nStart[] = {0}, nEnd[] = {0};
-            getStartEndRange(p.trim(), nStart, nEnd) ;
-            for (int i = nStart[0]; i <= nEnd[0]; i++) {
-                aRange.add(i-1) ;     // 0 based
-            }
-        }
-        return aRange;
-    }*/
 
     private static void setFormatDataField(XSSFPivotTable pivotTable, long fieldIndex, long numFmtId) {
         Optional.ofNullable(pivotTable
@@ -155,18 +88,14 @@ public class buildXLS {
     }
 
     private void getCSVData(XSSFWorkbook wb, XSSFSheet sheet, String outCSVFile, String grpName, _SheetProperties sProperties) {
-        CSVReader reader = null;
+        FileReader fileReader = null;
         try {
-            String[] nextLine;
-
 			String dirToUse = Utils.m_settings.getDirToUse() ;
             File f = new File(dirToUse, outCSVFile);
-            //System.out.println("outCSVFile:" + outCSVFile);
 
-            //2.3.0
-            final char FILE_DELIMITER = '\t';
-            reader = new CSVReader(new FileReader(f), FILE_DELIMITER);
-            //reader = new CSVReader(new FileReader(f));
+            fileReader = new FileReader(f);
+			BufferedReader buffReader = new BufferedReader(fileReader);
+			String sLine = "";
 
             //_SheetProperties sProperties = getSheetProperties() ;
 
@@ -179,38 +108,38 @@ public class buildXLS {
             cellStyle.setDataFormat(format.getFormat(accountingFormat));
 
             int rowNum = 0;
-            while((nextLine = reader.readNext()) != null) {
-                Row currentRow = sheet.createRow(rowNum);
-
-                for(int i=0; i < nextLine.length; i++) {
-                    Cell cell = null;
-                    if (NumberUtils.isCreatable(nextLine[i])) {
-                        cell = currentRow.createCell(i);
-                        cell.setCellValue(Double.parseDouble(nextLine[i]));
-                    } else {
-                        cell = currentRow.createCell(i);
-                        cell.setCellValue(nextLine[i]);
-                    }
-                    if (cellInRange2(rowNum, i, sProperties)) cell.setCellStyle(cellStyle);
-                }
-                rowNum++ ;
-            }
-        } catch(Exception exObj) {
-            System.err.println("Exception In convertCsvToXls() Method?=  " + exObj);
-        } finally {
             try {
-                reader.close();             /**** Closing The CSV File-ReaderObject ****/
-            } catch (IOException ioExObj) {
-                System.err.println("Exception While Closing I/O Objects In convertCsvToXls() Method?=  " + ioExObj);
+                while ((sLine = buffReader.readLine()) != null) {
+                    Row currentRow = sheet.createRow(rowNum);
+
+                    String[] nextLine = sLine.split(Constants._TAB_SEPARATOR);
+                    for(int i=0; i < nextLine.length; i++) {
+                        Cell cell = null;
+                        if (NumberUtils.isCreatable(nextLine[i])) {
+                            cell = currentRow.createCell(i);
+                            cell.setCellValue(Double.parseDouble(nextLine[i]));
+                        } else {
+                            cell = currentRow.createCell(i);
+                            cell.setCellValue(nextLine[i]);
+                        }
+                        if (cellInRange2(rowNum, i, sProperties)) cell.setCellStyle(cellStyle);
+                    }
+                    rowNum++ ;
+                }
+                buffReader.close() ;    
+                fileReader.close();
+            } catch (IOException e) {
+                System.out.println("There was a problem reading:" + outCSVFile);
             }
-        }
+		} catch (FileNotFoundException e) {
+			System.out.println("Could not locate a file: " + e.getMessage());
+		}
     }
 
     private void buildPivot(XSSFSheet sheet, _SheetProperties sProperties) {
         int headerRow0 = 0;
         int headerRow1 = (int)sProperties.getlHeaders() - 1 ;      // 1, last header is formatting header
         int numberofHeaderRowsToSkip = (int)sProperties.getlHeaders() - headerRow1 ;
-        //System.out.println("headerRow1, numberofHeaderRowsToSkip:" + headerRow1 + "\t" + numberofHeaderRowsToSkip);
 
         TreeSet<Integer> tFCSet = new TreeSet<Integer>(sProperties.getsFormatColumn());
         //System.out.println("tFCSet:" + tFCSet);
@@ -244,7 +173,7 @@ public class buildXLS {
         HashMap<Integer, String> pivotColumns = new HashMap<Integer, String>(nSize) ;
         for (int i = tFCSet.first(); i <= tFCSet.last(); i++) {
             String nColName = sheet.getRow(headerRow1).getCell(i).getStringCellValue() ;
-            pivotColumns.put(i /*-1 /* zero based, adjust by 1 */, nColName) ;
+            pivotColumns.put(i, nColName) ;
         }
 
         XSSFPivotTable pivotTable = sheet.createPivotTable(source, position);
@@ -287,7 +216,6 @@ public class buildXLS {
 		try {
 			String xlsFile = f.getName() ;
 			String outCSVFile = cj._sCSVFile ;
-            //System.out.println("xlsFile, outCSVFile:" + xlsFile + "\t" + outCSVFile);
 			constructXLS(outCSVFile, xlsFile, key, sp) ;
         } catch (FileNotFoundException fnf) {
         } catch (IOException ioe) {
@@ -303,16 +231,17 @@ public class buildXLS {
             String mapFile = Utils.m_settings.getMapFileToUse(fName) ;
             Utils.m_grpCsvJsonMap = jFileR.readJSONMapFile(mapFile) ;
 
-            for(String key: Utils.m_grpCsvJsonMap._groupMap.keySet()) {
-                /*System.out.println("key:" + key);
-                if (!(	(key.equalsIgnoreCase("default"))   ||
+            List<String> sortedMapKeys = Utils.customSort(Utils.m_grpCsvJsonMap._groupMap.keySet()) ;
+            for (String key: sortedMapKeys) {
+    			// ONLY process one group = testing
+                /*if (!(	(key.equalsIgnoreCase("default"))   ||
                       	(key.equalsIgnoreCase("medical"))   ||
                       	(key.equalsIgnoreCase("planesTrainsAutos"))   ))
-                    continue;*/
-                    groupCsvJsonMapping._CSV_JSON cj = Utils.m_grpCsvJsonMap._groupMap.get(key) ;
+                    continue;
+                System.out.println("key:" + key);*/
+                groupCsvJsonMapping._CSV_JSON cj = Utils.m_grpCsvJsonMap._groupMap.get(key) ;
                 csvFileJSON ocj = jFileR.readJSON(cj._sCSVJSONFile) ;
                 _SheetProperties sp = ocj.toSheetProperties() ;
-                //sp.dump();
 				buildXLSFile(fName, f, key, cj, sp);
             }
         } catch (Exception e) {
@@ -323,22 +252,23 @@ public class buildXLS {
         try {
             if (Utils.m_grpCsvJsonMap == null) return ;
 
-            for(String key: Utils.m_grpCsvJsonMap._groupMap.keySet()) {
-                /*System.out.println("key:" + key);
-                if (!(	(key.equalsIgnoreCase("hcg"))   ||
+            List<String> sortedMapKeys = Utils.customSort(Utils.m_grpCsvJsonMap._groupMap.keySet()) ;
+            for (String key: sortedMapKeys) {
+                // ONLY process one group = testing
+                /*if (!(	(key.equalsIgnoreCase("default"))   ||
                       	(key.equalsIgnoreCase("medical"))   ||
-                      	(key.equalsIgnoreCase("planesTrainsAutos"))))
-                    continue;*/
+                      	(key.equalsIgnoreCase("planesTrainsAutos"))   ))
+                    continue;
+                System.out.println("key:" + key);*/
                 groupCsvJsonMapping._CSV_JSON cj = Utils.m_grpCsvJsonMap._groupMap.get(key) ;
                 _SheetProperties sp = cj._sheetProperties ;
-                //sp.dump() ;
 				buildXLSFile(fName, f, key, cj, sp);
             }
         } catch (Exception e) {
         }
 	}
 
-	public File InitializeXLS(String fName) {
+    public File InitializeXLS(String fName) {
         File f = null ;
 		try {
             String xlsFile = Utils.m_settings.getXLSToUse(fName) ;
@@ -361,16 +291,10 @@ public class buildXLS {
 				workBook.close();
 				fileOut.close() ;
 			}
-			// check for success
-			/*if (f.exists())
-				System.out.println("recreated:" + filetoRecreate);
-			else
-				System.out.println("failed to recreat:" + filetoRecreate);*/
-
 			return f;
         } catch (FileNotFoundException fnf) {
         } catch (IOException ioe) {
-        } //catch (InvalidFormatException ife) {}
+        }
         return f;
 	}
 }

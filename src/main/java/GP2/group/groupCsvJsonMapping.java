@@ -1,9 +1,8 @@
 package GP2.group;
 
-import java.util.HashMap;
-//import java.util.Iterator;
-
 import GP2.xls._SheetProperties;
+
+import java.util.HashMap;
 
 public class groupCsvJsonMapping extends Object{
 	public HashMap<String, _CSV_JSON> 	_groupMap = null ; // String/key = groupName
@@ -37,7 +36,7 @@ public class groupCsvJsonMapping extends Object{
 	}
 
     // --------------------------------------------------------------------------
-    public class _CSV_JSON {
+    public class _CSV_JSON extends Object {
         public String _sCSVFile ; 					// exists if bExport == true
         public String _sCSVJSONFile ;				// exists if bViaJson == true
         public csvFileJSON _oCSVFileJSON ;			// exists if bViaJson == true
@@ -47,7 +46,7 @@ public class groupCsvJsonMapping extends Object{
             _sCSVFile = sCsvFile;
             _sCSVJSONFile = sCsvJsonFile;
             _oCSVFileJSON = oCsvJson;
-			_sheetProperties = sp;			
+			_sheetProperties = sp;
         }
 
         public void dumpCollection() {
