@@ -12,6 +12,8 @@ import GP2.group.groupCsvJsonMapping;
 import GP2.group.csvFileJSON;
 import GP2.json.WriteJson;
 import GP2.xls.buildXLS;
+import GP2.format.GPFormatter2;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -400,6 +402,7 @@ public class account extends Object
 	{
 		Utils.m_GroupCollection = null ;
 		GPFormatter gpF = null ;
+		GPFormatter2 gpF2 = null ;
         FileReader fileReader = null;
 		try {
 			fileReader = new FileReader(fileUtils.getFile(fileName));
@@ -409,7 +412,8 @@ public class account extends Object
 
 			initPersons() ;
 			if (Utils.m_settings.getExportToUse()) {
-				gpF = new GPFormatter() ;
+				//gpF = new GPFormatter() ;
+				gpF2 = new GPFormatter2() ;
 				//gpF.m_gpCollectionToFormat = this.m_GroupCollection ;
 			}
 
@@ -468,7 +472,10 @@ public class account extends Object
 					//System.out.println("item:" + item + ", category:" + category + ", vendor:" + vendor + ", desc:" + desc + ", amt:" + amt + ", from:" + from + ", to:" + to + ", group:" + group + ", action:" + action);
 					if (group.length() == 0) group = Constants._DEFAULT_GROUP ;
 					ProcessTransaction(item, desc, amt, from, to, group, action, def) ;
-					if (Utils.m_settings.getExportToUse()) gpF.prepareToExportGroup(item, category, vendor, desc, amt, from, to, group, action, def) ;
+					if (Utils.m_settings.getExportToUse()) { 
+						//gpF.prepareToExportGroup(item, category, vendor, desc, amt, from, to, group, action, def) ;
+						gpF2.prepareToExportGroup(item, category, vendor, desc, amt, from, to, group, action, def) ;
+					}
 				} // end of while
 				buffReader.close() ;
 				////System.out.println("map: " + m_Transactions.toString()); // dump HashMap
@@ -476,7 +483,10 @@ public class account extends Object
 				// XLS integration, added
 				buildGroupCsvJsonMap(fileName) ;
 
-				if (Utils.m_settings.getExportToUse()) gpF.exportToCSVGroup(fileName) ;
+				if (Utils.m_settings.getExportToUse()) { 
+					//gpF.exportToCSVGroup(fileName) ;
+					gpF2.exportToCSVGroup(fileName) ;
+				}
 				//dumpCollection() ;
 			} catch (IOException e) {
 				System.out.println("There was a problem reading:" + fileName);
