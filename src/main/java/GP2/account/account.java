@@ -12,7 +12,6 @@ import GP2.group.groupCsvJsonMapping;
 import GP2.group.csvFileJSON;
 import GP2.json.WriteJson;
 import GP2.xls.buildXLS;
-import GP2.format.GPFormatter2;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -28,23 +27,23 @@ public class account extends Object
 {
 	//CONSTANTS
 	//calculation direction
-	private final int _FR = 0 ;
-	private final int	_TO = 1 ;
+	private final int _FR 	= 0 ;
+	private final int _TO	= 1 ;
 
 	// control row
-	private final char 	CONTROL = '@' ;
-	//private final char 	USE_COLUMN = '+' ;
-	//private final char 	SKIP_COLUMN = '-' ;
+	private final char 	CONTROL 		= '@' ;
+	//private final char 	USE_COLUMN	= '+' ;
+	//private final char 	SKIP_COLUMN	= '-' ;
 
-	private final String S_ITEM = "item" ;
-	private final String S_CATEGORY = "category" ;
-	private final String S_VENDOR = "vendor" ;
-	private final String S_DESC = "description" ;
-	private final String S_AMOUNT = "amount" ;
-	private final String S_FROM = "from" ;
-	private final String S_TO = "to" ;
-	private final String S_GROUP = "group" ;
-	private final String S_ACTION = "action" ;
+	private final String S_ITEM 	= "item" ;
+	private final String S_CATEGORY	= "category" ;
+	private final String S_VENDOR	= "vendor" ;
+	private final String S_DESC		= "description" ;
+	private final String S_AMOUNT	= "amount" ;
+	private final String S_FROM		= "from" ;
+	private final String S_TO		= "to" ;
+	private final String S_GROUP	= "group" ;
+	private final String S_ACTION	= "action" ;
 
 	private int	P_ITEM ;
 	private int	P_CATEGORY ;
@@ -402,7 +401,6 @@ public class account extends Object
 	{
 		Utils.m_GroupCollection = null ;
 		GPFormatter gpF = null ;
-		GPFormatter2 gpF2 = null ;
         FileReader fileReader = null;
 		try {
 			fileReader = new FileReader(fileUtils.getFile(fileName));
@@ -411,11 +409,7 @@ public class account extends Object
 			String sLine = "";
 
 			initPersons() ;
-			if (Utils.m_settings.getExportToUse()) {
-				//gpF = new GPFormatter() ;
-				gpF2 = new GPFormatter2() ;
-				//gpF.m_gpCollectionToFormat = this.m_GroupCollection ;
-			}
+			if (Utils.m_settings.getExportToUse()) gpF = new GPFormatter() ;
 
 			try {
 				while ((sLine = buffReader.readLine()) != null) {
@@ -472,10 +466,8 @@ public class account extends Object
 					//System.out.println("item:" + item + ", category:" + category + ", vendor:" + vendor + ", desc:" + desc + ", amt:" + amt + ", from:" + from + ", to:" + to + ", group:" + group + ", action:" + action);
 					if (group.length() == 0) group = Constants._DEFAULT_GROUP ;
 					ProcessTransaction(item, desc, amt, from, to, group, action, def) ;
-					if (Utils.m_settings.getExportToUse()) { 
-						//gpF.prepareToExportGroup(item, category, vendor, desc, amt, from, to, group, action, def) ;
-						gpF2.prepareToExportGroup(item, category, vendor, desc, amt, from, to, group, action, def) ;
-					}
+					if (Utils.m_settings.getExportToUse())
+						gpF.prepareToExportGroup(item, category, vendor, desc, amt, from, to, group, action, def) ;
 				} // end of while
 				buffReader.close() ;
 				////System.out.println("map: " + m_Transactions.toString()); // dump HashMap
@@ -483,10 +475,7 @@ public class account extends Object
 				// XLS integration, added
 				buildGroupCsvJsonMap(fileName) ;
 
-				if (Utils.m_settings.getExportToUse()) { 
-					//gpF.exportToCSVGroup(fileName) ;
-					gpF2.exportToCSVGroup(fileName) ;
-				}
+				if (Utils.m_settings.getExportToUse()) gpF.exportToCSVGroup(fileName) ;
 				//dumpCollection() ;
 			} catch (IOException e) {
 				System.out.println("There was a problem reading:" + fileName);

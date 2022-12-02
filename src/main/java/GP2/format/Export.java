@@ -11,7 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Collections;
 
-public class Export2 {
+public class Export {
     public interface XLSHeaders {
         final String H_TRANSACTION_AMOUNTS	= "transaction amounts" ;
         final String H_OWE					= "(you owe) / owed to you" ;
