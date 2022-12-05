@@ -41,13 +41,11 @@ public class Person extends Object {
 		m_active = active ;
 	}
 
-	public Float incAmount(AccountEntry ae, float f)
-	{
+	public Float incAmount(AccountEntry ae, float f) {
 		return m_amount.put( ae, (f + m_amount.get(ae)) ) ;
 	}
 
-	public Float decAmount(AccountEntry ae, float f)
-	{
+	public Float decAmount(AccountEntry ae, float f) {
 		return m_amount.put( ae, (f - m_amount.get(ae)) ) ;
 	}
 
