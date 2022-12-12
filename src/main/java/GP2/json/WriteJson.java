@@ -26,67 +26,71 @@ public class WriteJson {
         String sFormatColumn = null ;
         String sFormatFormat = null ;
 
-        csvFileName = cjJSON.getCSVFileName();
-		lHeaders = cjJSON.getHeaders() ;
+		try {
+			csvFileName = cjJSON.getCSVFileName();
+			lHeaders = cjJSON.getHeaders() ;
 
-		// getting table 
-		HashMap<String, String> mapTable = cjJSON.getTable() ;
-		for (Map.Entry<String,String> pair : mapTable.entrySet()) {  
-			//System.out.println("Key = " + pair.getKey() + ", Value = " + pair.getValue()); 
-			if (pair.getKey().toString().equalsIgnoreCase(JSONKeys.keyRows)) {
-				sRows = pair.getValue().toString();
-			} else if (pair.getKey().toString().equalsIgnoreCase(JSONKeys.keyColumns)) {
-				sColumns = pair.getValue().toString();
-			} else if (pair.getKey().toString().equalsIgnoreCase(JSONKeys.keyFormat)) {
-				sFormat = pair.getValue().toString();
+			// getting table 
+			HashMap<String, String> mapTable = cjJSON.getTable() ;
+			for (Map.Entry<String,String> pair : mapTable.entrySet()) {  
+				//System.out.println("Key = " + pair.getKey() + ", Value = " + pair.getValue()); 
+				if (pair.getKey().toString().equalsIgnoreCase(JSONKeys.keyRows)) {
+					sRows = pair.getValue().toString();
+				} else if (pair.getKey().toString().equalsIgnoreCase(JSONKeys.keyColumns)) {
+					sColumns = pair.getValue().toString();
+				} else if (pair.getKey().toString().equalsIgnoreCase(JSONKeys.keyFormat)) {
+					sFormat = pair.getValue().toString();
+				}
 			}
-		}
 
-		// getting pivot 
-		HashMap<String, Object> mapPivot = cjJSON.getPivot() ;
-		for (Map.Entry<String,Object> pair2 : mapPivot.entrySet()) {  
-				if (pair2.getKey().toString().equalsIgnoreCase(JSONKeys.keyHeader)) {
-				sHeader = pair2.getValue().toString();
-			} else if (pair2.getKey().toString().equalsIgnoreCase(JSONKeys.keyArea)) {
-				sArea = pair2.getValue().toString();
-			} else if (pair2.getKey().toString().equalsIgnoreCase(JSONKeys.keyFormat)) {
-				HashMap<String, Object> f = (HashMap<String, Object>) pair2.getValue();
-				for (Map.Entry<String,Object> entry : f.entrySet())  {
-					//System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue()); 	
-					if (entry.getKey().toString().equalsIgnoreCase(JSONKeys.keyColumns)){
-						sFormatColumn  = entry.getValue().toString();
-					} else if (entry.getKey().toString().equalsIgnoreCase(JSONKeys.keyFormat)){
-						sFormatFormat = entry.getValue().toString();
+			// getting pivot 
+			HashMap<String, Object> mapPivot = cjJSON.getPivot() ;
+			for (Map.Entry<String,Object> pair2 : mapPivot.entrySet()) {  
+					if (pair2.getKey().toString().equalsIgnoreCase(JSONKeys.keyHeader)) {
+					sHeader = pair2.getValue().toString();
+				} else if (pair2.getKey().toString().equalsIgnoreCase(JSONKeys.keyArea)) {
+					sArea = pair2.getValue().toString();
+				} else if (pair2.getKey().toString().equalsIgnoreCase(JSONKeys.keyFormat)) {
+					HashMap<String, Object> f = (HashMap<String, Object>) pair2.getValue();
+					for (Map.Entry<String,Object> entry : f.entrySet())  {
+						//System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue()); 	
+						if (entry.getKey().toString().equalsIgnoreCase(JSONKeys.keyColumns)){
+							sFormatColumn  = entry.getValue().toString();
+						} else if (entry.getKey().toString().equalsIgnoreCase(JSONKeys.keyFormat)){
+							sFormatFormat = entry.getValue().toString();
+						}
 					}
 				}
 			}
-		}
 
-        JsonObject joCSV2 = Json.createObjectBuilder()
-                            .add(JSONKeys.keyCsvFile, csvFileName)
-                            .add(JSONKeys.keyHeaders, lHeaders)
-                            .add(JSONKeys.keyTable, Json.createObjectBuilder()
-                                .add(JSONKeys.keyRows, sRows)
-                                .add(JSONKeys.keyColumns, sColumns)
-                                .add(JSONKeys.keyFormat, sFormat))
-                            .add(JSONKeys.keyPivot, Json.createObjectBuilder()
-                                .add(JSONKeys.keyHeader, sHeader)
-                                .add(JSONKeys.keyArea, sArea)
-                                .add(JSONKeys.keyFormat, Json.createObjectBuilder()
-                                    .add(JSONKeys.keyColumns, sFormatColumn)
-                                    .add(JSONKeys.keyFormat, sFormatFormat)
-                                    ))
-                            .build();
+			JsonObject joCSV2 = Json.createObjectBuilder()
+								.add(JSONKeys.keyCsvFile, csvFileName)
+								.add(JSONKeys.keyHeaders, lHeaders)
+								.add(JSONKeys.keyTable, Json.createObjectBuilder()
+									.add(JSONKeys.keyRows, sRows)
+									.add(JSONKeys.keyColumns, sColumns)
+									.add(JSONKeys.keyFormat, sFormat))
+								.add(JSONKeys.keyPivot, Json.createObjectBuilder()
+									.add(JSONKeys.keyHeader, sHeader)
+									.add(JSONKeys.keyArea, sArea)
+									.add(JSONKeys.keyFormat, Json.createObjectBuilder()
+										.add(JSONKeys.keyColumns, sFormatColumn)
+										.add(JSONKeys.keyFormat, sFormatFormat)
+										))
+								.build();
 
-        //Write JSON file
-		try {
-			FileWriter file = fileUtils.getFileWriter(fName) ;
-            JSONObject jo = new JSONObject(joCSV2);
-			file.write(jo.toJSONString());
-			file.flush();
-			file.close();
-		} catch (IOException e) {
-			e.printStackTrace();
+			//Write JSON file
+			try {
+				FileWriter file = fileUtils.getFileWriter(fName) ;
+				JSONObject jo = new JSONObject(joCSV2);
+				file.write(jo.toJSONString());
+				file.flush();
+				file.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		} catch (Exception e) {
+			// do nothing
 		}
 	}
 

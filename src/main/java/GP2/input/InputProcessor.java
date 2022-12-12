@@ -77,10 +77,10 @@ public class InputProcessor extends Object {
 
 			float f = getTotalAmount(Constants._ALL_key) + getTotalAmount(Constants._REM_key) + getTotalAmount(Constants._INDIV_key) ;
 			if (totalAmount != f) {
-				float f1 = Math.abs(totalAmount-f) ;
+				float f1 = (totalAmount-f) ;
 				float f2 = 1/100 ;	// 1cent = tolerance
 				if ( f1 >= f2 )
-					System.out.println("Amounts do not tally: " + totalAmount + " <> " + f) ;
+					System.out.println("Amounts do not tally: " + totalAmount + " <> " + f + ", diff:" + String.valueOf(f1)) ;
 			}
 		} catch (Exception e) {
 			System.err.println("Error:assignAmounts::" + e.getMessage()) ;
