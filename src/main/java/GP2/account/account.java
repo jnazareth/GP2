@@ -505,14 +505,13 @@ public class account extends Object
 
 			String gCSVFile = null, sCSVJSON = null ;
 			csvFileJSON csvFile = null ;
-			_SheetProperties sp = null ;
+			_SheetProperties sp = new _SheetProperties() ;
 
 			if (Utils.m_settings.getExportToUse()) gCSVFile = makeOutFileName(0, groupName, csvFileName);
 			if (Utils.m_settings.getJsonToUse()) {
 				sCSVJSON = makeOutFileName(1, groupName, csvFileName);
 				csvFile = new csvFileJSON() ;
 			}
-			if (Utils.m_settings.getPropertyXLS().IsPropertyUsed())  sp = new _SheetProperties() ;
 
 			//add to map
 			if (Utils.m_grpCsvJsonMap == null) Utils.m_grpCsvJsonMap = new groupCsvJsonMapping();
@@ -526,6 +525,7 @@ public class account extends Object
 		for(String key: Utils.m_grpCsvJsonMap._groupMap.keySet()) {
 			groupCsvJsonMapping._CSV_JSON cj = Utils.m_grpCsvJsonMap._groupMap.get(key) ;
 			WriteJson jFileW = new WriteJson() ;
+			//cj.dumpCollection();
 			jFileW.writeJSON(cj._sCSVJSONFile, cj._oCSVFileJSON) ;
 		}
 		return true ;

@@ -25,9 +25,33 @@ public class GPFormatter {
         RowLayout rl = m_export.putRow(item, category, vendor, desc, amt, from, to, group, action, def);
     }
 
-    private void exportToCSV(String group, _SheetProperties sp) {
+    private _SheetProperties buildSP(String group, int rC, int hC) {
+        _SheetProperties sp = new _SheetProperties();
+
 		String outFilename = Utils.m_grpCsvJsonMap._groupMap.get(group)._sCSVFile ;
-		try {
+        sp.setCsvFileName(outFilename) ;
+        sp.setlHeaders(hC) ;
+        RowLayout.CellLayout cl = m_export.header1.getCell(Export.ExportKeys.keyAmount) ;
+        if (cl != null) sp.amountLocation = cl.xlsPosition;
+        sp.maxColums = m_export.header1.length();
+        ArrayList<String> persons = m_export.getSortedPersons(group);
+        cl = m_export.header1.getCell(Export.ExportKeys.keyTransactions + Constants._ID_SEPARATOR + persons.get(1)) ;
+        if (cl != null) {
+            sp.personLocation = cl.xlsPosition-1;
+            sp.pivotColumnStart = sp.personLocation ;
+            sp.pivotColumnEnd = sp.pivotColumnStart + (persons.size()-1) ;
+        }
+        sp.maxRows = rC ;
+        sp.build() ;
+
+        return sp ;
+    }
+
+    private _SheetProperties exportToCSV(String group) {
+		String outFilename = Utils.m_grpCsvJsonMap._groupMap.get(group)._sCSVFile ;
+        _SheetProperties sp = new _SheetProperties();
+
+        try {
 			String dirToUse = Utils.m_settings.getDirToUse() ;
             File f = new File(dirToUse, outFilename);
             FileOutputStream foS = FileUtils.openOutputStream(f) ;
@@ -40,20 +64,7 @@ public class GPFormatter {
 
             m_export.buildHeaders(group);
             out.write(m_export.toCSVLine(m_export.header0));	out.newLine();  headerCounter++ ;
-			out.write(m_export.toCSVLine(m_export.header1));  out.newLine();  headerCounter++ ;
-
-			sp.setCsvFileName(outFilename) ;
-			sp.setlHeaders(headerCounter) ;
-            RowLayout.CellLayout cl = m_export.header1.getCell(Export.ExportKeys.keyAmount) ;
-            if (cl != null) sp.amountLocation = cl.xlsPosition;
-            sp.maxColums = m_export.header1.length();
-            ArrayList<String> persons = m_export.getSortedPersons(group);
-            cl = m_export.header1.getCell(Export.ExportKeys.keyTransactions + Constants._ID_SEPARATOR + persons.get(1)) ;
-            if (cl != null) {
-                sp.personLocation = cl.xlsPosition-1;
-                sp.pivotColumnStart = sp.personLocation ;
-                sp.pivotColumnEnd = sp.pivotColumnStart + (persons.size()-1) ;
-            }
+			out.write(m_export.toCSVLine(m_export.header1));    out.newLine();  headerCounter++ ;
 
             ArrayList<RowLayout> exportLines = m_export.m_exportLinesGroup.get(group) ;
 			for (RowLayout rowToExport : exportLines) {
@@ -62,15 +73,14 @@ public class GPFormatter {
 
                 rowCounter++ ;
             }
-
-            sp.maxRows = rowCounter ;
-			sp.build() ;
+            sp = buildSP(group, rowCounter, headerCounter);
 
             // close all file handles
 			out.close();    fstream.close() ;   fw.close() ;    foS.close() ;
         } catch (Exception e){
 			System.err.println("exportToCSV Error: " + e.getMessage());
 		}
+        return sp ;
     }
 
 	public void exportToCSVGroup(String fileName) {
@@ -79,15 +89,13 @@ public class GPFormatter {
 		while(keysGroup.hasMoreElements()) {
 			String groupName = keysGroup.nextElement();
 			Hashtable<String, Person> aGroup = Utils.m_GroupCollection.get(groupName) ;
-			sp = new _SheetProperties() ;
-
+            
             // TEST: only process default group
             //if (!groupName.equalsIgnoreCase("default")) continue;
             //System.out.println("groupName:" + groupName);
+            sp = exportToCSV(groupName) ;
 
-			exportToCSV(groupName, sp) ;
-
-			// update map
+            // update map
 			groupCsvJsonMapping._CSV_JSON cj = Utils.m_grpCsvJsonMap._groupMap.get(groupName) ;
 			csvFileJSON csvFile = new csvFileJSON() ;
 			csvFile = sp.toCsvFileJSON();

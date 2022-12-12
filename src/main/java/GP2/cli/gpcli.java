@@ -162,8 +162,34 @@ public class gpcli {
         return true;
     }
 
+    private boolean processCommandLineFlags() {
+        boolean bXLSSpecified   = Utils.m_settings.getPropertyXLS().IsPropertyUsed();
+        boolean bExport         = Utils.m_settings.getExportToUse();
+        boolean bJSON           = Utils.m_settings.getJsonToUse();        
+
+        //System.out.println("flags:: XLS|bExport|bJSON:\t" + bXLSSpecified + "|" + bExport + "|" + bJSON) ;
+
+        final String sSetExportMessage = "set -Fexport=true";
+        final String sXLSMessage = (bXLSSpecified ? "-x specified" : "-x not specified") ;
+		if (bXLSSpecified) {
+            if (!bExport)  {
+                System.out.println("Invalid Input:: " + sXLSMessage + ", " + sSetExportMessage + " for xls to be generated") ;
+                return false ;
+            }
+        }
+        if (bJSON) {
+            if (!bExport)  {
+                System.out.println("Invalid Input:: -Fjson=" + bJSON + ", " + sSetExportMessage + " for json to be generated") ;
+                return false ;
+            }
+        }
+        return true ; 
+    }
+
     public void processCommandLine() {
 		account myAccount = new account() ;
+        if (!processCommandLineFlags()) return ;
+
 		File[] inputs = Utils.m_settings.getInputs();
 		for (File filename : inputs) {
 			myAccount.ReadAndProcessTransactions(filename.getName()) ;
