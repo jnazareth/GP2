@@ -22,6 +22,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.HashSet;
+import java.lang.Math;
 
 public class account extends Object
 {
@@ -58,7 +59,7 @@ public class account extends Object
 	// ----------------------------------------------------
 	// Declarations
 	// ----------------------------------------------------
-	private float m_nTotAmount = 0, m_nSysToAmount ;
+	private float m_nTotAmount = 0.0f, m_nSysToAmount ;
 
 	// ----------------------------------------------------
 	// Class body
@@ -75,7 +76,7 @@ public class account extends Object
 		String sIn[] = in.split(Constants._ITEM_SEPARATOR) ;
 
 		String eachName = "" ;
-		float eachPer = 0 ;
+		float eachPer = 0.0f ;
 		for (int i = 0; i < sIn.length; i++) {
 			eachName = "";	eachPer = 0 ;
 			String sEach[] = sIn[i].split(Constants._AMT_INDICATOR) ;
@@ -113,11 +114,11 @@ public class account extends Object
                 if (idx == _FR) person.incAmount(Person.AccountEntry.FROM, fAmount) ;
                 if (idx == _TO) person.incAmount(Person.AccountEntry.TO, fAmount) ;
 				if ((idx == _FR) && (Utils.m_bClearing == false)) {
-                    person.incAmount(Person.AccountEntry.IND_PAID, fAmount) ;
+                    person.incAmount(Person.AccountEntry.PAID, fAmount) ;
 				}
 				if ((idx == _TO) && (Utils.m_bClearing == false)) {
-                    person.incAmount(Person.AccountEntry.TRANS_AMT, fAmount) ;
-                    person.incAmount(Person.AccountEntry.IND_SUM, fAmount) ;
+                    person.incAmount(Person.AccountEntry.TRANSACTION, fAmount) ;
+                    person.incAmount(Person.AccountEntry.SPENT, fAmount) ;
 				}
 				aGroup.put(person.m_name, person) ;
 			}
@@ -252,9 +253,9 @@ public class account extends Object
 			Person person = aGroup.get(keysPeople.nextElement());
 			person.m_amount.put(Person.AccountEntry.FROM, 0.0f);
             person.m_amount.put(Person.AccountEntry.TO, 0.0f);
-            person.m_amount.put(Person.AccountEntry.TRANS_AMT, 0.0f);
-            person.m_amount.put(Person.AccountEntry.CHK_SUM, 0.0f);
-            person.m_amount.put(Person.AccountEntry.CHK_INDSUM, 0.0f);
+            person.m_amount.put(Person.AccountEntry.TRANSACTION, 0.0f);
+            person.m_amount.put(Person.AccountEntry.checksumTRANSACTION, 0.0f);
+            person.m_amount.put(Person.AccountEntry.checksumINDIVIDUAL, 0.0f);
 			aGroup.put(person.m_name, person) ;
 		}
 
@@ -263,7 +264,7 @@ public class account extends Object
 		iter = m_System.keySet().iterator();
 		while(iter.hasNext()){
 			Person3 aPer = m_System.get(iter.next()) ;
-			aPer.m_amount[aPer.FROM] = aPer.m_amount[aPer.TO] = aPer.m_amount[aPer.TRANS_AMT] = aPer.m_amount[aPer.CHK_SUM] = aPer.m_amount[aPer.CHK_INDSUM] = 0 ;
+			aPer.m_amount[aPer.FROM] = aPer.m_amount[aPer.TO] = aPer.m_amount[aPer.TRANSACTION] = aPer.m_amount[aPer.checksumTRANSACTION] = aPer.m_amount[aPer.checksumINDIVIDUAL] = 0 ;
 			m_System.put(aPer.m_name, aPer) ;
 		} */
 	}
@@ -274,7 +275,7 @@ public class account extends Object
 	private void initPersons()
 	{
 		//m_Persons = new Hashtable<String, Person>() ;
-		m_nTotAmount = 0;		m_nSysToAmount = 0 ;
+		m_nTotAmount = 0.0f;		m_nSysToAmount = 0.0f ;
 
 		Utils.m_System = new Hashtable<String, Person>() ;
 		Person aPerson = new Person(Constants._SYS, true) ;
@@ -282,59 +283,55 @@ public class account extends Object
 		Utils.m_bSys = false ;
 	}
 
-	// ----------------------------------------------------
-	// 	sumFromTo
-	// ----------------------------------------------------
-	private float sumFromTo(float amt, String action, String sGroupName)
-	{
-		float sysAmount = 0 ;
-		// sys account pending
-		/*
-		float sysAmount = 0 ;
-		Iterator<String> iter = m_System.keySet().iterator();
-		while(iter.hasNext()){
-			Person3 aPer = m_System.get(iter.next()) ;
-			if (aPer.m_active == true) aPer.m_amount[aPer.SYS_SUM] += (aPer.m_amount[aPer.FROM] + ((-1)*aPer.m_amount[aPer.TO])) ;
-			sysAmount = aPer.m_amount[aPer.SYS_SUM] ;		m_nSysToAmount += aPer.m_amount[aPer.TO] ;
-			m_System.put(aPer.m_name, aPer) ;
-		}
-		*/
-
-		// person account
-		float nCheckSum = 0, nCheckIndSum = 0 ;
+	private void ComputeCheckSums(String action, String sGroupName, Float[] cs) {
 		Hashtable<String, Person> aGroup = Utils.m_GroupCollection.get(sGroupName) ;
 		Enumeration<String> keysPeople = aGroup.keys();
-		while(keysPeople.hasMoreElements()){
+		Float f = 0.0f, t = 0.0f;			Float s = 0.0f, p = 0.0f;
+		Float cst = 0.0f ;					Float csi = 0.0f ;
+		while(keysPeople.hasMoreElements()) {
 			Person person = aGroup.get(keysPeople.nextElement());
-            if (person.m_active == true) {
-                Float f = person.m_amount.get(Person.AccountEntry.FROM) ;
+		    if (person.m_active == true) {
+				f += person.m_amount.get(Person.AccountEntry.FROM) ;
+				t += person.m_amount.get(Person.AccountEntry.TO) ;
+				if (!action.endsWith(Constants._CLEARING)) {
+					s += person.m_amount.get(Person.AccountEntry.SPENT) ;
+					p += person.m_amount.get(Person.AccountEntry.PAID) ;
+				}
+		    }
+		}
+		cst = (f + ((-1)*t)) ;				csi = (s + ((-1)*p)) ;
+
+		//truncate to 2 decimals
+		int base = 10, power = 2;
+		Double dFactor = Math.pow(base, power) ;
+		Double dcst = Math.round(cst * dFactor ) / dFactor ;
+		Double dcsi = Math.round(csi * dFactor ) / dFactor ;
+
+		cs[0] = dcst.floatValue() ;			cs[1] = dcsi.floatValue() ;
+	}
+
+	private void sumFromTo(String action, String sGroupName) {
+		Hashtable<String, Person> aGroup = Utils.m_GroupCollection.get(sGroupName) ;
+		Enumeration<String> keysPeople = aGroup.keys();
+		Float checkSums[] = {0.0f, 0.0f} ;
+		while(keysPeople.hasMoreElements()) {
+			Person person = aGroup.get(keysPeople.nextElement());
+		    if (person.m_active == true) {
+				ComputeCheckSums(action, sGroupName, checkSums) ;
+				Float cst = checkSums[0] ;	Float csi = checkSums[1] ;
+
+				Float f = person.m_amount.get(Person.AccountEntry.FROM) ;
                 Float t = person.m_amount.get(Person.AccountEntry.TO) ;
-                person.incAmount(Person.AccountEntry.SYS_SUM, (f + ((-1)*t))) ;
+				Float sysSum = (f + ((-1)*t)) ;
 
-            }
-            person.m_amount.put(Person.AccountEntry.FROM, 0.0f) ;
-            person.m_amount.put(Person.AccountEntry.TO, 0.0f) ;
+				person.incAmount(Person.AccountEntry.OWE_OWED, sysSum) ;
+				//System.out.println(sGroupName + "::" + person.m_name + "::" + person.m_amount.get(Person.AccountEntry.OWE_OWED));
 
-			nCheckSum += person.m_amount.get(Person.AccountEntry.SYS_SUM) ;
-			if (!action.endsWith(Constants._CLEARING)) nCheckIndSum += person.m_amount.get(Person.AccountEntry.IND_SUM) ;
-		}
-		keysPeople = aGroup.keys();
-		while(keysPeople.hasMoreElements()){
-			Person person = aGroup.get(keysPeople.nextElement());
-			if (person.m_active == true) person.m_amount.put(Person.AccountEntry.CHK_SUM, (nCheckSum + sysAmount /* adjust for sys account*/));
+				person.m_amount.put(Person.AccountEntry.checksumTRANSACTION, cst) ;
+				person.m_amount.put(Person.AccountEntry.checksumINDIVIDUAL, csi) ;
+			}
 			aGroup.put(person.m_name, person) ;
 		}
-
-		// individual checksum
-		m_nTotAmount += amt ;
-		keysPeople = aGroup.keys();
-		while(keysPeople.hasMoreElements()){
-			Person person = aGroup.get(keysPeople.nextElement());
-			if (!action.endsWith(Constants._CLEARING)) person.m_amount.put(Person.AccountEntry.CHK_INDSUM, ((m_nTotAmount - m_nSysToAmount) /* this is adjusted for sys account */ - nCheckIndSum)) ;
-			aGroup.put(person.m_name, person) ;
-		}
-
-		return nCheckSum ;
 	}
 
 	// ----------------------------------------------------
@@ -350,7 +347,7 @@ public class account extends Object
 			GroupProcessor gp = new GroupProcessor() ;
 			gp.doGroupAction(action) ;
 
-			float xAmt = 0 ;
+			float xAmt = 0.0f ;
 			try {
 				xAmt = Float.parseFloat(amt) ;
 			} catch (NumberFormatException e) {
@@ -362,7 +359,7 @@ public class account extends Object
 
 			doFromTo(item, _FR, xAmt, aFrom, sGroupName) ;
 			doFromTo(item, _TO, xAmt, aTo, sGroupName) ;
-			sumFromTo(xAmt, action, sGroupName) ;
+			sumFromTo(action, sGroupName) ;
 		} catch (Exception e){
 			System.err.println("Error:ProcessTransaction:" + e.getMessage());
 		}
@@ -384,10 +381,10 @@ public class account extends Object
 			while(keysPeople.hasMoreElements()){
 				Person person = aGroup.get(keysPeople.nextElement());
 				String sTransAmt = "", sPerAmt = "", sIndAmt = "", sIndPaid="" ;
-				sTransAmt +=  Constants.lBr + person.m_name + Constants._AMT_INDICATOR + Utils.roundAmount(person.m_amount.get(Person.AccountEntry.TRANS_AMT)) + Constants.rBr ;
-				sPerAmt += Constants.lBr + person.m_name + Constants._AMT_INDICATOR + Utils.roundAmount(person.m_amount.get(Person.AccountEntry.SYS_SUM)) + Constants.rBr ;
-				sIndAmt += Constants.lBr + person.m_name + Constants._AMT_INDICATOR + Utils.roundAmount(person.m_amount.get(Person.AccountEntry.IND_SUM)) + Constants.rBr ;
-				sIndPaid += Constants.lBr + person.m_name + Constants._AMT_INDICATOR + Utils.roundAmount(person.m_amount.get(Person.AccountEntry.IND_PAID)) + Constants.rBr ;
+				sTransAmt +=  Constants.lBr + person.m_name + Constants._AMT_INDICATOR + Utils.roundAmount(person.m_amount.get(Person.AccountEntry.TRANSACTION)) + Constants.rBr ;
+				sPerAmt += Constants.lBr + person.m_name + Constants._AMT_INDICATOR + Utils.roundAmount(person.m_amount.get(Person.AccountEntry.OWE_OWED)) + Constants.rBr ;
+				sIndAmt += Constants.lBr + person.m_name + Constants._AMT_INDICATOR + Utils.roundAmount(person.m_amount.get(Person.AccountEntry.SPENT)) + Constants.rBr ;
+				sIndPaid += Constants.lBr + person.m_name + Constants._AMT_INDICATOR + Utils.roundAmount(person.m_amount.get(Person.AccountEntry.PAID)) + Constants.rBr ;
 				System.out.println(person.m_name + ":" + sTransAmt + Constants._DUMP_SEPARATOR + sPerAmt + Constants._DUMP_SEPARATOR + sIndAmt + Constants._DUMP_SEPARATOR + sIndPaid);
 			}
 		}

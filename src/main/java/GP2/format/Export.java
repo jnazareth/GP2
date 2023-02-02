@@ -92,7 +92,7 @@ public class Export {
         header1.addCell(pos++, ExportKeys.keyIndividualCheckSum, XLSHeaders.H_INDCHECKSUM) ;
         header0.addCell(pos, ExportKeys.keyPaid, XLSHeaders.H_INDIVIDUAL_PAID) ;
         for (String p : persons) header1.addCell(pos++, ExportKeys.keyPaid  + Constants._ID_SEPARATOR + p, p) ;
-	}	
+	}
 
 	String toCSVLine(RowLayout rl) {
 		String sLine = "" ;
@@ -142,7 +142,7 @@ public class Export {
 		row.addCell(pos++, ExportKeys.keyFrom,      from) ;
 		row.addCell(pos++, ExportKeys.keyTo,        to) ;
 		row.addCell(pos++, ExportKeys.keyAction,    action) ;
-        
+
 		float cs = 0, indcs = 0 ;
         Hashtable<String, Person> aGroup = Utils.m_GroupCollection.get(group) ;
         List<String> mapKeys = new ArrayList<String>(aGroup.keySet());
@@ -150,13 +150,13 @@ public class Export {
         Iterator<String> iter = mapKeys.iterator();
         while (iter.hasNext()) {
             Person person = aGroup.get(iter.next());
-            row.addCell(pos++, ExportKeys.keyTransactions + Constants._ID_SEPARATOR + person.m_name,    Utils.roundAmount(person.m_amount.get(Person.AccountEntry.TRANS_AMT))) ;
-            row.addCell(pos++, ExportKeys.keyOwe +          Constants._ID_SEPARATOR + person.m_name,    Utils.roundAmount(person.m_amount.get(Person.AccountEntry.SYS_SUM))) ;
-            cs = person.m_amount.get(Person.AccountEntry.CHK_SUM) ;
-            row.addCell(pos++, ExportKeys.keySpent +        Constants._ID_SEPARATOR + person.m_name,    Utils.roundAmount(person.m_amount.get(Person.AccountEntry.IND_SUM))) ;
-            indcs = person.m_amount.get(Person.AccountEntry.CHK_INDSUM) ;
-            row.addCell(pos++, ExportKeys.keyPaid +         Constants._ID_SEPARATOR + person.m_name,    Utils.roundAmount(person.m_amount.get(Person.AccountEntry.IND_PAID))) ;
-        }			
+            row.addCell(pos++, ExportKeys.keyTransactions + Constants._ID_SEPARATOR + person.m_name,    Utils.roundAmount(person.m_amount.get(Person.AccountEntry.TRANSACTION))) ;
+            row.addCell(pos++, ExportKeys.keyOwe +          Constants._ID_SEPARATOR + person.m_name,    Utils.roundAmount(person.m_amount.get(Person.AccountEntry.OWE_OWED))) ;
+            cs = person.m_amount.get(Person.AccountEntry.checksumTRANSACTION) ;
+            row.addCell(pos++, ExportKeys.keySpent +        Constants._ID_SEPARATOR + person.m_name,    Utils.roundAmount(person.m_amount.get(Person.AccountEntry.SPENT))) ;
+            indcs = person.m_amount.get(Person.AccountEntry.checksumINDIVIDUAL) ;
+            row.addCell(pos++, ExportKeys.keyPaid +         Constants._ID_SEPARATOR + person.m_name,    Utils.roundAmount(person.m_amount.get(Person.AccountEntry.PAID))) ;
+        }
         row.addCell(pos++, ExportKeys.keyCheckSum, Utils.roundAmount(cs)) ;
         row.addCell(pos++, ExportKeys.keyIndividualCheckSum, Utils.roundAmount(indcs)) ;
 
@@ -195,11 +195,11 @@ public class Export {
 
         public RowLayout(RowLayout rl) {
             for (CellLayout c : rl.m_Cells) {
-                CellLayout cl = rl.getCell(c.xlsPositionName) ; 
+                CellLayout cl = rl.getCell(c.xlsPositionName) ;
                 this.addCell(cl.xlsPosition, cl.xlsPositionName, cl.xlsPositionValue) ;
             }
         }
-        
+
         public RowLayout() {
         }
 
@@ -262,7 +262,7 @@ public class Export {
                 xlsPosition = x;
                 xlsPositionName = n;
                 xlsPositionValue = v;
-            }    
+            }
         }
-    }    
+    }
 }

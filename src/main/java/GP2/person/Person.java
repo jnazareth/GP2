@@ -6,12 +6,12 @@ public class Person extends Object {
 	public static enum AccountEntry {
 		FROM,
 		TO,
-		SYS_SUM,
-		IND_SUM,
-		CHK_SUM,
-		CHK_INDSUM,
-		TRANS_AMT,
-		IND_PAID;
+		TRANSACTION,
+		OWE_OWED,
+		checksumTRANSACTION,
+		SPENT,
+		PAID,
+		checksumINDIVIDUAL;
 
 		public static final int size;
 		static { size = values().length; }
