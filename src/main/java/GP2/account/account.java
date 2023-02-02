@@ -98,7 +98,6 @@ public class account extends Object
 				}
 			}
 		}
-		////System.out.println("percentageToAmounts: amt = " + amt + ", sIn = " + in + ", sOut = " +  sOut);
 		return sOut ;
 	}
 
@@ -229,7 +228,6 @@ public class account extends Object
 	private void doFromTo(String item, int idx, float amt, String in, String sGroupName)
 	{
 		try {
-			//System.out.println("\ndoFromTo: idx = " + idx + ", sIn = " + in + ", sGroupName = " +  sGroupName);
 			int numAll = getAllActive(sGroupName).size() ;
 			InputProcessor sT = new InputProcessor() ;
 			sT.processFrTo(item, idx, amt, numAll, in) ;
@@ -276,7 +274,6 @@ public class account extends Object
 	{
 		//m_Persons = new Hashtable<String, Person>() ;
 		m_nTotAmount = 0.0f;		m_nSysToAmount = 0.0f ;
-
 		Utils.m_System = new Hashtable<String, Person>() ;
 		Person aPerson = new Person(Constants._SYS, true) ;
 		Utils.m_System.put(Constants._SYS, aPerson) ;
@@ -340,7 +337,6 @@ public class account extends Object
 	private void ProcessTransaction(String item, String desc, String amt, String from, String to, String group, String action, String def)
 	{
 		try {
-			//System.out.println("ProcessTransaction::" + "item:" + item + ",amt:" + amt + ",from:" + from + ",to:" + to + ",group:" + group + ",action:" + action) ;
 			Utils.m_bClearing = false ;
 
 			String sGroupName = group ;
@@ -401,7 +397,6 @@ public class account extends Object
         FileReader fileReader = null;
 		try {
 			fileReader = new FileReader(fileUtils.getFile(fileName));
-			//read file
 			BufferedReader buffReader = new BufferedReader(fileReader);
 			String sLine = "";
 
@@ -419,7 +414,6 @@ public class account extends Object
 						for (String p : pieces) {
 							String sColumn = p ;
 							sColumn = sColumn.substring(sColumn.indexOf(CONTROL) + 1, sColumn.length()) ;
-							//System.out.println("sColumn:" + sColumn);
 							if (sColumn.compareToIgnoreCase(S_ITEM) == 0) 			P_ITEM = pos++ ;
 							else if (sColumn.compareToIgnoreCase(S_CATEGORY) == 0) 	P_CATEGORY = pos++ ;
 							else if (sColumn.compareToIgnoreCase(S_VENDOR) == 0) 	P_VENDOR = pos++ ;
@@ -431,7 +425,6 @@ public class account extends Object
 							else if (sColumn.compareToIgnoreCase(S_ACTION) == 0) 	P_ACTION = pos++ ;
 							else pos++ ;
 						}
-						//System.out.println("P_ITEM:" + P_ITEM + ", P_CATEGORY:" + P_CATEGORY + ", P_VENDOR:" + P_VENDOR + ", P_DESC:" + P_DESC + ", P_AMOUNT:" + P_AMOUNT + ", P_FROM:" + P_FROM + ", P_TO:" + P_TO + ", P_GROUP:" + P_GROUP + ", P_ACTION:" + P_ACTION);
 						continue ;
 					}
 
@@ -467,13 +460,9 @@ public class account extends Object
 						gpF.prepareToExportGroup(item, category, vendor, desc, amt, from, to, group, action, def) ;
 				} // end of while
 				buffReader.close() ;
-				////System.out.println("map: " + m_Transactions.toString()); // dump HashMap
 
-				// XLS integration, added
 				buildGroupCsvJsonMap(fileName) ;
-
 				if (Utils.m_settings.getExportToUse()) gpF.exportToCSVGroup(fileName) ;
-				//dumpCollection() ;
 			} catch (IOException e) {
 				System.out.println("There was a problem reading:" + fileName);
 			}
@@ -553,11 +542,10 @@ public class account extends Object
 		if (f == null) return ;
 
 		if (Utils.m_settings.getPropertyXLS().IsPropertyUsed()) {
-			if (Utils.m_settings.getJsonToUse()) {
+			if (Utils.m_settings.getJsonToUse())
 				xls.readFromJSON(fName, f) ;
-			} else {
+			else
 				xls.readFromMap(fName, f) ;
-			}
 		}
     }
 } // end of class
