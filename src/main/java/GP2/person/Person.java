@@ -11,7 +11,8 @@ public class Person extends Object {
 		checksumTRANSACTION,
 		SPENT,
 		PAID,
-		checksumINDIVIDUAL;
+		checksumGROUPTOTALS,
+		checksumINDIVIDUALTOTALS;
 
 		public static final int size;
 		static { size = values().length; }

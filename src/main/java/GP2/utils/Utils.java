@@ -46,6 +46,13 @@ public class Utils {
 		}
 	}
 
+	public static Double truncate (float d) {
+		//truncate to 2 decimals
+		int base = 10, power = 2;
+		Double dFactor = Math.pow(base, power) ;
+		return (Math.round(d * dFactor ) / dFactor) ;
+	}
+
 	public static List<String> customSort(Set<String> hm) {
 		List<String> sortedMapKeys = new ArrayList<String>(hm);
 		try {
@@ -69,7 +76,4 @@ public class Utils {
 		}
 		return sortedMapKeys ;
 	}
-
-
-
 }

@@ -16,6 +16,11 @@ public class Settings {
     _CLIParamater   _clean  = new _CLIParamater();
     _CLIParamater   _export = new _CLIParamater();
     _CLIParamater   _json   = new _CLIParamater();
+    _CLIParamater   _suppressCS   = new _CLIParamater();
+
+    public boolean  bCheckSumTransaction = false;
+    public boolean  bCheckSumGroupTotals = false;
+    public boolean  bCheckSumIndividualTotals = false;
 
     public File[] getInputs() {
         return inputs;
@@ -92,6 +97,24 @@ public class Settings {
         _json.bPropertyUsed = b ;
     	return _json ;
     }
+
+    public _CLIParamater getPropertySuppressCS() {
+        return _suppressCS;
+    }
+    public _CLIParamater setPropertySuppressCS(String n, Boolean bV, Boolean b) {
+        if (_suppressCS == null) _suppressCS = new _CLIParamater() ;
+        if (n != null) _suppressCS.sPropertyName = n ;
+        _suppressCS.bPropertyValue = bV ;
+        _suppressCS.bPropertyUsed = b ;
+    	return _suppressCS ;
+    }
+
+    public boolean getSuppressCStoUse() {
+        Boolean b = true;
+        if ( (this._suppressCS.bPropertyUsed) ) b = this._suppressCS.bPropertyValue ;
+        return b ;
+    }
+
     public String getDirToUse() {
         String sDir = Constants.OUT_FOLDER ;
         if ( (this._dir.bPropertyUsed) && (this._dir.sPropertyValue != null) ) sDir = this._dir.sPropertyValue ;

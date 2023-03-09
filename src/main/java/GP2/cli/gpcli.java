@@ -97,7 +97,7 @@ public class gpcli {
                         }
                 )
                 .withOption (
-                        new _CommandLine._Option("F", "Flags: -export <true/false>,  -json <true/false>")
+                        new _CommandLine._Option("F", "Flags: -export <true/false>, -json <true/false>, , -suppressCS <true/false>")
                         .longOption("F")
                                 .argName("boolean=value")
                                 .hasArgs()
@@ -126,6 +126,16 @@ public class gpcli {
                                     else Utils.m_settings.setPropertyJson(sKey, bV, true);
                                 } catch (NullPointerException ne) {
 									Utils.m_settings.setPropertyJson(sKey, true, false);  // not used
+                                }
+
+                                sKey = "suppressCS" ;   // Property:suppressCS
+                                try {
+                                    String c = properties.getProperty(sKey).toString() ;
+                                    Boolean bV = Boolean.valueOf(c);
+                                    if (c.equalsIgnoreCase(sSingle)) Utils.m_settings.setPropertySuppressCS(sKey, true, false);   // value not specified
+                                    else Utils.m_settings.setPropertySuppressCS(sKey, bV, true);
+                                } catch (NullPointerException ne) {
+									Utils.m_settings.setPropertySuppressCS(sKey, true, false);  // not used
                                 }
                             }
                         }
