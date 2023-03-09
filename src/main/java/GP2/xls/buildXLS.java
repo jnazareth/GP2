@@ -19,6 +19,13 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.ss.usermodel.Sheet;
 
+// debug - read Pivot
+import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTPivotFields ;
+import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTPivotField ;
+import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTItems;
+import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTItem;
+import java.util.ArrayList;
+
 import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTDataFields;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle ;
 
@@ -36,6 +43,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.apache.commons.collections4.iterators.ArrayListIterator;
 import org.apache.commons.lang3.math.NumberUtils;
 
 public class buildXLS {
@@ -188,6 +196,33 @@ public class buildXLS {
         }
     }
 
+    private void dumpPivotTable(XSSFSheet sheet) {
+        List<XSSFPivotTable> pTables ;
+        pTables = sheet.getPivotTables() ;
+
+        XSSFPivotTable pivotTable = pTables.get(0);
+        CTPivotFields pivotFields = pivotTable.getCTPivotTableDefinition().getPivotFields();
+        for(CTPivotField ctPivotField : pivotFields.getPivotFieldList()){
+            //ctPivotField.setAutoShow(false);
+            //ctPivotField.setOutline(false);
+            //ctPivotField.setSubtotalTop(false);
+            //ctPivotField.setSubtotalCaption("x");
+            //ctPivotField.setSumSubtotal(true);
+            
+            //ctPivotField.dump();
+            //ctPivotField.setShowAll(true);
+            CTItems ctPivotFieldItems  = ctPivotField.getItems();
+            //System.out.println(ctPivotField.toString());
+
+            // this is returning null !
+            List<org.openxmlformats.schemas.spreadsheetml.x2006.main.CTItem> arrItems =  ctPivotFieldItems.getItemList();
+            for(CTItem aItem : arrItems) {
+                System.out.println(aItem.toString());
+            }
+        }
+    }
+
+
     public void constructXLS(String outCSVFile, String xlsFile, String groupName, _SheetProperties sp)
 	throws FileNotFoundException, IOException, InvalidFormatException {
 		try {
@@ -199,6 +234,8 @@ public class buildXLS {
             XSSFSheet sheet = workBook.createSheet(sheetName);
             getCSVData(workBook, sheet, outCSVFile, sheetName, sp) ;
             buildPivot(sheet, sp) ;
+
+            //dumpPivotTable(sheet);
 
             try (FileOutputStream fileOut = new FileOutputStream(f)) {
                 workBook.write(fileOut);

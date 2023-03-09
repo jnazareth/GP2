@@ -327,7 +327,7 @@ public class account extends Object
 				person.m_amount.put(Person.AccountEntry.checksumINDIVIDUALTOTALS, csIT) ;
 
 				Utils.m_settings.bCheckSumTransaction 		= (csT != 0.0f) ;
-				Utils.m_settings.bCheckSumGroupTotals 		= (csGT != 0.0f) ; 
+				Utils.m_settings.bCheckSumGroupTotals 		= (csGT != 0.0f) ;
 				Utils.m_settings.bCheckSumIndividualTotals 	= (csIT != 0.0f) ;
 			}
 			aGroup.put(person.m_name, person) ;
@@ -371,10 +371,10 @@ public class account extends Object
 		System.out.println("--------------------------------------");
 		Enumeration<String> keysGroup = Utils.m_GroupCollection.keys();
 		while(keysGroup.hasMoreElements()){
-			String groupName = keysGroup.nextElement();
-			Hashtable<String, Person> aGroup = Utils.m_GroupCollection.get(groupName) ;
+			String sGroupName = keysGroup.nextElement();
+			Hashtable<String, Person> aGroup = Utils.m_GroupCollection.get(sGroupName) ;
 			System.out.println("");
-			System.out.println(groupName);
+			System.out.println(sGroupName);
 
 			Enumeration<String> keysPeople = aGroup.keys();
 			while(keysPeople.hasMoreElements()){
@@ -408,6 +408,7 @@ public class account extends Object
 
 			try {
 				while ((sLine = buffReader.readLine()) != null) {
+					if (sLine.length() == 0) continue ;
 					String item="", category="", vendor="", desc="", amt="", from="", to="", group="", action="", def="" ;
 					// stream the input, one line at a time
 					String[] pieces = sLine.split(Constants._READ_SEPARATOR);
@@ -453,7 +454,6 @@ public class account extends Object
 						else def = def + p ;
 						pos++ ;
 					}
-					if (sLine.length() == 0) continue ;
 					if (item.charAt(0) == Constants._COMMENT) continue ; // comment, skip
 
 					//System.out.println("item:" + item + ", category:" + category + ", vendor:" + vendor + ", desc:" + desc + ", amt:" + amt + ", from:" + from + ", to:" + to + ", group:" + group + ", action:" + action);
@@ -489,22 +489,22 @@ public class account extends Object
 	private groupCsvJsonMapping buildGroupCsvJsonMap(String csvFileName) {
 		Enumeration<String> keysGroup = Utils.m_GroupCollection.keys();
 		while(keysGroup.hasMoreElements()){
-			String groupName = keysGroup.nextElement();
-			Hashtable<String, Person> aGroup = Utils.m_GroupCollection.get(groupName) ;
+			String sGroupName = keysGroup.nextElement();
+			Hashtable<String, Person> aGroup = Utils.m_GroupCollection.get(sGroupName) ;
 
 			String gCSVFile = null, sCSVJSON = null ;
 			csvFileJSON csvFile = null ;
 			_SheetProperties sp = new _SheetProperties() ;
 
-			if (Utils.m_settings.getExportToUse()) gCSVFile = makeOutFileName(0, groupName, csvFileName);
+			if (Utils.m_settings.getExportToUse()) gCSVFile = makeOutFileName(0, sGroupName, csvFileName);
 			if (Utils.m_settings.getJsonToUse()) {
-				sCSVJSON = makeOutFileName(1, groupName, csvFileName);
+				sCSVJSON = makeOutFileName(1, sGroupName, csvFileName);
 				csvFile = new csvFileJSON() ;
 			}
 
 			//add to map
 			if (Utils.m_grpCsvJsonMap == null) Utils.m_grpCsvJsonMap = new groupCsvJsonMapping();
-			Utils.m_grpCsvJsonMap.addItem(groupName, gCSVFile, sCSVJSON, csvFile, sp);
+			Utils.m_grpCsvJsonMap.addItem(sGroupName, gCSVFile, sCSVJSON, csvFile, sp);
 		}
 		return Utils.m_grpCsvJsonMap ;
 	}

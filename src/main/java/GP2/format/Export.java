@@ -54,10 +54,10 @@ public class Export {
     RowLayout template  = new RowLayout();
     Hashtable<String, ArrayList<RowLayout>> m_exportLinesGroup  ;	// String = groupName (Key)
 
-    ArrayList<String> getSortedPersons(String group) {
+    ArrayList<String> getSortedPersons(String sGroupName) {
         ArrayList<String> al = new ArrayList<String>() ;
 
-        Hashtable<String, Person> aGroup = Utils.m_GroupCollection.get(group) ;
+        Hashtable<String, Person> aGroup = Utils.m_GroupCollection.get(sGroupName) ;
 		List<String> mapKeys = new ArrayList<String>(aGroup.keySet());
 		Collections.sort(mapKeys);
         Iterator<String> iter = mapKeys.iterator();
