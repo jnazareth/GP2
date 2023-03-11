@@ -1,19 +1,22 @@
 package GP2.input;
 
+import GP2.input.FTType.FromToType;
 import GP2.utils.Constants ;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.lang.Float;
 import java.lang.Math;
 
 public class InputProcessor extends Object {
 	// member
-	public HashMap<String, _WhoFromTo> 	_Input = null ;	// String/key = _REM | _ALL | _INDIV | _UNKNOWN
+	//public HashMap<String, _WhoFromTo> 	_Input = null ;	// String/key = _REM | _ALL | _INDIV | _UNKNOWN
+	public EnumMap<FromToType, _WhoFromTo> _Input = null ;
 
 	// functions
-	private void addItem (String k, _NameAmt na) {
+	private void addItem (FromToType k, _NameAmt na) {
 		try {
 			_WhoFromTo w = _Input.get(k) ;
 			if (w == null) w = new _WhoFromTo(na) ;
@@ -24,7 +27,7 @@ public class InputProcessor extends Object {
 		}
 	}
 
-	private float getTotalAmount (String key)
+	private float getTotalAmount (FromToType key)
 	{
 		try {
 			float fTotal = 0 ;
@@ -46,7 +49,7 @@ public class InputProcessor extends Object {
 		}
 	}
 
-    private void assignAmount (String key, float totalAmount) {
+    private void assignAmount (FromToType key, float totalAmount) {
 		try {
 			_WhoFromTo w = _Input.get(key) ;
 			if (w == null) return ;
@@ -57,9 +60,9 @@ public class InputProcessor extends Object {
 				_NameAmt na = iter.next();
 				if (na.m_amount == null) {
 					na.m_amount = (totalAmount
-								- getTotalAmount(Constants._ALL_key)
-								- getTotalAmount(Constants._REM_key)
-								- getTotalAmount(Constants._INDIV_key)) ;
+								- getTotalAmount(FTType.FromToType.All)
+								- getTotalAmount(FTType.FromToType.Remainder)
+								- getTotalAmount(FTType.FromToType.Individual)) ;
 					_Input.put(key, w) ;
 				}
 			}
@@ -71,11 +74,11 @@ public class InputProcessor extends Object {
     private void assignAmounts (float totalAmount) {
 		try {
 			if (this._Input == null) return ;
-			assignAmount (Constants._ALL_key, totalAmount) ;
-			assignAmount (Constants._REM_key, totalAmount) ;
-			assignAmount (Constants._INDIV_key, totalAmount) ;
+			assignAmount (FTType.FromToType.All, totalAmount) ;
+			assignAmount (FTType.FromToType.Remainder, totalAmount) ;
+			assignAmount (FTType.FromToType.Individual, totalAmount) ;
 
-			float f = getTotalAmount(Constants._ALL_key) + getTotalAmount(Constants._REM_key) + getTotalAmount(Constants._INDIV_key) ;
+			float f = getTotalAmount(FTType.FromToType.All) + getTotalAmount(FTType.FromToType.Remainder) + getTotalAmount(FTType.FromToType.Individual) ;
 			if (totalAmount != f) {
 				float f1 = (totalAmount-f) ;
 				float f2 = 1/100 ;	// 1cent = tolerance
@@ -92,7 +95,7 @@ public class InputProcessor extends Object {
 			int nullCount = 0 ;
 			if (this._Input == null) return nullCount ;
 
-			String key = Constants._INDIV_key ;
+			FromToType key = FTType.FromToType.Individual ;
 			_WhoFromTo w = _Input.get(key) ;
 			if (w == null) return nullCount ;
 
@@ -114,7 +117,7 @@ public class InputProcessor extends Object {
 			int nullCount = 0 ;
 			if (this._Input == null) return nullCount ;
 
-			String key = Constants._INDIV_key ;
+			FromToType key = FTType.FromToType.Individual ;
 			_WhoFromTo w = _Input.get(key) ;
 			if (w == null) return nullCount ;
 
@@ -137,10 +140,10 @@ public class InputProcessor extends Object {
 		try {
 			if (this._Input == null) return ;
 
-			if ( (_Input.get(Constants._ALL_key) == null) && (_Input.get(Constants._REM_key) == null) ) {
+			if ( (_Input.get(FTType.FromToType.All) == null) && (_Input.get(FTType.FromToType.Remainder) == null) ) {
 				int nNulls = getIndivNullCount() ;
 				if (nNulls != 0) {
-					float nIndivEachAmount = ((totalAmount-getTotalAmount(Constants._INDIV_key)) / nNulls) ;
+					float nIndivEachAmount = ((totalAmount-getTotalAmount(FTType.FromToType.Individual)) / nNulls) ;
 					putIndivAmount (nIndivEachAmount, nNulls) ;
 				}
 			}
@@ -159,7 +162,7 @@ public class InputProcessor extends Object {
 			if (this._Input == null) return ;
 			// _INDIV
 			int indivTotal = 0 ;
-			String k = Constants._INDIV_key ;
+			FromToType k = FTType.FromToType.Individual ;
 			_WhoFromTo w = _Input.get(k) ;
 			if (w != null) {
 				Iterator<_NameAmt> iter ;
@@ -179,7 +182,7 @@ public class InputProcessor extends Object {
 
 			// _REM
 			int numActive = nActive ;
-			k = Constants._REM_key ;
+			k = FTType.FromToType.Remainder ;
 			w = _Input.get(k) ;
 			if (w != null) {
 				w._Count = (numActive - indivTotal) ;
@@ -187,7 +190,7 @@ public class InputProcessor extends Object {
 			}
 
 			// _ALL
-			k = Constants._ALL_key ;
+			k = FTType.FromToType.All ;
 			w = _Input.get(k) ;
 			if (w != null) {
 				w._Count = (numActive) ;
@@ -224,16 +227,16 @@ public class InputProcessor extends Object {
 			for (int i = 0; i < sIn.length; i++) {
 				na = splitNameAmount(sIn[i]) ;
 
-				if (_Input == null) _Input = new HashMap<String, _WhoFromTo>();
+				if (_Input == null) _Input = new EnumMap<FromToType, _WhoFromTo>(FromToType.class) ;
 
-				if (sIn[i].indexOf(Constants._ALL) != -1) {         // ALL found
-					addItem(Constants._ALL_key, na);
-				} else if (sIn[i].indexOf(Constants._REM) != -1) {  // REM found
-					addItem(Constants._REM_key, na);
-				} else if (na.m_name == null) {					// UNKNOWN
-					addItem(Constants._UNKNOWN_key, na);
-				} else {                                        // INDIV found
-					addItem(Constants._INDIV_key, na);
+				if (sIn[i].indexOf(FTType.FromToTypes.All) != -1) {         // ALL found
+					addItem(FTType.FromToType.All, na);
+				} else if (sIn[i].indexOf(FTType.FromToTypes.Rem) != -1) {  // REM found
+					addItem(FTType.FromToType.Remainder, na);
+				} else if (na.m_name == null) {						// UNKNOWN
+					addItem(FTType.FromToType.Unknown, na);
+				} else {                                        	// INDIV found
+					addItem(FTType.FromToType.Individual, na);
 				}
 			}
 			processFrToExtended(amt, nActive) ;
@@ -262,7 +265,7 @@ public class InputProcessor extends Object {
 		try {
 			if (this._Input != null) {
 				//System.out.println("dumpCollection ============") ;
-				for(String key: _Input.keySet()) {
+				for(FromToType key: _Input.keySet()) {
 					System.out.println(key);
 					_WhoFromTo w = _Input.get(key) ;
 					w.dumpCollection() ;
@@ -278,7 +281,7 @@ public class InputProcessor extends Object {
 	public class _WhoFromTo {
 		public int					_Count = 0 ;			// count(_Collection)
 		public ArrayList<_NameAmt>	_Collection = null ;	// String/key = name of person. If _REM | _ALL, use literals.
-													// float/amount = amount assigned.
+															// float/amount = amount assigned.
 		private _WhoFromTo(String s, Float f) {
 			try {
 				if (_Collection == null) _Collection = new ArrayList<_NameAmt>() ;

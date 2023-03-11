@@ -3,6 +3,8 @@ GP2\cli\_CommandLine$1.class
 GP2\json\WriteJson.class
 GP2\group\csvFileJSON.class
 GP2\xls\_Coordinates.class
+GP2\input\FTType$FromToTypes.class
+GP2\input\FTType$FromToType.class
 GP2\input\InputProcessor$_WhoFromTo.class
 GP2\utils\fileUtils$2.class
 GP2\cli\Settings$1.class
@@ -21,6 +23,7 @@ GP2\format\Export$RowLayout$CellLayout.class
 GP2\format\Export$XLSHeaders.class
 GP2\cli\_CommandLine$_Option$Handler2.class
 GP2\utils\fileUtils.class
+GP2\input\FTType.class
 GP2\cli\gpcli$4.class
 GP2\cli\_CommandLine$_Option$Handler.class
 GP2\format\Export.class

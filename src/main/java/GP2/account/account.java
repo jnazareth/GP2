@@ -1,6 +1,9 @@
 package GP2.account;
 
+import GP2.input.FTType;
 import GP2.input.InputProcessor;
+import GP2.input.FTType.FromToType;
+import GP2.input.FTType.FromToTypes;
 import GP2.utils.Constants;
 import GP2.utils.Utils;
 import GP2.utils.fileUtils;
@@ -69,7 +72,7 @@ public class account extends Object
 	// ----------------------------------------------------
 	private String percentageToAmounts(float amt, String in, String action)
 	{
-		if (in.indexOf(Constants._PERCENTAGE) == -1) return in;
+		if (in.indexOf(FromToTypes.Percentage) == -1) return in;
 
 		String sOut = "" ;
 		String sIn[] = in.split(Constants._ITEM_SEPARATOR) ;
@@ -81,7 +84,7 @@ public class account extends Object
 			String sEach[] = sIn[i].split(Constants._AMT_INDICATOR) ;
 			for (int k = 0; k < sEach.length; k++) {
 				int pLoc = -1 ;
-				if ((pLoc = sEach[k].indexOf(Constants._PERCENTAGE)) == -1) {
+				if ((pLoc = sEach[k].indexOf(FromToTypes.Percentage)) == -1) {
 					try {
 						eachPer = Float.parseFloat(sEach[k]) ;
 						sOut += Constants._AMT_INDICATOR + sEach[k] ;
@@ -141,7 +144,7 @@ public class account extends Object
 	private HashSet<String> getIndivInput(InputProcessor ip)
 	{
 		HashSet<String> indivInput = new HashSet<String>() ;
-		InputProcessor._WhoFromTo w = ip._Input.get(Constants._INDIV_key) ;
+		InputProcessor._WhoFromTo w = ip._Input.get(FTType.FromToType.Individual) ;
 		if (w != null) {
 			Iterator<InputProcessor._NameAmt> iter = w._Collection.iterator();
 			while (iter.hasNext()) {
@@ -159,7 +162,7 @@ public class account extends Object
 		return diff ;
 	}
 
-	private void processSetAll(String key, String sGroupName, int idx, InputProcessor ip)
+	private void processSetAll(FromToType key, String sGroupName, int idx, InputProcessor ip)
 	{
 		try {
 			InputProcessor._WhoFromTo w = ip._Input.get(key) ;
@@ -177,7 +180,7 @@ public class account extends Object
 		}
 	}
 
-	private void processSetRem(String key, String sGroupName, int idx, InputProcessor ip)
+	private void processSetRem(FromToType key, String sGroupName, int idx, InputProcessor ip)
 	{
 		try {
 			InputProcessor._WhoFromTo w = ip._Input.get(key) ;
@@ -204,7 +207,7 @@ public class account extends Object
 		}
 	}
 
-	private void processSetIndiv(String key, String sGroupName, int idx, InputProcessor ip)
+	private void processSetIndiv(FromToType key, String sGroupName, int idx, InputProcessor ip)
 	{
 		try {
 			InputProcessor._WhoFromTo w = ip._Input.get(key) ;
@@ -231,9 +234,9 @@ public class account extends Object
 			InputProcessor sT = new InputProcessor() ;
 			sT.processFrTo(item, idx, amt, numAll, in) ;
 
-			processSetAll(Constants._ALL_key, sGroupName, idx, sT) ;
-			processSetRem(Constants._REM_key, sGroupName, idx, sT) ;
-			processSetIndiv(Constants._INDIV_key, sGroupName, idx, sT) ;
+			processSetAll(FTType.FromToType.All, sGroupName, idx, sT) ;
+			processSetRem(FTType.FromToType.Remainder, sGroupName, idx, sT) ;
+			processSetIndiv(FTType.FromToType.Individual, sGroupName, idx, sT) ;
 		} catch (Exception e) {
 			System.err.println("Error:doFromTo::" + e.getMessage()) ;
 		}

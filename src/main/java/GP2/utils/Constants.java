@@ -41,13 +41,7 @@ public interface Constants {
 	final String S_ACTION_QUOTE	= "\"" ;
 
     // transaction indicators
-	final String _REM	= "rem" ;
-	final String _ALL	= "all" ;
-	final String _SYS	= "sys" ;
-	final String _INDIV	= "indiv" ;
-	final String _UNKNOWN	= "unknown" ;
 	final String _CLEARING	= "$" ;
-	final String _PERCENTAGE	= "%" ;
 	final char 	_COMMENT	= '#' ;
 	
 	// formatting strings
@@ -61,11 +55,4 @@ public interface Constants {
 	final String _REGEX_SEPARATOR	= ",(?=([^\"]*\"[^\"]*\")*[^\"]*$)" ;
 	final String _READ_SEPARATOR	= _REGEX_SEPARATOR ;
 	final String _DUMP_SEPARATOR	= " | " ;
-
-	// keys
-	final String _REM_key	= "_REM" ;
-	final String _ALL_key	= "_ALL" ;
-	final String _SYS_key	= "_SYS" ;
-	final String _INDIV_key	= "_INDIV" ;
-	final String _UNKNOWN_key	= "_UNKNOWN" ;
 }
