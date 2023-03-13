@@ -24,10 +24,12 @@ import java.io.FileNotFoundException;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
+
+import org.apache.poi.ss.formula.functions.T;
+
 import java.util.HashSet;
 
-public class account extends Object
-{
+public class account2 {
 	//CONSTANTS
 	//calculation direction
 	private final int _FR 	= 0 ;
@@ -107,7 +109,7 @@ public class account extends Object
 	private void putIndivAmount(String sGroupName, int idx, float fAmount, HashSet<String> indiv)
 	{
 		try {
-			Hashtable<String, Person> aGroup = Utils.m_GroupCollection.get(sGroupName) ;
+			Hashtable<String, Person> aGroup = Utils.m_GroupCollection.get(sGroupName).getCollection() ;
 			Enumeration<String> keysPeople = aGroup.keys();
 			while(keysPeople.hasMoreElements()){
 				Person person = aGroup.get(keysPeople.nextElement());
@@ -128,10 +130,22 @@ public class account extends Object
 		}
 	}
 
+	private HashSet<String> getAllActive2(String sGroupName)
+	{
+		HashSet<String> allSet = new HashSet<String>() ;
+		Hashtable<String, Person> aGroup = Utils.m_GroupCollection.get(sGroupName).getCollection() ;
+		Enumeration<String> keysPeople = aGroup.keys();
+		while(keysPeople.hasMoreElements()){
+			Person person = aGroup.get(keysPeople.nextElement());
+			if (person.isActive()) allSet.add(person.m_name) ;
+		}
+		return allSet ;
+	}
+
 	private HashSet<String> getAllActive(String sGroupName)
 	{
 		HashSet<String> allSet = new HashSet<String>() ;
-		Hashtable<String, Person> aGroup = Utils.m_GroupCollection.get(sGroupName) ;
+		Hashtable<String, Person> aGroup = Utils.m_GroupCollection.get(sGroupName).getCollection() ;
 
 		Enumeration<String> keysPeople = aGroup.keys();
 		while(keysPeople.hasMoreElements()) {
@@ -173,7 +187,7 @@ public class account extends Object
 				InputProcessor._NameAmt na = iter.next();
 				if (na.m_amount == null) continue ;
 				float fIndivAmt = na.m_amount / w._Count ;
-				putIndivAmount(sGroupName, idx, fIndivAmt, getAllActive(sGroupName)) ;
+				putIndivAmount(sGroupName, idx, fIndivAmt, getAllActive2(sGroupName)) ;
 			}
 		} catch (Exception e) {
 			System.err.println("Error:processSetAll::" + e.getMessage()) ;
@@ -189,7 +203,7 @@ public class account extends Object
 			HashSet<String> setRem = null ;
 			int rSize = 1 ;
 			try {	// prepare sets
-				setRem = getRemActive(getAllActive(sGroupName), getIndivInput(ip));
+				setRem = getRemActive(getAllActive2(sGroupName), getIndivInput(ip));
 				rSize = setRem.size() ;
 			}  catch (Exception e) {
 				System.err.println("Error:processSetRem::prepareSets::" + e.getMessage()) ;
@@ -230,7 +244,7 @@ public class account extends Object
 	private void doFromTo(String item, int idx, float amt, String in, String sGroupName)
 	{
 		try {
-			int numAll = getAllActive(sGroupName).size() ;
+			int numAll = getAllActive2(sGroupName).size() ;
 			InputProcessor sT = new InputProcessor() ;
 			sT.processFrTo(item, idx, amt, numAll, in) ;
 
@@ -247,7 +261,7 @@ public class account extends Object
 	// ----------------------------------------------------
 	private void initFromTo(String sGroupName)
 	{
-		Hashtable<String, Person> aGroup = Utils.m_GroupCollection.get(sGroupName) ;
+		Hashtable<String, Person> aGroup = Utils.m_GroupCollection.get(sGroupName).getCollection() ;
 		Enumeration<String> keysPeople = aGroup.keys();
 		while(keysPeople.hasMoreElements()){
 			Person person = aGroup.get(keysPeople.nextElement());
@@ -286,7 +300,7 @@ public class account extends Object
 	}
 
 	private void ComputeCheckSums(String action, String sGroupName, Float[] cs) {
-		Hashtable<String, Person> aGroup = Utils.m_GroupCollection.get(sGroupName) ;
+		Hashtable<String, Person> aGroup = Utils.m_GroupCollection.get(sGroupName).getCollection() ;
 		Enumeration<String> keysPeople = aGroup.keys();
 		Float f = 0.0f, t = 0.0f;			Float s = 0.0f, p = 0.0f;
 		Float csT = 0.0f ;					Float csGT = 0.0f ;
@@ -307,7 +321,7 @@ public class account extends Object
 	}
 
 	private void sumFromTo(String action, String sGroupName) {
-		Hashtable<String, Person> aGroup = Utils.m_GroupCollection.get(sGroupName) ;
+		Hashtable<String, Person> aGroup = Utils.m_GroupCollection.get(sGroupName).getCollection() ;
 		Enumeration<String> keysPeople = aGroup.keys();
 		Float checkSums[] = {0.0f, 0.0f} ;
 		while(keysPeople.hasMoreElements()) {
@@ -340,14 +354,16 @@ public class account extends Object
 	// ----------------------------------------------------
 	// ProcessTransaction
 	// ----------------------------------------------------
-	private void ProcessTransaction(String item, String desc, String amt, String from, String to, String group, String action, String def)
+	private boolean ProcessTransaction(String item, String desc, String amt, String from, String to, String group, String action, String def)
 	{
 		try {
 			Utils.m_bClearing = false ;
 
 			String sGroupName = group ;
 			GroupProcessor gp = new GroupProcessor() ;
-			gp.doGroupAction(action) ;
+			//gp.doGroupAction(action) ;
+			boolean bGroup = gp.doGroupAction2(action, sGroupName) ;
+            if (bGroup) return false;
 
 			float xAmt = 0.0f ;
 			try {
@@ -362,8 +378,11 @@ public class account extends Object
 			doFromTo(item, _FR, xAmt, aFrom, sGroupName) ;
 			doFromTo(item, _TO, xAmt, aTo, sGroupName) ;
 			sumFromTo(action, sGroupName) ;
+
+            return true;
 		} catch (Exception e){
 			System.err.println("Error:ProcessTransaction:" + e.getMessage());
+            return false;
 		}
 	}
 
@@ -372,10 +391,10 @@ public class account extends Object
 	private void dumpCollection()
 	{
 		System.out.println("--------------------------------------");
-		Enumeration<String> keysGroup = Utils.m_GroupCollection.keys();
+		Enumeration<String> keysGroup = Utils.m_GroupCollection.m_Groups.keys();
 		while(keysGroup.hasMoreElements()){
 			String sGroupName = keysGroup.nextElement();
-			Hashtable<String, Person> aGroup = Utils.m_GroupCollection.get(sGroupName) ;
+			Hashtable<String, Person> aGroup = Utils.m_GroupCollection.get(sGroupName).getCollection() ;
 			System.out.println("");
 			System.out.println(sGroupName);
 
@@ -412,6 +431,8 @@ public class account extends Object
 			try {
 				while ((sLine = buffReader.readLine()) != null) {
 					if (sLine.length() == 0) continue ;
+					if (sLine.charAt(0) == Constants._COMMENT) continue ; // comment, skip
+
 					String item="", category="", vendor="", desc="", amt="", from="", to="", group="", action="", def="" ;
 					// stream the input, one line at a time
 					String[] pieces = sLine.split(Constants._READ_SEPARATOR);
@@ -457,11 +478,9 @@ public class account extends Object
 						else def = def + p ;
 						pos++ ;
 					}
-					if (item.charAt(0) == Constants._COMMENT) continue ; // comment, skip
-
 					//System.out.println("item:" + item + ", category:" + category + ", vendor:" + vendor + ", desc:" + desc + ", amt:" + amt + ", from:" + from + ", to:" + to + ", group:" + group + ", action:" + action);
 					if (group.length() == 0) group = Constants._DEFAULT_GROUP ;
-					ProcessTransaction(item, desc, amt, from, to, group, action, def) ;
+					if (ProcessTransaction(item, desc, amt, from, to, group, action, def) == false) continue;
 					if (Utils.m_settings.getExportToUse())
 						gpF.prepareToExportGroup(item, category, vendor, desc, amt, from, to, group, action, def) ;
 				} // end of while
@@ -490,10 +509,10 @@ public class account extends Object
 	}
 
 	private groupCsvJsonMapping buildGroupCsvJsonMap(String csvFileName) {
-		Enumeration<String> keysGroup = Utils.m_GroupCollection.keys();
+		Enumeration<String> keysGroup = Utils.m_GroupCollection.m_Groups.keys();
 		while(keysGroup.hasMoreElements()){
 			String sGroupName = keysGroup.nextElement();
-			Hashtable<String, Person> aGroup = Utils.m_GroupCollection.get(sGroupName) ;
+			Hashtable<String, Person> aGroup = Utils.m_GroupCollection.get(sGroupName).getCollection() ;
 
 			String gCSVFile = null, sCSVJSON = null ;
 			csvFileJSON csvFile = null ;
@@ -554,4 +573,4 @@ public class account extends Object
 				xls.readFromMap(fName, f) ;
 		}
     }
-} // end of class
+}

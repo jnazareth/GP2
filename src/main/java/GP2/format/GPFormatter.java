@@ -85,7 +85,7 @@ public class GPFormatter {
 
 	public void exportToCSVGroup(String fileName) {
 		_SheetProperties sp = null ;
-		Enumeration<String> keysGroup = Utils.m_GroupCollection.keys();
+		Enumeration<String> keysGroup = Utils.m_GroupCollection.m_Groups.keys();
 		while(keysGroup.hasMoreElements()) {
 			String groupName = keysGroup.nextElement();
 			Hashtable<String, Person> aGroup = Utils.m_GroupCollection.get(groupName) ;

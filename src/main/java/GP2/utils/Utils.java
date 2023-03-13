@@ -1,6 +1,7 @@
 package GP2.utils;
 
 import GP2.person.Person;
+import GP2.group.GroupAccount;
 import GP2.group.groupCsvJsonMapping;
 import GP2.cli.Settings;
 
@@ -17,7 +18,8 @@ public class Utils {
 
 	// members
 	public static Hashtable<String, Person> /* m_Persons, replaced by Group */ m_System ;
-	public static Hashtable<String, Hashtable<String, Person>> m_GroupCollection ;
+	//public static Hashtable<String, Hashtable<String, Person>> m_GroupCollection ;
+	public static GroupAccount m_GroupCollection ;
 	public static boolean m_bClearing = false ;
 	public static boolean m_bSys = false ;
 

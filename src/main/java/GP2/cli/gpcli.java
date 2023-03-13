@@ -1,6 +1,7 @@
 package GP2.cli;
 
-import GP2.account.account;
+//import GP2.account.account;
+import GP2.account.account2;
 import GP2.utils.Constants;
 import GP2.utils.fileUtils;
 import GP2.utils.Utils;
@@ -196,8 +197,8 @@ public class gpcli {
         return true ; 
     }
 
-    public void processCommandLine() {
-		account myAccount = new account() ;
+    public void processCommandLine2() {
+		account2 myAccount = new account2() ;
         if (!processCommandLineFlags()) return ;
 
 		File[] inputs = Utils.m_settings.getInputs();
@@ -208,6 +209,19 @@ public class gpcli {
 		}
         processClean() ;
     }
+
+    /*public void processCommandLine() {
+		account myAccount = new account() ;
+        if (!processCommandLineFlags()) return ;
+
+		File[] inputs = Utils.m_settings.getInputs();
+		for (File filename : inputs) {
+			myAccount.ReadAndProcessTransactions(filename.getName()) ;
+            myAccount.writeJson(filename.getName()) ;
+            myAccount.buildXLS(filename.getName()) ;
+		}
+        processClean() ;
+    }*/
 
     private String versionFrom(String resourceInClasspath) {
         InputStream in = null;

@@ -3,16 +3,13 @@ package GP2.input;
 import GP2.input.FTType.FromToType;
 import GP2.utils.Constants ;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.lang.Float;
-import java.lang.Math;
 
 public class InputProcessor extends Object {
 	// member
-	//public HashMap<String, _WhoFromTo> 	_Input = null ;	// String/key = _REM | _ALL | _INDIV | _UNKNOWN
 	public EnumMap<FromToType, _WhoFromTo> _Input = null ;
 
 	// functions
@@ -78,7 +75,9 @@ public class InputProcessor extends Object {
 			assignAmount (FTType.FromToType.Remainder, totalAmount) ;
 			assignAmount (FTType.FromToType.Individual, totalAmount) ;
 
-			float f = getTotalAmount(FTType.FromToType.All) + getTotalAmount(FTType.FromToType.Remainder) + getTotalAmount(FTType.FromToType.Individual) ;
+			float f = (getTotalAmount(FTType.FromToType.All) 
+					+ getTotalAmount(FTType.FromToType.Remainder) 
+					+ getTotalAmount(FTType.FromToType.Individual)) ;
 			if (totalAmount != f) {
 				float f1 = (totalAmount-f) ;
 				float f2 = 1/100 ;	// 1cent = tolerance
@@ -143,7 +142,7 @@ public class InputProcessor extends Object {
 			if ( (_Input.get(FTType.FromToType.All) == null) && (_Input.get(FTType.FromToType.Remainder) == null) ) {
 				int nNulls = getIndivNullCount() ;
 				if (nNulls != 0) {
-					float nIndivEachAmount = ((totalAmount-getTotalAmount(FTType.FromToType.Individual)) / nNulls) ;
+					float nIndivEachAmount = ((totalAmount - getTotalAmount(FTType.FromToType.Individual)) / nNulls) ;
 					putIndivAmount (nIndivEachAmount, nNulls) ;
 				}
 			}
