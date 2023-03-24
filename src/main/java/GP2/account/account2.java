@@ -123,6 +123,11 @@ public class account2 {
                     person.incAmount(Person.AccountEntry.TRANSACTION, fAmount) ;
                     person.incAmount(Person.AccountEntry.SPENT, fAmount) ;
 				}
+				/* checksumINDIVIDUALTOTALS bug 3/13
+				if (Utils.m_bClearing == true) {
+					if (idx == _FR) person.incAmount(Person.AccountEntry.PAID, fAmount) ;
+					if (idx == _TO) person.decAmount(Person.AccountEntry.PAID, fAmount) ;
+				}*/
 				aGroup.put(person.m_name, person) ;
 			}
 		} catch (Exception e) {
@@ -362,7 +367,7 @@ public class account2 {
 			String sGroupName = group ;
 			GroupProcessor gp = new GroupProcessor() ;
 			//gp.doGroupAction(action) ;
-			boolean bGroup = gp.doGroupAction2(action, sGroupName) ;
+			boolean bGroup = gp.doGroupAction3(action, sGroupName) ;
             if (bGroup) return false;
 
 			float xAmt = 0.0f ;
@@ -391,7 +396,7 @@ public class account2 {
 	private void dumpCollection()
 	{
 		System.out.println("--------------------------------------");
-		Enumeration<String> keysGroup = Utils.m_GroupCollection.m_Groups.keys();
+		Enumeration<String> keysGroup = Utils.m_GroupCollection.keys();
 		while(keysGroup.hasMoreElements()){
 			String sGroupName = keysGroup.nextElement();
 			Hashtable<String, Person> aGroup = Utils.m_GroupCollection.get(sGroupName).getCollection() ;
@@ -509,7 +514,7 @@ public class account2 {
 	}
 
 	private groupCsvJsonMapping buildGroupCsvJsonMap(String csvFileName) {
-		Enumeration<String> keysGroup = Utils.m_GroupCollection.m_Groups.keys();
+		Enumeration<String> keysGroup = Utils.m_GroupCollection.keys();
 		while(keysGroup.hasMoreElements()){
 			String sGroupName = keysGroup.nextElement();
 			Hashtable<String, Person> aGroup = Utils.m_GroupCollection.get(sGroupName).getCollection() ;

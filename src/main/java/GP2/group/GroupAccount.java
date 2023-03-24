@@ -9,7 +9,7 @@ import java.util.Hashtable;
 import java.util.Enumeration;
 
 public class GroupAccount extends Object {
-	public Hashtable<String, _AGroup> m_Groups = new Hashtable<String, _AGroup>(); // String/key = groupName
+	private Hashtable<String, _AGroup> m_Groups = new Hashtable<String, _AGroup>(); // String/key = groupName
 
 	public _AGroup get(String group) {
 		return m_Groups.get(group) ;
@@ -17,6 +17,10 @@ public class GroupAccount extends Object {
 
 	public void put(String g, _AGroup ag) {
 		m_Groups.put(g, ag);
+	}
+
+	public Enumeration<String> keys() {
+		return m_Groups.keys();
 	}
 
 	public int size() {
@@ -30,7 +34,6 @@ public class GroupAccount extends Object {
             System.out.print(groupName + "\t::");
 
 			_AGroup aG = this.get(groupName);
-			//Hashtable<String, Person> aGroup = aG.getCollection();
 			aG.dumpCollection() ;
             System.out.println("");
 		}
@@ -40,8 +43,8 @@ public class GroupAccount extends Object {
     public class _AGroup extends Hashtable<String, Person> {
 		private Hashtable<String, Person> m_aGroup = new Hashtable<String, Person>() ;
         private EntryType m_gType ;
-        public PGState m_gState ; 
-    
+        public PGState m_gState ;
+
 		public _AGroup () {
             m_gType = EntryType.Self ;
             m_gState = new PGState(EntryState.Disable) ;

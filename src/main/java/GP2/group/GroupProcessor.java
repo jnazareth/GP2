@@ -4,6 +4,7 @@ import GP2.group.GroupAccount._AGroup;
 import GP2.person.GPAction;
 import GP2.person.Person;
 import GP2.person.GPAction.ActionItem;
+import GP2.person.GPAction.ActionItem2;
 import GP2.person.GPAction.PGState;
 import GP2.person.GPAction.PGType;
 import GP2.person.GPAction.TransactionType;
@@ -14,20 +15,56 @@ import GP2.utils.Utils;
 import GP2.utils.Constants;
 
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Map;
-
-import org.apache.poi.ss.formula.functions.T;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class GroupProcessor extends Object {
+
+	Hashtable<String, Person> newAGCollection(String sGroupName) {
+		try {
+			_AGroup aG = Utils.m_GroupCollection.new _AGroup();
+			Utils.m_GroupCollection.put(sGroupName, aG) ;
+			return aG.getCollection();
+		} catch (Exception e){
+			System.err.println("newAGCollection::Error:" + e.getMessage());
+			return null ;
+		}
+	}
+
+	// Find_CreateGroup
+	Hashtable<String, Person> Find_CreateGroup2(String sGroupName)
+	{
+		// find group
+		try {
+			if (Utils.m_GroupCollection == null) Utils.m_GroupCollection = new GroupAccount() ;
+
+			if (Utils.m_GroupCollection.size() == 0)
+				return newAGCollection(sGroupName);
+			else {
+				_AGroup aG = Utils.m_GroupCollection.get(sGroupName);
+				if (aG == null) {
+					return newAGCollection(sGroupName);
+				} else {
+					return aG.getCollection();
+				}
+			}
+		} catch (Exception e){
+			System.err.println("Find_CreateGroup::Error:" + e.getMessage());
+			return null ;
+		}
+	}
 
 	// Find_CreateGroup
 	Hashtable<String, Person> Find_CreateGroup(String sGroupName)
 	{
 		// find group
 		try {
+			if (Utils.m_GroupCollection == null) Utils.m_GroupCollection = new GroupAccount() ;
+
 			_AGroup aG = Utils.m_GroupCollection.get(sGroupName);
 			if (aG == null) {
 				aG = Utils.m_GroupCollection.new _AGroup();
@@ -80,44 +117,168 @@ public class GroupProcessor extends Object {
 	}
 
 	void listActions2(String a, String g) {
-		HashMap<String, ActionItem> hmActions = GPAction.breakdownActions2(a, g);
-		for (Map.Entry<String, ActionItem> pair : hmActions.entrySet()) {
+		HashMap<String, HashSet<ActionItem>> hmActions = GPAction.breakdownActions2(a, g);
+		for (Map.Entry<String, HashSet<ActionItem>> pair : hmActions.entrySet()) {
 			System.out.println("groupName:" + pair.getKey());
-			ActionItem ai = pair.getValue();
-			System.out.println("actionItem:" + ai.type + "|" + ai.name + "|" + ai.state);
+			HashSet<ActionItem> hs = pair.getValue();
+			Iterator<ActionItem> iterator = hs.iterator();
+			while (iterator.hasNext()) {
+				ActionItem ai = iterator.next() ;
+				System.out.println("actionItem:" + ai.type + "|" + ai.name + "|" + ai.state);
+      		}
 		}
 	}
 
 	private boolean processActions(String a, String g) {
 		boolean bSkip = false;
+		//System.out.println("action:" + a + ", group:" + g);
 
 		Hashtable<String, Person> grpPersons = null ;
-		HashMap<String, ActionItem> hmActions = GPAction.breakdownActions2(a, g);
-		for (Map.Entry<String, ActionItem> pair : hmActions.entrySet()) {
+		HashMap<String, HashSet<ActionItem>> hmActions = GPAction.breakdownActions2(a, g);
+		for (Map.Entry<String, HashSet<ActionItem>> pair : hmActions.entrySet()) {
 			String sGroupName = pair.getKey() ;
+			//System.out.println("for, groupName:" + sGroupName);
 			grpPersons = Find_CreateGroup(sGroupName) ;
+			//System.out.println(sGroupName + ", grpPersons.size():" + grpPersons.size());
 
-			ActionItem item = pair.getValue();
-			if (TransactionType.TType.byValue(item.type) == TransactionType.TType.Skip) return true ;	// skip line
-			if (TransactionType.TType.byValue(item.type) == TransactionType.TType.Clearing) {			// pay between individuals
-				Utils.m_bClearing = true ;
-				return bSkip;
-			}
-			if (item.type.equalsIgnoreCase(EntryType.Group.toString())) {
-				// group actions, pending
-			} else if (item.type.equalsIgnoreCase(EntryType.Self.toString())) {
-				EntryState es = EntryState.byValue(item.state);
-				Person person = null;
-				if (es.equals(EntryState.Enable) || (es.equals(EntryState.Disable))) {
-					person = grpPersons.get(item.name);
-					person.m_gState = new PGState(es) ;
-				} else if (es.equals(EntryState.Add)) {
-					person = new Person(item.name, EntryState.Add) ;
+
+			HashSet<ActionItem> hsActions = pair.getValue();
+			Iterator<ActionItem> iterator = hsActions.iterator();
+			while (iterator.hasNext()) {
+				ActionItem item = iterator.next() ;
+				//System.out.println("while, actionItem:" + item.type + "|" + item.name + "|" + item.state);
+				if (item.type.toString().compareToIgnoreCase(TransactionType.TType.Skip.toString()) == 0) {
+					//System.out.println("skipping ...");
+					return true ;	// skip line
 				}
-				grpPersons.put(item.name, person) ;
+				if (item.type.toString().compareToIgnoreCase(TransactionType.TType.Clearing.toString()) == 0) {
+					Utils.m_bClearing = true ;
+					//System.out.println("bSkip ..." +  bSkip);
+					return bSkip;
+				}
+
+				//debug
+				/*
+				System.out.println("item.type:"+ item.type.toString() + ", EntryType.Self.toString():" + EntryType.Self.toString());
+				if (item.type.toString().compareToIgnoreCase(EntryType.Group.toString()) == 0) {
+					System.out.println("type match::item.type.equals(EntryType.Group.toString()");
+				} else if (item.type.toString().compareToIgnoreCase(EntryType.Self.toString()) == 0) {
+					System.out.println("type match::item.type.equals(EntryType.Self.toString()");
+				}
+				System.out.println("item state:" + item.state.toString());
+				if (item.state.toString().compareToIgnoreCase(EntryState.Add.toString()) == 0) {
+					System.out.println("state match::es1.equals(EntryState.Add)");
+				}
+				*/
+
+				if (item.type.toString().compareToIgnoreCase(EntryType.Group.toString()) == 0) {
+					// group actions, pending
+					//System.out.println("(item.type.toString().compareToIgnoreCase(EntryType.Group.toString()) == 0), nothing to do");
+				} else if (item.type.toString().compareToIgnoreCase(EntryType.Self.toString()) == 0) {
+					Person person = grpPersons.get(item.name);
+					if (person != null) {
+						if ((item.state.toString().compareToIgnoreCase(EntryState.Enable.toString()) == 0) ||
+							(item.state.toString().compareToIgnoreCase(EntryState.Disable.toString()) == 0)) {
+							person.m_gState = new PGState(EntryState.byValue(item.state.toString())) ;
+							person.m_active = false ;	// remove
+						}
+					} else {
+						if (item.state.toString().compareToIgnoreCase(EntryState.Add.toString()) == 0) {
+							person = new Person(item.name, EntryState.Add) ;
+							grpPersons.put(item.name, person) ;
+							//System.out.println(sGroupName +"::" + item.name + ",grpPersons.size():" + grpPersons.size());
+						}
+					}
+				}
 			}
 		}
 		return bSkip ;
+	}
+
+	void listActions3(String a, String g) {
+		HashMap<String, HashSet<ActionItem2>> hmActions = GPAction.breakdownActions3(a, g);
+        System.out.println("listActions3: ----- " + hmActions.size());
+		for (Map.Entry<String, HashSet<ActionItem2>> pair : hmActions.entrySet()) {
+			System.out.println("groupName:" + pair.getKey());
+			HashSet<ActionItem2> hs = pair.getValue();
+			Iterator<ActionItem2> iterator = hs.iterator();
+			while (iterator.hasNext()) {
+				ActionItem2 ai = iterator.next() ;
+				System.out.println("actionItem:" + ai.pgtype + "|" + ai.ttype + "|" + ai.name + "|" + ai.state);
+      		}
+		}
+        System.out.println("listActions3: ----- ");
+	}
+
+	private boolean processActions2(String a, String g) {
+		boolean bSkip = false;
+		//System.out.println("processActions2. action:" + a + ", group:" + g);
+
+		Hashtable<String, Person> grpPersons = null ;
+		HashMap<String, HashSet<ActionItem2>> hmActions = GPAction.breakdownActions3(a, g);
+		for (Map.Entry<String, HashSet<ActionItem2>> pair : hmActions.entrySet()) {
+			String sGroupName = pair.getKey() ;
+			//System.out.println("for, groupName:" + sGroupName);
+			grpPersons = Find_CreateGroup(sGroupName) ;
+			//System.out.println(sGroupName + ", grpPersons.size():" + grpPersons.size());
+
+			HashSet<ActionItem2> hsActions = pair.getValue();
+			Iterator<ActionItem2> iterator = hsActions.iterator();
+			while (iterator.hasNext()) {
+				ActionItem2 item = iterator.next() ;
+
+				if ((item.ttype != null) &&	(item.ttype.compareTo(TransactionType.TType.Skip) == 0)) {
+					//System.out.println("match skip::" + item.ttype.toString());
+					return true ;	// skip line
+				} else if ((item.ttype != null) &&	(item.ttype.compareTo(TransactionType.TType.Clearing) == 0)) {
+					Utils.m_bClearing = true ;
+					//System.out.println("bSkip ..." +  bSkip);
+					return bSkip;
+				}
+				//System.out.println("clearing check done");
+
+				if ((item.pgtype.compareTo(EntryType.Group) == 0)) {
+					//System.out.println("group processing");
+					// group actions, pending
+					//System.out.println("(item.type.toString().compareToIgnoreCase(EntryType.Group.toString()) == 0), nothing to do");
+				} else if ((item.pgtype.compareTo(EntryType.Self) == 0)) {
+					//System.out.println("self processing");
+
+					Person person = grpPersons.get(item.name);
+					if (person != null) {
+						//System.out.println("not null, person:" + person.m_name);
+						if (((item.state.compareTo(EntryState.Enable)) == 0) ||
+							((item.state.compareTo(EntryState.Disable)) == 0)) {
+							person.m_gState = new PGState(EntryState.byValue(item.state.toString())) ;
+							person.m_active = false ;	// remove
+						}
+					} else {
+						//System.out.println("null, person:");
+						if ((item.state.compareTo(EntryState.Add) == 0)) {
+							person = new Person(item.name, EntryState.Add) ;
+							grpPersons.put(item.name, person) ;
+							//System.out.println(sGroupName +"::" + item.name + ",grpPersons.size():" + grpPersons.size());
+						}
+					}
+				}
+			}
+		}
+		return bSkip ;
+	}
+
+	public boolean doGroupAction3(String action, String sGroup)
+	{
+		//String sG = ((sGroup.length() == 0) ? Constants._DEFAULT_GROUP : sGroup) ;
+		String sG = "";
+		if (sGroup.length() == 0) sG = Constants._DEFAULT_GROUP;
+		else sG = sGroup;
+
+		//listActions2(action, sG);
+		//boolean bProcess = processActions(action, sG) ;
+
+		//listActions3(action, sG);
+		boolean bProcess = processActions2(action, sG) ;
+		return bProcess;
 	}
 
     // doGroupAction: process input action
@@ -128,10 +289,9 @@ public class GroupProcessor extends Object {
 		String sG = "";
 		if (sGroup.length() == 0) sG = Constants._DEFAULT_GROUP;
 		else sG = sGroup;
-		listActions2(action, sG);
+		//listActions2(action, sG);
 		//boolean pA = processActions(action, sG) ;
 		//return pA;
-
 
 		boolean bSkip = false;
 		if (TransactionType.TType.byValue(action) == TransactionType.TType.Skip) return true ;	// skip line
@@ -195,6 +355,7 @@ public class GroupProcessor extends Object {
 					esInd = iActions.get(iName);
 					try {
 						Hashtable<String, Person> aGrp = Find_CreateGroup(sGroupName) ;
+						//System.out.println(sGroupName + ", aGrp.size():" + aGrp.size());
 
 						Person person = aGrp.get(iName);
 						if (person != null) {	// found, flip enable/disable
@@ -209,6 +370,7 @@ public class GroupProcessor extends Object {
 							if (esInd.equals(EntryState.Add)) {
 								Person aPerson = new Person(iName.trim(), EntryState.Add) ;
 								aGrp.put(iName, aPerson) ;
+								//System.out.println(sGroupName +"::" + iName + ",aGrp.size():" + aGrp.size());
 							}
 						}
 					} catch (Exception e) {
