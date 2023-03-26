@@ -26,24 +26,11 @@ public interface Constants {
 	final String DELETE_FILE_WC4	= WC_GLOB + WC_ALL + OUT_FILE + OUT_JSON_EXTENSION ;
 	final String DELETE_FILE_WC5	= WC_GLOB + WC_ALL + OUT_EXTENSION + OUT_MAP_EXTENSION ;
 
-	// Actions
-	final String ADD_ITEM 		= "*" ;
-	final String ENABLE_ITEM 	= "+" ;
-	final String DISABLE_ITEM 	= "-" ;
-
 	// id markers
 	final String _ID_SEPARATOR 	= ":" ;
-	final String _SELF 			= ":self" ;
-	final String _GROUP 		= ":group" ;
-	final String _ID_lR 		= "(" ;
-	final String _ID_rR 		= ")" ;
 	final String _DEFAULT_GROUP	= "default" ;
 	final String S_ACTION_QUOTE	= "\"" ;
 
-    // transaction indicators
-	final String _CLEARING	= "$" ;
-	final char 	_COMMENT	= '#' ;
-	
 	// formatting strings
 	final String lBr	= "{" ;
 	final String rBr	= "}" ;

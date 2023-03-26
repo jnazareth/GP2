@@ -49,8 +49,6 @@ public class gp2
         gpcli gCLI = new gpcli();
         Utils.m_settings = gCLI.parseCommandLine(args);
 
-		//System.out.println("settings" + Utils.m_settings);
-		//gCLI.processCommandLine();
-		gCLI.processCommandLine2();
+		gCLI.processCommandLine();
 	}
 }

@@ -1,7 +1,6 @@
 package GP2.cli;
 
-//import GP2.account.account;
-import GP2.account.account2;
+import GP2.account.account;
 import GP2.utils.Constants;
 import GP2.utils.fileUtils;
 import GP2.utils.Utils;
@@ -12,9 +11,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.io.IOException;
 import java.util.Properties;
-
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -197,20 +193,7 @@ public class gpcli {
         return true ; 
     }
 
-    public void processCommandLine2() {
-		account2 myAccount = new account2() ;
-        if (!processCommandLineFlags()) return ;
-
-		File[] inputs = Utils.m_settings.getInputs();
-		for (File filename : inputs) {
-			myAccount.ReadAndProcessTransactions(filename.getName()) ;
-            myAccount.writeJson(filename.getName()) ;
-            myAccount.buildXLS(filename.getName()) ;
-		}
-        processClean() ;
-    }
-
-    /*public void processCommandLine() {
+    public void processCommandLine() {
 		account myAccount = new account() ;
         if (!processCommandLineFlags()) return ;
 
@@ -221,7 +204,7 @@ public class gpcli {
             myAccount.buildXLS(filename.getName()) ;
 		}
         processClean() ;
-    }*/
+    }
 
     private String versionFrom(String resourceInClasspath) {
         InputStream in = null;

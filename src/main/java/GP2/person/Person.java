@@ -25,7 +25,7 @@ public class Person extends Object {
 	// members
 	public String	m_name;
 	public EnumMap<AccountEntry, Float> m_amount = new EnumMap<AccountEntry, Float>(AccountEntry.class);
-	public boolean	m_active;
+	//public boolean	m_active;
 	private EntryType m_gType ;
 	public PGState m_gState ; 
 
@@ -39,7 +39,7 @@ public class Person extends Object {
 	public Person() {
 		m_name = "" ;
 		initAmounts() ;
-		m_active = false ;
+		//m_active = false ;
 
 		m_gType = EntryType.Self ;
 		m_gState = new PGState(EntryState.Disable) ;
@@ -48,7 +48,7 @@ public class Person extends Object {
 	public Person(String name, boolean active) {
 		m_name = name ;
 		initAmounts() ;
-		m_active = active ;
+		//m_active = active ;
 
 		m_gType = EntryType.Self ;
 		if (active) m_gState = new PGState(EntryState.Enable) ;
@@ -80,6 +80,6 @@ public class Person extends Object {
 		for (AccountEntry ae : AccountEntry.values()) {
 			sAmtsE += (ae.ordinal() + "::" + ae.name() + "::" + m_amount.get(ae) + "\n") ;
 		}
-		return m_name + "," + sAmtsE + m_active ;
+		return m_name + "," + sAmtsE;// + m_active ;
 	}
 } // end of class

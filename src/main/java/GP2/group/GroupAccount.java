@@ -46,9 +46,9 @@ public class GroupAccount extends Object {
         public PGState m_gState ;
 
 		public _AGroup () {
-            m_gType = EntryType.Self ;
-            m_gState = new PGState(EntryState.Disable) ;
-            }
+            m_gType = EntryType.Group ;
+            m_gState = new PGState(EntryState.Add) ;
+        }
 
 		public Person put(String s, Person p) {
 			return m_aGroup.put(s, p) ;

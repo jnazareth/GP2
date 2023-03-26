@@ -84,6 +84,8 @@ public class GPFormatter {
     }
 
 	public void exportToCSVGroup(String fileName) {
+		if (Utils.m_GroupCollection == null) return ;
+
 		_SheetProperties sp = null ;
 		Enumeration<String> keysGroup = Utils.m_GroupCollection.keys();
 		while(keysGroup.hasMoreElements()) {
