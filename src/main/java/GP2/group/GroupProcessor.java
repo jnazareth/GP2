@@ -129,7 +129,6 @@ public class GroupProcessor extends Object {
 							Hashtable<String, Person> aGroup = Find_CreateGroup(sGroupName) ;
 							Person person = aGroup.get(item.name);
 							person.m_gState = new PGState(item.state) ;
-							//person.m_active = !person.m_active; // toggle, remove
 						}
 					} else if (isEntryStateAdd(item)) {
 						if (!bGroupExists) return logGroupPersonError(EntryType.Group, sGroupName) ;
