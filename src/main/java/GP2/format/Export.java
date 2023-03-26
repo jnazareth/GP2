@@ -57,7 +57,7 @@ public class Export {
     ArrayList<String> getSortedPersons(String sGroupName) {
         ArrayList<String> al = new ArrayList<String>() ;
 
-        Hashtable<String, Person> aGroup = Utils.m_GroupCollection.get(sGroupName) ;
+        Hashtable<String, Person> aGroup = Utils.m_GroupCollection.get(sGroupName).getCollection() ;
 		List<String> mapKeys = new ArrayList<String>(aGroup.keySet());
 		Collections.sort(mapKeys);
         Iterator<String> iter = mapKeys.iterator();
@@ -156,7 +156,7 @@ public class Export {
 		row.addCell(pos++, ExportKeys.keyAction,    action) ;
 
 		float csTransaction = 0, csGroupTotals = 0, csIndividualTotals = 0 ;
-        Hashtable<String, Person> aGroup = Utils.m_GroupCollection.get(group) ;
+        Hashtable<String, Person> aGroup = Utils.m_GroupCollection.get(group).getCollection() ;
         List<String> mapKeys = new ArrayList<String>(aGroup.keySet());
         Collections.sort(mapKeys);
         Iterator<String> iter = mapKeys.iterator();

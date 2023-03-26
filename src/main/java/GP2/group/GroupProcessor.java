@@ -1,258 +1,152 @@
 package GP2.group;
 
+import GP2.group.GroupAccount._AGroup;
+import GP2.person.GPAction;
 import GP2.person.Person;
+import GP2.person.GPAction.ActionItem;
+import GP2.person.GPAction.PGState;
+import GP2.person.GPAction.TransactionType;
+import GP2.person.GPAction.PGState.EntryState;
+import GP2.person.GPAction.PGType.EntryType;
 import GP2.utils.Utils;
 import GP2.utils.Constants;
 
 import java.util.Hashtable;
-import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.HashMap;
 
 public class GroupProcessor extends Object {
-    
-	// Find_CreateGroup
-	Hashtable<String, Person> Find_CreateGroup(String sGrpName)
-	{
-		// find group
+	static final boolean bSkip = true, bDoNoSkip = false ;
+
+	Hashtable<String, Person> Find_CreateGroup(String sGroupName) {
 		try {
-			Hashtable<String, Person> aGrp = Utils.m_GroupCollection.get(sGrpName) ;
-			if (aGrp == null) {
-				aGrp = new Hashtable<String, Person>() ;
-				Utils.m_GroupCollection.put(sGrpName, aGrp) ;
+			if (Utils.m_GroupCollection == null) Utils.m_GroupCollection = new GroupAccount() ;
+
+			_AGroup aG = Utils.m_GroupCollection.get(sGroupName);
+			if (aG == null) {
+				aG = Utils.m_GroupCollection.new _AGroup();
+				//System.out.println("new aG:" + sGroupName + ", state" + aG.m_gState);
+				Utils.m_GroupCollection.put(sGroupName, aG) ;
+				return aG.getCollection();
 			} else {
-				// found, do nothing
+				return aG.getCollection();
 			}
-			return aGrp ;
 		} catch (Exception e){
-			System.err.println("Error: " + e.getMessage());
+			System.err.println("Find_CreateGroup::Error:" + e.getMessage());
 			return null ;
 		}
 	}
 
-	// getAction: get specific action
-	String getAction(int lR, String sA)
-	{
-		String sAct = "" ;
-		// get action
-		int idS = 0 ;
-		if ( ((idS = sA.indexOf(Constants._ID_SEPARATOR)) != -1) )
-			sAct = sA.substring(lR+1, idS).trim() ;
-		else
-			System.err.println("Action not specified: " + sA);
-
-		return sAct ;
+    boolean groupExists(String sGroupName) {
+		try {
+			if (Utils.m_GroupCollection == null) return false ;
+			_AGroup aG = Utils.m_GroupCollection.get(sGroupName);
+			return ( (aG == null) ? false:true ) ;
+		} catch (Exception e){
+			System.err.println("groupExists::Error:" + e.getMessage());
+			return false ;
+		}
 	}
 
-    // doGroupAction: process input action
-	// name1 (*/+/-:self), name2 (*/+/-:self): add/enable/disable individuals
-	// group1 (*/+/-:group): add/enable/disable group
-	public String doGroupAction2(String action, String sGroup)
-	{
-		//System.out.println("action: " + action);
-
-		String sGroupName = Constants._DEFAULT_GROUP ;
-		boolean bGroup = false, bInd = false ;
-		ArrayList<String> grpActions = null, indActions = null ;
-
-		// process Action
-		if (action.length() != 0) {
-			String[] pieces = action.split(Constants._ITEM_SEPARATOR);
-			String sActs = "", sIndAct = Constants.ADD_ITEM, sGrpAct = Constants.ADD_ITEM;
-			for (String p : pieces) {
-				sActs = p ;
-
-				if (sActs.endsWith(Constants._CLEARING)) {	// pay between individuals
-					Utils.m_bClearing = true ;
-				}
-
-				int lR = 0, rR = 0 ;
-				String aName = "", aGroup = Constants._DEFAULT_GROUP ;
-				// valid construct: <name> (*:self or *:group)
-				if ( ((lR = sActs.indexOf(Constants._ID_lR)) != -1) && ((rR = sActs.indexOf(Constants._ID_rR)) != -1) ) {
-						// get name: self or group
-						if ( (bInd = sActs.contains(Constants._SELF)) ) {
-							aName = sActs.substring(0, lR).trim() ;
-							sIndAct = getAction(lR, sActs) ;
-						}
-						else if ( (bGroup = sActs.contains(Constants._GROUP)) ) {
-							aGroup = sActs.substring(0, lR).trim() ;
-							sGrpAct = getAction(lR, sActs) ;
-						}
-						else
-							; //System.err.println("Individual or Group not specified: " + action);
-				}
-
-				if (bGroup) {
-					if (grpActions == null) {
-						grpActions = new ArrayList<String>() ;
-						grpActions.add(aGroup + Constants._ID_SEPARATOR + sGrpAct) ;
-					} else
-						grpActions.add(aGroup + Constants._ID_SEPARATOR + sGrpAct) ;
-				}
-
-				if (bInd) {
-					if (indActions == null) {
-						indActions = new ArrayList<String>() ;
-						indActions.add(aName + Constants._ID_SEPARATOR + sIndAct) ;
-					} else
-						indActions.add(aName + Constants._ID_SEPARATOR + sIndAct) ;
-				}
-			} // while
-
-			// Create Collections
-			if (Utils.m_GroupCollection == null) Utils.m_GroupCollection = new Hashtable<String, Hashtable<String, Person>>() ;
-
-			if (grpActions != null) {
-				for (String aAction : grpActions) {
-					int idS = -1 ;
-					if ( ((idS = aAction.indexOf(Constants._ID_SEPARATOR)) != -1) ) {
-						sGroupName = aAction.substring(0, idS).trim() ;
-						sGrpAct = aAction.substring(idS+1, aAction.length()).trim() ;
-						Find_CreateGroup(sGroupName) ;
-					}
-				}
+    boolean personExists(String sGroupName, String sName) {
+		try {
+			if (Utils.m_GroupCollection == null) return false ;
+			_AGroup aG = Utils.m_GroupCollection.get(sGroupName);
+			if (aG == null) {
+				return false ;
+			} else {
+				Hashtable<String, Person> aGrp = aG.getCollection();
+				Person person = aGrp.get(sName);
+				return ( (person == null) ? false:true ) ;
 			}
-
-			if (indActions != null) {
-				for (String aAction : indActions) {
-					int idS = -1 ;
-					if ( ((idS = aAction.indexOf(Constants._ID_SEPARATOR)) != -1) ) {
-						String sIndName = aAction.substring(0, idS).trim() ;
-						sIndAct = aAction.substring(idS+1, aAction.length()).trim() ;
-
-						try {
-							Hashtable<String, Person> aGrp = Find_CreateGroup(sGroupName) ;
-							//System.out.println("sGroupName: " + sGroupName);
-
-							Person person = aGrp.get(sIndName);
-							if (person != null) { // found, flip enable/disable
-								//System.out.println("SEARCH: " + sIndName + " ,FOUND: " + person.m_name + ":" + person.m_active + ": flip active");
-								if (sIndAct.compareToIgnoreCase(Constants.DISABLE_ITEM) == 0) {
-									person.m_active = false ;
-								} else if (sIndAct.compareToIgnoreCase(Constants.ENABLE_ITEM) == 0) {
-									person.m_active = true ;
-								}
-								aGrp.put(sIndName, person) ;
-							} else { // not found, add
-								//System.out.println("SEARCH: " + sIndName + ": NOT found, add");
-								if (sIndAct.compareToIgnoreCase(Constants.ADD_ITEM) == 0) {
-									Person aPerson = new Person(sIndName.trim(), true) ;
-									aGrp.put(sIndName, aPerson) ;
-								}
-							}
-						} catch (Exception e){
-							System.err.println("Error:doGroupAction " + e.getMessage());
-						}
-					}
-				}
-			}
-		} // action
-		return sGroupName ;
+		} catch (Exception e){
+			System.err.println("personExists::Error:" + e.getMessage());
+			return false ;
+		}
 	}
 
-    // doGroupAction: process input action
-	// name1 (*/+/-:self), name2 (*/+/-:self): add/enable/disable individuals
-	// group1 (*/+/-:group): add/enable/disable group
-	public String doGroupAction(String action)
-	{
-		//System.out.println("action: " + action);
+	static boolean doClearing(String sGroupName, boolean bGroupExists) {
+		//System.out.println("clearing, groupName:" + sGroupName + ", " + bGroupExists);
+		if (!bGroupExists) {
+			return logGroupPersonError(EntryType.Group, sGroupName) ;
+		} else {
+			Utils.m_bClearing = true ;
+			return bDoNoSkip;
+		}
+	}
 
-		String sGroupName = Constants._DEFAULT_GROUP ;
-		boolean bGroup = false, bInd = false ;
-		ArrayList<String> grpActions = null, indActions = null ;
+	static boolean isEntryStateToggle(ActionItem item) {
+		return (((item.state.compareTo(EntryState.Enable)) == 0) || ((item.state.compareTo(EntryState.Disable)) == 0) || ((item.state.compareTo(EntryState.NoOp)) == 0)) ;
+	}
+	static boolean isEntryStateAdd(ActionItem item) {
+		return ((item.state.compareTo(EntryState.Add)) == 0) ;
+	}
 
-		// process Action
-		if (action.length() != 0) {
-			String[] pieces = action.split(Constants._ITEM_SEPARATOR);
-			String sActs = "", sIndAct = Constants.ADD_ITEM, sGrpAct = Constants.ADD_ITEM;
-			for (String p : pieces) {
-				sActs = p ;
+	static boolean logGroupPersonError(EntryType et, String sName) {
+		if (et.compareTo(EntryType.Group) == 0) {
+			System.err.println("Group specified does not exist. Use: \"" +  sName + "(*:group)\" to create");
+		} else if (et.compareTo(EntryType.Self) == 0) {
+			System.err.println("Person specified does not exist. Use: \"" +  sName + "(*:self)\" to create");
+		}
+		return bSkip;		// skip, does not exist.
+	}
 
-				if (sActs.endsWith(Constants._CLEARING)) {	// pay between individuals
-					Utils.m_bClearing = true ;
-				}
+	boolean processActions(HashMap<String, LinkedHashSet<ActionItem>> hmActions) {
+		for (Map.Entry<String, LinkedHashSet<ActionItem>> pair : hmActions.entrySet()) {
+			String sGroupName = pair.getKey() ;
 
-				int lR = 0, rR = 0 ;
-				String aName = "", aGroup = Constants._DEFAULT_GROUP ;
-				// valid construct: <name> (*:self or *:group)
-				if ( ((lR = sActs.indexOf(Constants._ID_lR)) != -1) && ((rR = sActs.indexOf(Constants._ID_rR)) != -1) ) {
-						// get name: self or group
-						if ( (bInd = sActs.contains(Constants._SELF)) ) {
-							aName = sActs.substring(0, lR).trim() ;
-							sIndAct = getAction(lR, sActs) ;
+			LinkedHashSet<ActionItem> hsActions = pair.getValue();
+			Iterator<ActionItem> iterator = hsActions.iterator();
+			while (iterator.hasNext()) {
+				boolean bGroupExists = groupExists(sGroupName) ;
+
+				ActionItem item = iterator.next() ;
+				if ((item.ttype != null) &&	(item.ttype.compareTo(TransactionType.TType.Skip) == 0)) return bSkip ;	// skip line
+				if ((item.ttype != null) &&	(item.ttype.compareTo(TransactionType.TType.Clearing) == 0)) return doClearing(sGroupName, bGroupExists) ;
+
+				if ((item.pgtype.compareTo(EntryType.Group) == 0)) {
+					if ( isEntryStateToggle(item) ) {
+						if (!bGroupExists) {
+							return logGroupPersonError(EntryType.Group, sGroupName) ;
+						} else {
+							Hashtable<String, Person> aGroup = Find_CreateGroup(sGroupName) ;
+							_AGroup aG = Utils.m_GroupCollection.get(sGroupName);
+							if (aG != null) aG.m_gState = new PGState(item.state) ;
 						}
-						else if ( (bGroup = sActs.contains(Constants._GROUP)) ) {
-							aGroup = sActs.substring(0, lR).trim() ;
-							sGrpAct = getAction(lR, sActs) ;
+					} else if (isEntryStateAdd(item)) {
+						Hashtable<String, Person> aGroup = Find_CreateGroup(sGroupName) ;
+					}
+				} else if ((item.pgtype.compareTo(EntryType.Self) == 0)) {
+					if ( isEntryStateToggle(item) )  {
+						if (!bGroupExists) return logGroupPersonError(EntryType.Group, sGroupName) ;
+
+						boolean bPersonExists = personExists(sGroupName, item.name) ;
+						if (!bPersonExists) {
+							logGroupPersonError(EntryType.Self, item.name) ;
+						} else {
+							Hashtable<String, Person> aGroup = Find_CreateGroup(sGroupName) ;
+							Person person = aGroup.get(item.name);
+							person.m_gState = new PGState(item.state) ;
 						}
-						else
-							; //System.err.println("Individual or Group not specified: " + action);
-				}
+					} else if (isEntryStateAdd(item)) {
+						if (!bGroupExists) return logGroupPersonError(EntryType.Group, sGroupName) ;
 
-				if (bGroup) {
-					if (grpActions == null) {
-						grpActions = new ArrayList<String>() ;
-						grpActions.add(aGroup + Constants._ID_SEPARATOR + sGrpAct) ;
-					} else
-						grpActions.add(aGroup + Constants._ID_SEPARATOR + sGrpAct) ;
-				}
-
-				if (bInd) {
-					if (indActions == null) {
-						indActions = new ArrayList<String>() ;
-						indActions.add(aName + Constants._ID_SEPARATOR + sIndAct) ;
-					} else
-						indActions.add(aName + Constants._ID_SEPARATOR + sIndAct) ;
-				}
-			} // while
-
-			// Create Collections
-			if (Utils.m_GroupCollection == null) Utils.m_GroupCollection = new Hashtable<String, Hashtable<String, Person>>() ;
-
-			if (grpActions != null) {
-				for (String aAction : grpActions) {
-					int idS = -1 ;
-					if ( ((idS = aAction.indexOf(Constants._ID_SEPARATOR)) != -1) ) {
-						sGroupName = aAction.substring(0, idS).trim() ;
-						sGrpAct = aAction.substring(idS+1, aAction.length()).trim() ;
-						Find_CreateGroup(sGroupName) ;
+						Hashtable<String, Person> aGroup = Find_CreateGroup(sGroupName) ;
+						Person aPerson = new Person(item.name.trim(), EntryState.Add) ;
+						aGroup.put(item.name, aPerson) ;
 					}
 				}
 			}
+		}
+		return bDoNoSkip ;
+	}
 
-			if (indActions != null) {
-				for (String aAction : indActions) {
-					int idS = -1 ;
-					if ( ((idS = aAction.indexOf(Constants._ID_SEPARATOR)) != -1) ) {
-						String sIndName = aAction.substring(0, idS).trim() ;
-						sIndAct = aAction.substring(idS+1, aAction.length()).trim() ;
-
-						try {
-							Hashtable<String, Person> aGrp = Find_CreateGroup(sGroupName) ;
-							//System.out.println("sGroupName: " + sGroupName);
-
-							Person person = aGrp.get(sIndName);
-							if (person != null) { // found, flip enable/disable
-								//System.out.println("SEARCH: " + sIndName + " ,FOUND: " + person.m_name + ":" + person.m_active + ": flip active");
-								if (sIndAct.compareToIgnoreCase(Constants.DISABLE_ITEM) == 0) {
-									person.m_active = false ;
-								} else if (sIndAct.compareToIgnoreCase(Constants.ENABLE_ITEM) == 0) {
-									person.m_active = true ;
-								}
-								aGrp.put(sIndName, person) ;
-							} else { // not found, add
-								//System.out.println("SEARCH: " + sIndName + ": NOT found, add");
-								if (sIndAct.compareToIgnoreCase(Constants.ADD_ITEM) == 0) {
-									Person aPerson = new Person(sIndName.trim(), true) ;
-									aGrp.put(sIndName, aPerson) ;
-								}
-							}
-						} catch (Exception e){
-							System.err.println("Error:doGroupAction " + e.getMessage());
-						}
-					}
-				}
-			}
-		} // action
-		return sGroupName ;
+	public boolean doGroupAction(String action, String sGroup) {
+		String sG = ((sGroup.length() == 0) ? Constants._DEFAULT_GROUP : sGroup) ;
+		HashMap<String, LinkedHashSet<ActionItem>> hmActions = GPAction.breakdownActions(action, sG) ;
+		boolean bProcess = processActions(hmActions) ;
+		return bProcess;
 	}
 }

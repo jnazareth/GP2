@@ -12,9 +12,6 @@ import java.nio.file.Paths;
 import java.io.IOException;
 import java.util.Properties;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 

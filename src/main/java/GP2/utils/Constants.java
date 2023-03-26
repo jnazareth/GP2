@@ -26,30 +26,11 @@ public interface Constants {
 	final String DELETE_FILE_WC4	= WC_GLOB + WC_ALL + OUT_FILE + OUT_JSON_EXTENSION ;
 	final String DELETE_FILE_WC5	= WC_GLOB + WC_ALL + OUT_EXTENSION + OUT_MAP_EXTENSION ;
 
-	// Actions
-	final String ADD_ITEM 		= "*" ;
-	final String ENABLE_ITEM 	= "+" ;
-	final String DISABLE_ITEM 	= "-" ;
-
 	// id markers
 	final String _ID_SEPARATOR 	= ":" ;
-	final String _SELF 			= ":self" ;
-	final String _GROUP 		= ":group" ;
-	final String _ID_lR 		= "(" ;
-	final String _ID_rR 		= ")" ;
 	final String _DEFAULT_GROUP	= "default" ;
 	final String S_ACTION_QUOTE	= "\"" ;
 
-    // transaction indicators
-	final String _REM	= "rem" ;
-	final String _ALL	= "all" ;
-	final String _SYS	= "sys" ;
-	final String _INDIV	= "indiv" ;
-	final String _UNKNOWN	= "unknown" ;
-	final String _CLEARING	= "$" ;
-	final String _PERCENTAGE	= "%" ;
-	final char 	_COMMENT	= '#' ;
-	
 	// formatting strings
 	final String lBr	= "{" ;
 	final String rBr	= "}" ;
@@ -61,11 +42,4 @@ public interface Constants {
 	final String _REGEX_SEPARATOR	= ",(?=([^\"]*\"[^\"]*\")*[^\"]*$)" ;
 	final String _READ_SEPARATOR	= _REGEX_SEPARATOR ;
 	final String _DUMP_SEPARATOR	= " | " ;
-
-	// keys
-	final String _REM_key	= "_REM" ;
-	final String _ALL_key	= "_ALL" ;
-	final String _SYS_key	= "_SYS" ;
-	final String _INDIV_key	= "_INDIV" ;
-	final String _UNKNOWN_key	= "_UNKNOWN" ;
 }
