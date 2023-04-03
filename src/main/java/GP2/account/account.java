@@ -269,7 +269,7 @@ public class account {
 		while(keysPeople.hasMoreElements()) {
 			Person person = aGroup.get(keysPeople.nextElement());
 			if (person.isActive()) {
-					f += person.m_amount.get(Person.AccountEntry.FROM) ;
+				f += person.m_amount.get(Person.AccountEntry.FROM) ;
 				t += person.m_amount.get(Person.AccountEntry.TO) ;
 				//if (!action.endsWith(Constants._CLEARING)) {
 				if (!action.endsWith(TransactionType.TType.Clearing.toString())) {

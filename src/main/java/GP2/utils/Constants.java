@@ -42,4 +42,7 @@ public interface Constants {
 	final String _REGEX_SEPARATOR	= ",(?=([^\"]*\"[^\"]*\")*[^\"]*$)" ;
 	final String _READ_SEPARATOR	= _REGEX_SEPARATOR ;
 	final String _DUMP_SEPARATOR	= " | " ;
+
+	// default currency format
+	final String _CURRENCY_FORMAT	= "#,##0.00_);(#,##0.00)" ;
 }

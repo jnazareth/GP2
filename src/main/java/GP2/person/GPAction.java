@@ -7,12 +7,14 @@ import GP2.person.GPAction.PGType.EntryType;
 import GP2.person.GPAction.PGType.EntryTypes;
 import GP2.person.GPAction.TransactionType.TType;
 import GP2.utils.Constants;
-
+import GP2.xcur.CrossCurrency;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 
 public class GPAction {
     final static String _ITEM_SEPARATOR	    = "," ;
+    final static String _ITEM_SEPARATOR2    = ",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)" ;
     final static String _ID_lR 		        = "(" ;
     final static String _ID_rR 		        = ")" ;
 
@@ -30,7 +32,8 @@ public class GPAction {
             static { size = values().length; }
             static {
                 for (EntryState e : values()) {
-                    byValueMap.put(e.value, e);            }
+                    byValueMap.put(e.value, e);
+                }
             }
             EntryState(String value) {
                 this.value = value;
@@ -84,7 +87,8 @@ public class GPAction {
             static { size = values().length; }
             static {
                 for (EntryType e : values()) {
-                    byValueMap.put(e.value, e);            }
+                    byValueMap.put(e.value, e);
+                }
             }
             private EntryType(String v) {
                 this.value = v;
@@ -109,7 +113,8 @@ public class GPAction {
             static { size = values().length; }
             static {
                 for (TType e : values()) {
-                    byValueMap.put(e.value, e);            }
+                    byValueMap.put(e.value, e);
+                }
             }
             private TType(String v) {
                 this.value = v;
@@ -120,6 +125,7 @@ public class GPAction {
         }
     }
 
+    //-----------------------------------------------
     static EntryState getAction(int lR, String sA)
 	{
 		String sAct = "" ;
@@ -131,6 +137,24 @@ public class GPAction {
 		return EntryState.byValue(sAct) ;
 	}
 
+    //-----------------------------------------------
+    static CrossCurrency.XCurrencyProperties getCurrencyProperty(int rR, String sA)
+	{
+		String sAct = "" ;
+		int idS = 0 ;
+		if ( ((idS = sA.indexOf(_ID_rR)) != -1) )
+			sAct = sA.substring(rR+1, idS).trim() ;
+		else
+			System.err.println("Property not specified: " + sA);
+		return CrossCurrency.XCurrencyProperties.byValue(sAct) ;
+	}
+
+    static boolean isXCurrencyProperties(String sAct) {
+        return ((sAct.contains(CrossCurrency.CurrencyProperties.Currency.toString())) ||
+                (sAct.contains(CrossCurrency.CurrencyProperties.Format.toString())) ||
+                (sAct.contains(CrossCurrency.CurrencyProperties.XCurrency.toString())) ||
+                (sAct.contains(CrossCurrency.CurrencyProperties.Rate.toString())) );
+    }
 
 	public static HashMap<String, LinkedHashSet<ActionItem>> breakdownActions(String sAction, String sGroupName) {
 		String sActionGroupName = Constants._DEFAULT_GROUP;
@@ -141,35 +165,47 @@ public class GPAction {
 		LinkedHashSet<ActionItem> selfActions = new LinkedHashSet<ActionItem>();
 		LinkedHashSet<ActionItem> clearingActions = new LinkedHashSet<ActionItem>();
 		LinkedHashSet<ActionItem> skipActions = new LinkedHashSet<ActionItem>();
-		EntryState esSelf, esGroup;
+		EnumMap<CrossCurrency.XCurrencyProperties, String> curProperties = new EnumMap<CrossCurrency.XCurrencyProperties, String>(CrossCurrency.XCurrencyProperties.class);
+		HashMap<String, EnumMap<CrossCurrency.XCurrencyProperties, String>> hmXCurrency = new HashMap<String, EnumMap<CrossCurrency.XCurrencyProperties, String>>();
+		LinkedHashSet<ActionItem> xchgActions = new LinkedHashSet<ActionItem>();
+        EntryState esSelf, esGroup;
+        String aGroup = null;
 
-		String[] pieces = sAction.split(_ITEM_SEPARATOR);
+		String[] pieces = sAction.split(Constants._READ_SEPARATOR);
 		for (String p : pieces) {
 			String sActs = p ;
 
 			TType t1 = TransactionType.TType.byValue(sActs);
 			if ( (t1 != null) && (t1.compareTo(TransactionType.TType.Clearing) == 0) ) {
-				clearingActions.add(new ActionItem(null, TType.Clearing, null, EntryState.NoOp)) ;
+				clearingActions.add(new ActionItem(null, TType.Clearing, null, EntryState.NoOp, null, null)) ;
 			}
 			if ( (t1 != null) && (t1.compareTo(TransactionType.TType.Skip) == 0) ) {
-				skipActions.add(new ActionItem(null, TType.Skip, null, EntryState.NoOp)) ;
+				skipActions.add(new ActionItem(null, TType.Skip, null, EntryState.NoOp, null, null)) ;
 			}
 
 			int lR = 0, rR = 0 ;
-			String aName, aGroup ;
+			String aName;//, aGroup ;
 			if ( ((lR = sActs.indexOf(_ID_lR)) != -1) &&
 				 ((rR = sActs.indexOf(_ID_rR)) != -1) ) {
 				if (sActs.contains(EntryTypes.Self.toString())) {
 					aName = sActs.substring(0, lR).trim() ;		// get Name
 					esSelf = getAction(lR, sActs) ;			    // EntryState.Add|Enable|Disable|NoOp
-					selfActions.add(new ActionItem(EntryType.Self, null, aName, esSelf));
+					selfActions.add(new ActionItem(EntryType.Self, null, aName, esSelf, null, null));
 				} else if (sActs.contains(EntryTypes.Group.toString())) {
 					aGroup = sActs.substring(0, lR).trim() ;
 					esGroup = getAction(lR, sActs) ;			// EntryState.Add|Enable|Disable|NoOp
-					groupActions.add(new ActionItem(EntryType.Group, null, aGroup, esGroup));
+					groupActions.add(new ActionItem(EntryType.Group, null, aGroup, esGroup, null, null));
+				} else if (isXCurrencyProperties(sActs)) {
+                    lR = sActs.indexOf(_ID_lR);
+                    rR = sActs.indexOf(Constants._AMT_INDICATOR);
+                    // toDo: check lR & rR return values
+                    String xCurProperty = sActs.substring(lR+1, rR) ;
+                    CrossCurrency.XCurrencyProperties xcP = getCurrencyProperty(rR, sActs);
+                    curProperties.put(xcP, xCurProperty);
 				}
 			}
-		}
+        }
+
 		if (skipActions.size() != 0) hsActions = new LinkedHashSet<ActionItem>(skipActions) ;
 		if (clearingActions.size() != 0) hsActions = new LinkedHashSet<ActionItem>(clearingActions) ;
 		if (groupActions.size() != 0) {
@@ -182,25 +218,52 @@ public class GPAction {
 			if (hsActions == null) hsActions = new LinkedHashSet<ActionItem>(selfActions.size()) ;
 			for (ActionItem ai : selfActions) hsActions.add(ai) ;
 		}
+		if (curProperties.size() != 0) {
+            if (aGroup == null) {
+                System.err.println("Group not specified: " + CrossCurrency.XCurrencyType.XCurrency.toString());
+            } else {
+                hmXCurrency.put(aGroup, curProperties);
+                if (hsActions == null) hsActions = new LinkedHashSet<ActionItem>(curProperties.size()) ;
+                xchgActions.add(new ActionItem(null, null, null, null, aGroup, hmXCurrency));
+                for (ActionItem ai : xchgActions) hsActions.add(ai) ;
+            }
+        }
 
-		hmActions.put(sActionGroupName, hsActions) ;
+        hmActions.put(sActionGroupName, hsActions) ;
+
+        // dump collection
+        /*for (Map.Entry<String, LinkedHashSet<ActionItem>> hm : hmActions.entrySet()) {
+            LinkedHashSet<ActionItem> aSet = hm.getValue();
+            System.out.print("aSet.size():" + aSet.size());
+            for (ActionItem ele : aSet) {
+                System.out.print("ai:" + ele.toString() + "\t");
+            }
+            System.out.println("");
+        }*/
+
 		return hmActions ;
 	}
 
 	public static class ActionItem {
-		public EntryType pgtype = null;
-		public TType ttype = null;
-		public String name = null;
-		public EntryState state = null;
+		public EntryType    pgtype = null;
+		public TType        ttype = null;
+		public String       name = null;
+		public EntryState   state = null;
+        public CrossCurrency.XCurrencyType    xcType = null;
+		public HashMap<String, EnumMap<CrossCurrency.XCurrencyProperties, String>> xCurrency = new HashMap<String, EnumMap<CrossCurrency.XCurrencyProperties, String>>();
 
 		public ActionItem() {
 		}
 
-		public ActionItem(EntryType t, TType tt, String n, EntryState s) {
+		public ActionItem(EntryType t, TType tt, String n, EntryState s, String g, HashMap<String, EnumMap<CrossCurrency.XCurrencyProperties, String>> c) {
 			if (t != null) pgtype = t;
 			if (tt != null) ttype = tt;
 			if ((n != null) && (n.length() != 0)) name = n;
 			if (s != null) state = s;
+			if ((g != null) && (g.length() != 0) && (c != null)) {
+                xcType = CrossCurrency.XCurrencyType.XCurrency;
+                xCurrency = c;
+            }
 		}
 	}
 }

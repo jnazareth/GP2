@@ -9,12 +9,15 @@ import GP2.person.GPAction.TransactionType;
 import GP2.person.GPAction.PGState.EntryState;
 import GP2.person.GPAction.PGType.EntryType;
 import GP2.utils.Utils;
+import GP2.xcur.CrossCurrency;
+import GP2.xcur.CrossCurrency.XCurrencyProperties;
 import GP2.utils.Constants;
 
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.EnumMap;
 import java.util.HashMap;
 
 public class GroupProcessor extends Object {
@@ -105,8 +108,7 @@ public class GroupProcessor extends Object {
 				ActionItem item = iterator.next() ;
 				if ((item.ttype != null) &&	(item.ttype.compareTo(TransactionType.TType.Skip) == 0)) return bSkip ;	// skip line
 				if ((item.ttype != null) &&	(item.ttype.compareTo(TransactionType.TType.Clearing) == 0)) return doClearing(sGroupName, bGroupExists) ;
-
-				if ((item.pgtype.compareTo(EntryType.Group) == 0)) {
+				if ((item.pgtype != null) && (item.pgtype.compareTo(EntryType.Group) == 0)) {
 					if ( isEntryStateToggle(item) ) {
 						if (!bGroupExists) {
 							return logGroupPersonError(EntryType.Group, sGroupName) ;
@@ -118,7 +120,7 @@ public class GroupProcessor extends Object {
 					} else if (isEntryStateAdd(item)) {
 						Hashtable<String, Person> aGroup = Find_CreateGroup(sGroupName) ;
 					}
-				} else if ((item.pgtype.compareTo(EntryType.Self) == 0)) {
+				} else if ((item.pgtype != null) && (item.pgtype.compareTo(EntryType.Self) == 0)) {
 					if ( isEntryStateToggle(item) )  {
 						if (!bGroupExists) return logGroupPersonError(EntryType.Group, sGroupName) ;
 
@@ -136,6 +138,20 @@ public class GroupProcessor extends Object {
 						Hashtable<String, Person> aGroup = Find_CreateGroup(sGroupName) ;
 						Person aPerson = new Person(item.name.trim(), EntryState.Add) ;
 						aGroup.put(item.name, aPerson) ;
+					}
+				} else if ((item.xcType != null) &&	(item.xcType.compareTo(CrossCurrency.XCurrencyType.XCurrency) == 0)) {
+					for (Map.Entry<String, EnumMap<CrossCurrency.XCurrencyProperties, String>> xpair: item.xCurrency.entrySet()) {
+						String sG = xpair.getKey() ;
+						//System.out.println("sG:" + sG);
+						EnumMap<CrossCurrency.XCurrencyProperties, String> xProperties = xpair.getValue();
+						/*for (XCurrencyProperties p : xProperties.keySet()) {
+							System.out.println(p + ":" + xProperties.get(p));
+						}*/
+
+						Hashtable<String, Person> aGroup = Find_CreateGroup(sGroupName) ;
+						_AGroup aG = Utils.m_GroupCollection.get(sGroupName);
+						if (aG != null) aG.m_ccurrency = new CrossCurrency(xProperties);
+						//if (aG.m_ccurrency != null) System.out.println("aG.m_xcurrency:" + aG.m_ccurrency);
 					}
 				}
 			}

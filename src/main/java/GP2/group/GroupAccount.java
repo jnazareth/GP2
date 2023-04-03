@@ -4,6 +4,7 @@ import GP2.person.Person;
 import GP2.person.GPAction.PGState;
 import GP2.person.GPAction.PGState.EntryState;
 import GP2.person.GPAction.PGType.EntryType;
+import GP2.xcur.CrossCurrency;
 
 import java.util.Hashtable;
 import java.util.Enumeration;
@@ -44,6 +45,7 @@ public class GroupAccount extends Object {
 		private Hashtable<String, Person> m_aGroup = new Hashtable<String, Person>() ;
         private EntryType m_gType ;
         public PGState m_gState ;
+		public CrossCurrency m_ccurrency ;
 
 		public _AGroup () {
             m_gType = EntryType.Group ;
@@ -74,5 +76,39 @@ public class GroupAccount extends Object {
             }
 			return ;
 		}
+
+		//--------------------------------------------
+		/*public class XCurrency {
+			String m_Currency = "usd" ;
+			String m_Format = "_($* #,##0.00_);_($* (#,##0.00);_($* \"-\"??_);_(@_)" ;
+			String m_Baseline = "usd";
+			Double m_Rate = 1.0d ;
+
+			public XCurrency (String c, String f, String b, Double d) {
+				if ((c != null) && (c.length() != 0)) m_Currency = c;
+				if ((f != null) && (f.length() != 0)) m_Format = f;
+				if ((b != null) && (b.length() != 0)) m_Baseline = b;
+				if ((d != null) && (d != 0d)) m_Rate = d;
+			}
+
+			public XCurrency (EnumMap<CrossCurrency.XCurrencyProperties, String> xProperties) {
+				//String c, f, b; Double d ;
+				for (CrossCurrency.XCurrencyProperties p : xProperties.keySet()) {
+					//System.out.println(p + ":::" + xProperties.get(p));
+					String xcp = xProperties.get(p);
+					if (p.compareTo(CrossCurrency.XCurrencyProperties.Currency) == 0)
+						m_Currency = xcp ;
+					else if (p.compareTo(CrossCurrency.XCurrencyProperties.Format) == 0)
+						m_Format = xcp ;
+					else if (p.compareTo(CrossCurrency.XCurrencyProperties.Baseline) == 0)
+						m_Baseline = xcp ;
+					else if (p.compareTo(CrossCurrency.XCurrencyProperties.Rate) == 0)
+						m_Rate = Double.valueOf(xcp) ;
+				}
+			}
+			public String toString() {
+				return (m_Currency + "|" + m_Format + "|" + m_Baseline + "|" + m_Rate) ;
+			}
+		}*/
     }
 }
