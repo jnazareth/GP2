@@ -4,8 +4,10 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>GP2</groupId>
-	<artifactId>gp2</artifactId>
-	<version>2.0</version>
+	<!-- using versioning scheme <major>.<minor>.<revision> -->		
+	<!-- where <major>.<minor> = <artifactId> -->		
+	<artifactId>gp2.0</artifactId>
+	<version>2</version>
 
 	<packaging>jar</packaging>
 	<name>gp2</name>
@@ -29,6 +31,9 @@
 		<apache.poi.ooxml.version>5.2.0</apache.poi.ooxml.version>
 
 		<main.class>GP2.gp2</main.class>
+		
+		<!-- custom property to support major.minor.revision -->		
+	        <revision>4</revision>	
 	</properties>
 
 	<dependencies>
@@ -110,7 +115,7 @@
 	</dependencies>
 
 	<build>
-		<finalName>${project.artifactId}</finalName>
+		<finalName>${project.artifactId}.${revision}</finalName>
 
 		<plugins>
 			<plugin>
