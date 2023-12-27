@@ -55,6 +55,17 @@ public class Utils {
 		return (Math.round(d * dFactor ) / dFactor) ;
 	}
 
+	public static String applyXRate (String a, Double r) {
+		Float amount = Float.valueOf(a) ;
+		Double xAmount = amount * r ;
+		return String.valueOf(xAmount) ;
+	}
+
+	public static String applyXRateF(float a, Double r) {
+		Double xAmount = a * r ;
+		return String.valueOf(xAmount) ;
+	}
+
 	public static List<String> customSort(Set<String> hm) {
 		List<String> sortedMapKeys = new ArrayList<String>(hm);
 		try {

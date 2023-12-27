@@ -22,7 +22,7 @@ public class gpcli {
     public Settings parseCommandLine(String[] args) {
         Utils.m_settings = new Settings();
 
-        String version = versionFrom("/META-INF/maven/GP2/gp2/pom.properties");
+        String version = versionFrom("/META-INF/maven/GP2/gp2.0/pom.properties");
                 new _CommandLine(
                     LAUNCHER,
                     version,
@@ -172,7 +172,7 @@ public class gpcli {
     private boolean processCommandLineFlags() {
         boolean bXLSSpecified   = Utils.m_settings.getPropertyXLS().IsPropertyUsed();
         boolean bExport         = Utils.m_settings.getExportToUse();
-        boolean bJSON           = Utils.m_settings.getJsonToUse();        
+        boolean bJSON           = Utils.m_settings.getJsonToUse();
 
         //System.out.println("flags:: XLS|bExport|bJSON:\t" + bXLSSpecified + "|" + bExport + "|" + bJSON) ;
 
@@ -190,7 +190,7 @@ public class gpcli {
                 return false ;
             }
         }
-        return true ; 
+        return true ;
     }
 
     public void processCommandLine() {

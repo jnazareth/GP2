@@ -58,7 +58,7 @@ public class Export {
         ArrayList<String> al = new ArrayList<String>() ;
 
         Hashtable<String, Person> aGroup = Utils.m_GroupCollection.get(sGroupName).getCollection() ;
-		List<String> mapKeys = new ArrayList<String>(aGroup.keySet());
+        List<String> mapKeys = new ArrayList<String>(aGroup.keySet());
 		Collections.sort(mapKeys);
         Iterator<String> iter = mapKeys.iterator();
 		while (iter.hasNext()) {
@@ -140,17 +140,20 @@ public class Export {
 		return templateRow ;
 	}
 
-    RowLayout putRow(String item, String category, String vendor, String desc, String amt, String from, String to, String group, String action, String def) {
+    RowLayout putRow(String item, String category, String vendor, String desc, String amt, String from, String to, String group, String action, String def, Double rate) {
         RowLayout row = new RowLayout() ;
 
         boolean bSuppressCheckSum   = Utils.m_settings.getSuppressCStoUse() ;
-
+		float fRate = rate.floatValue();
         int pos = 1 ;
 		row.addCell(pos++, ExportKeys.keyItem,      item) ;
 		row.addCell(pos++, ExportKeys.keyCategory,  category) ;
         row.addCell(pos++, ExportKeys.keyVendor,    vendor) ;
 		row.addCell(pos++, ExportKeys.keyDescription, desc) ;
-		row.addCell(pos++, ExportKeys.keyAmount,    amt) ;
+
+		String xAmt = String.valueOf(fRate * Float.valueOf(amt)) ;
+		row.addCell(pos++, ExportKeys.keyAmount,    xAmt) ;
+
 		row.addCell(pos++, ExportKeys.keyFrom,      from) ;
 		row.addCell(pos++, ExportKeys.keyTo,        to) ;
 		row.addCell(pos++, ExportKeys.keyAction,    action) ;
@@ -162,20 +165,20 @@ public class Export {
         Iterator<String> iter = mapKeys.iterator();
         while (iter.hasNext()) {
             Person person = aGroup.get(iter.next());
-            row.addCell(pos++, ExportKeys.keyTransactions + Constants._ID_SEPARATOR + person.m_name,    Utils.roundAmount(person.m_amount.get(Person.AccountEntry.TRANSACTION))) ;
-            row.addCell(pos++, ExportKeys.keyOwe +          Constants._ID_SEPARATOR + person.m_name,    Utils.roundAmount(person.m_amount.get(Person.AccountEntry.OWE_OWED))) ;
-            csTransaction = person.m_amount.get(Person.AccountEntry.checksumTRANSACTION) ;
-            row.addCell(pos++, ExportKeys.keySpent +        Constants._ID_SEPARATOR + person.m_name,    Utils.roundAmount(person.m_amount.get(Person.AccountEntry.SPENT))) ;
-            csGroupTotals = person.m_amount.get(Person.AccountEntry.checksumGROUPTOTALS) ;
-            row.addCell(pos++, ExportKeys.keyPaid +         Constants._ID_SEPARATOR + person.m_name,    Utils.roundAmount(person.m_amount.get(Person.AccountEntry.PAID))) ;
-            csIndividualTotals = person.m_amount.get(Person.AccountEntry.checksumINDIVIDUALTOTALS) ;
+            row.addCell(pos++, ExportKeys.keyTransactions + Constants._ID_SEPARATOR + person.m_name,    Utils.roundAmount(person.m_amount.get(Person.AccountEntry.TRANSACTION) * fRate)) ;
+            row.addCell(pos++, ExportKeys.keyOwe +          Constants._ID_SEPARATOR + person.m_name,    Utils.roundAmount(person.m_amount.get(Person.AccountEntry.OWE_OWED) * fRate)) ;
+            csTransaction = person.m_amount.get(Person.AccountEntry.checksumTRANSACTION) * fRate ;
+            row.addCell(pos++, ExportKeys.keySpent +        Constants._ID_SEPARATOR + person.m_name,    Utils.roundAmount(person.m_amount.get(Person.AccountEntry.SPENT) * fRate)) ;
+            csGroupTotals = person.m_amount.get(Person.AccountEntry.checksumGROUPTOTALS) * fRate ;
+            row.addCell(pos++, ExportKeys.keyPaid +         Constants._ID_SEPARATOR + person.m_name,    Utils.roundAmount(person.m_amount.get(Person.AccountEntry.PAID) * fRate)) ;
+            csIndividualTotals = person.m_amount.get(Person.AccountEntry.checksumINDIVIDUALTOTALS) * fRate ;
             if ( (!bSuppressCheckSum) || (Utils.m_settings.bCheckSumIndividualTotals) )
-                row.addCell(pos++, ExportKeys.keyCheckSumIndividualTotals +         Constants._ID_SEPARATOR + person.m_name,    Utils.roundAmount(csIndividualTotals)) ;
+                row.addCell(pos++, ExportKeys.keyCheckSumIndividualTotals +         Constants._ID_SEPARATOR + person.m_name,    Utils.roundAmount(csIndividualTotals * fRate)) ;
         }
         if ( (!bSuppressCheckSum) || (Utils.m_settings.bCheckSumTransaction) )
-            row.addCell(pos++, ExportKeys.keyCheckSumTransaction, Utils.roundAmount(csTransaction)) ;
+            row.addCell(pos++, ExportKeys.keyCheckSumTransaction, Utils.roundAmount(csTransaction * fRate)) ;
         if ( (!bSuppressCheckSum) || (Utils.m_settings.bCheckSumGroupTotals) )
-            row.addCell(pos++, ExportKeys.keyCheckSumGroupTotals, Utils.roundAmount(csGroupTotals)) ;
+            row.addCell(pos++, ExportKeys.keyCheckSumGroupTotals, Utils.roundAmount(csGroupTotals * fRate)) ;
 
             // Create / Add to Collection
 		if (m_exportLinesGroup == null) m_exportLinesGroup = new Hashtable<String, ArrayList<RowLayout>>() ;

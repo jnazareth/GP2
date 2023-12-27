@@ -269,7 +269,7 @@ public class account {
 		while(keysPeople.hasMoreElements()) {
 			Person person = aGroup.get(keysPeople.nextElement());
 			if (person.isActive()) {
-					f += person.m_amount.get(Person.AccountEntry.FROM) ;
+				f += person.m_amount.get(Person.AccountEntry.FROM) ;
 				t += person.m_amount.get(Person.AccountEntry.TO) ;
 				//if (!action.endsWith(Constants._CLEARING)) {
 				if (!action.endsWith(TransactionType.TType.Clearing.toString())) {
@@ -317,7 +317,7 @@ public class account {
 	// ----------------------------------------------------
 	// ProcessTransaction
 	// ----------------------------------------------------
-	private boolean ProcessTransaction(String item, String desc, String amt, String from, String to, String group, String action, String def) {
+	private boolean ProcessTransaction(int lNo, String item, String desc, String amt, String from, String to, String group, String action, String def) {
 		try {
 			Utils.m_bClearing = false ;
 
@@ -345,7 +345,7 @@ public class account {
 
             return true;
 		} catch (Exception e){
-			System.err.println("Error:ProcessTransaction:" + e.getMessage());
+			System.err.println("Error:ProcessTransaction: processing << line# [" + lNo + "][" + item + "][" + desc + "][" + amt + "] >>:" + e.getMessage());
             return false;
 		}
 	}
@@ -390,8 +390,10 @@ public class account {
 
 			if (Utils.m_settings.getExportToUse()) gpF = new GPFormatter() ;
 
+			int lNo = 0 ;
 			try {
 				while ((sLine = buffReader.readLine()) != null) {
+					lNo++ ;
 					if (sLine.length() == 0) continue ;
 					String firstChar = String.valueOf(sLine.charAt(0));
 					TType t1 = TransactionType.TType.byValue(firstChar);
@@ -444,7 +446,7 @@ public class account {
 					}
 					//System.out.println("item:" + item + ", category:" + category + ", vendor:" + vendor + ", desc:" + desc + ", amt:" + amt + ", from:" + from + ", to:" + to + ", group:" + group + ", action:" + action);
 					if (group.length() == 0) group = Constants._DEFAULT_GROUP ;
-					if (ProcessTransaction(item, desc, amt, from, to, group, action, def) == false) continue;
+					if (ProcessTransaction(lNo, item, desc, amt, from, to, group, action, def) == false) continue;
 					if (Utils.m_settings.getExportToUse())
 						gpF.prepareToExportGroup(item, category, vendor, desc, amt, from, to, group, action, def) ;
 				} // end of while

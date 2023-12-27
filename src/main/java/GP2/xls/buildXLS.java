@@ -24,10 +24,10 @@ import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTPivotFields ;
 import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTPivotField ;
 import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTItems;
 import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTItem;
-import java.util.ArrayList;
 
 import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTDataFields;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle ;
+import org.apache.commons.lang3.math.NumberUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -37,14 +37,10 @@ import java.io.IOException;
 import java.io.FileReader;
 import java.io.BufferedReader;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.TreeSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
-import org.apache.commons.collections4.iterators.ArrayListIterator;
-import org.apache.commons.lang3.math.NumberUtils;
 
 public class buildXLS {
 
@@ -104,7 +100,6 @@ public class buildXLS {
             fileReader = new FileReader(f);
 			BufferedReader buffReader = new BufferedReader(fileReader);
 			String sLine = "";
-
             //_SheetProperties sProperties = getSheetProperties() ;
 
             //createStyle
@@ -188,11 +183,16 @@ public class buildXLS {
         pivotTable.addRowLabel(1);
 
         final int numberFormat = sProperties.getsFormatFormat();	//7 ;
+        final String sAmtFormat = sProperties.getsFormatFormatAsString();
+        //System.out.println("sAmtFormat:" + sAmtFormat);
+
         for (Map.Entry<Integer, String> entry : pivotColumns.entrySet()) {
             int col = entry.getKey();
             String cName = entry.getValue();
-            pivotTable.addColumnLabel(DataConsolidateFunction.SUM, col, cName);
-            setFormatDataField(pivotTable, col, numberFormat); //set format of value field numFmtId=3 # ##0
+            pivotTable.addColumnLabel(DataConsolidateFunction.SUM, col, cName, sAmtFormat);
+            // commented off after implementation of format groups specified via CrossCurrency
+            // plus added sAmtFormat to addColumnLabel call (is optional)
+            //setFormatDataField(pivotTable, col, numberFormat); //set format of value field numFmtId=3 # ##0
         }
     }
 

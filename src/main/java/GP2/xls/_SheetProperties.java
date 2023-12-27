@@ -137,6 +137,7 @@ public class _SheetProperties {
     }
     public Integer getsFormatFormat() {
         return 7;             // pivot table value for "$" format
+        //see: https://stackoverflow.com/questions/40511928/how-to-set-pivottable-field-number-format-cell-with-apache-poi
     }
 
     public csvFileJSON toCsvFileJSON() {

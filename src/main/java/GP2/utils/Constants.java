@@ -3,8 +3,8 @@ package GP2.utils;
 public interface Constants {
 	// command line
 	final String IN_HELP 		= "-h" ;
-	final String IN_VERSION 	= "-version" ; 
-	final String IN_CLEAN 		= "-clean" ; 
+	final String IN_VERSION 	= "-version" ;
+	final String IN_CLEAN 		= "-clean" ;
 
 	// file extensions
 	final String OUT_FILESEP 	= "." ;
@@ -14,7 +14,7 @@ public interface Constants {
 	final String OUT_JSON_EXTENSION = ".json" ;
 	final String OUT_MAP_EXTENSION 	= ".map" ;
 	final String OUT_XLS_EXTENSION 	= ".xlsx" ;
-	
+
 	// clean filters
 	final String WC_GLOB 			= "glob:" ;
 	final String WC_TRANSACTIONS 	= "transactions." ;
@@ -42,4 +42,9 @@ public interface Constants {
 	final String _REGEX_SEPARATOR	= ",(?=([^\"]*\"[^\"]*\")*[^\"]*$)" ;
 	final String _READ_SEPARATOR	= _REGEX_SEPARATOR ;
 	final String _DUMP_SEPARATOR	= " | " ;
+
+	// default currency format
+	final String _NO_CURRENCY_FORMAT	= "#,##0.00_);(#,##0.00)" ;
+	final String _USD_CURRENCY_FORMAT = "_($* #,##0.00_);_($* (#,##0.00);_($* \"-\"??_);_(@_)" ;
+	final String _CURRENCY_FORMAT =  _USD_CURRENCY_FORMAT ;
 }
