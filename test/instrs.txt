@@ -1,0 +1,1 @@
+java -jar ../target/gp2.0.5.jar dec.ffv.csv -x -Pdir=out2

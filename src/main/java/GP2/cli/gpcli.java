@@ -199,7 +199,7 @@ public class gpcli {
 
 		File[] inputs = Utils.m_settings.getInputs();
 		for (File filename : inputs) {
-			myAccount.ReadAndProcessTransactions(filename.getName()) ;
+			myAccount.ReadAndProcessTransactions2(filename.getName()) ;
             myAccount.writeJson(filename.getName()) ;
             myAccount.buildXLS(filename.getName()) ;
 		}
