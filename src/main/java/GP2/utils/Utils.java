@@ -4,6 +4,8 @@ import GP2.person.Person;
 import GP2.group.GroupAccount;
 import GP2.group.groupCsvJsonMapping;
 import GP2.cli.Settings;
+import GP2.input.FTType;
+import GP2.input.FTType.FromToTypes;
 
 import java.util.Hashtable;
 import java.math.BigDecimal;
@@ -35,6 +37,61 @@ public class Utils {
 		while ((q = sb.indexOf(Constants.S_ACTION_QUOTE)) != -1) sb.deleteCharAt(q) ;
 		return sb.toString();
 	}
+
+	public static String stripAmount(String inString)
+	{
+		final String _QUOTE = "\"";
+		final String _LEFT_ROUND = "(";
+		final String _RIGHT_ROUND = ")";
+		final String _DOLLAR = "$";
+
+		int l = inString.indexOf(_QUOTE);
+		int r = inString.lastIndexOf("\"");
+		if ((l != -1) && (r != -1)) inString = inString.substring(l+1, r) ;		// "
+		//System.out.print("\tq" + inString);
+
+		l = inString.indexOf(_LEFT_ROUND);
+		r = inString.indexOf(_RIGHT_ROUND);
+		if ((l != -1) && (r != -1)) inString = inString.substring(l+1, r) ;		// debit
+		//System.out.print("\tb" + inString);
+
+		l = inString.indexOf(_DOLLAR);
+		if ((l != -1)) inString = inString.substring(l+1, inString.length()).trim() ;		// $
+
+		return inString;
+	}
+
+	public static String stripPercentge(float amt, String in) {
+		String sOut = "" ;
+		String sIn[] = in.split(Constants._ITEM_SEPARATOR) ;
+
+		String eachName = "" ;
+		float eachPer = 0.0f ;
+		for (int i = 0; i < sIn.length; i++) {
+			eachName = "";	eachPer = 0 ;
+			String sEach[] = sIn[i].split(Constants._AMT_INDICATOR) ;
+			for (int k = 0; k < sEach.length; k++) {
+				int pLoc = -1 ;
+				if ((pLoc = sEach[k].indexOf(FromToTypes.Percentage)) == -1) {
+					try {
+						eachPer = Float.parseFloat(sEach[k]) ;
+						sOut += Constants._AMT_INDICATOR + sEach[k] ;
+					} catch (NumberFormatException e) {
+						eachName = sEach[k].trim() ;
+						if (sOut == "") sOut += sEach[k] ;
+						else sOut += Constants._ITEM_SEPARATOR + sEach[k] ;
+					}
+				} else {
+					eachPer = Float.parseFloat(sEach[k].substring(0, pLoc)) ;
+					float fAmt = amt * eachPer / 100 ;
+					sOut += Constants._AMT_INDICATOR + String.valueOf(fAmt) ;
+				}
+			}
+			return sOut ;
+		}
+		return sOut ;
+	}
+
 
 	public static String roundAmount(float f)
 	{

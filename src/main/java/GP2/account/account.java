@@ -18,16 +18,25 @@ import GP2.group.GroupAccount._AGroup;
 import GP2.group.csvFileJSON;
 import GP2.json.WriteJson;
 import GP2.xls.buildXLS;
+import GP2.account.source;
+import GP2.account.mint;
+import GP2.account.ffv;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.io.FileNotFoundException;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.HashSet;
+
+import com.fasterxml.jackson.databind.MappingIterator;
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.dataformat.csv.CsvMapper;
+import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 
 public class account {
 	//CONSTANTS
@@ -37,8 +46,6 @@ public class account {
 
 	// control row
 	private final char 	CONTROL 		= '@' ;
-	//private final char 	USE_COLUMN	= '+' ;
-	//private final char 	SKIP_COLUMN	= '-' ;
 
 	private final String S_ITEM 	= "item" ;
 	private final String S_CATEGORY	= "category" ;
@@ -70,34 +77,7 @@ public class account {
 	// ----------------------------------------------------
 	private String percentageToAmounts(float amt, String in, String action) {
 		if (in.indexOf(FromToTypes.Percentage) == -1) return in;
-
-		String sOut = "" ;
-		String sIn[] = in.split(Constants._ITEM_SEPARATOR) ;
-
-		String eachName = "" ;
-		float eachPer = 0.0f ;
-		for (int i = 0; i < sIn.length; i++) {
-			eachName = "";	eachPer = 0 ;
-			String sEach[] = sIn[i].split(Constants._AMT_INDICATOR) ;
-			for (int k = 0; k < sEach.length; k++) {
-				int pLoc = -1 ;
-				if ((pLoc = sEach[k].indexOf(FromToTypes.Percentage)) == -1) {
-					try {
-						eachPer = Float.parseFloat(sEach[k]) ;
-						sOut += Constants._AMT_INDICATOR + sEach[k] ;
-					} catch (NumberFormatException e) {
-						eachName = sEach[k].trim() ;
-						if (sOut == "") sOut += sEach[k] ;
-						else sOut += Constants._ITEM_SEPARATOR + sEach[k] ;
-					}
-				} else {
-					eachPer = Float.parseFloat(sEach[k].substring(0, pLoc)) ;
-					float fAmt = amt * eachPer / 100 ;
-					sOut += Constants._AMT_INDICATOR + String.valueOf(fAmt) ;
-				}
-			}
-		}
-		return sOut ;
+		return Utils.stripPercentge(amt, in) ;
 	}
 
 	private void putIndivAmount(String sGroupName, int idx, float fAmount, HashSet<String> indiv) {
@@ -317,7 +297,7 @@ public class account {
 	// ----------------------------------------------------
 	// ProcessTransaction
 	// ----------------------------------------------------
-	private boolean ProcessTransaction(int lNo, String item, String desc, String amt, String from, String to, String group, String action, String def) {
+	private boolean ProcessTransaction(int lNo, String item, String desc, String amt, String from, String to, String group, String action) {
 		try {
 			Utils.m_bClearing = false ;
 
@@ -399,7 +379,7 @@ public class account {
 					TType t1 = TransactionType.TType.byValue(firstChar);
 					if ( (t1 != null) && (t1.compareTo(TransactionType.TType.Skip) == 0) ) continue; // comment, skip
 
-					String item="", category="", vendor="", desc="", amt="", from="", to="", group="", action="", def="" ;
+					String item="", category="", vendor="", desc="", amt="", from="", to="", group="", action="" ;
 					// stream the input, one line at a time
 					String[] pieces = sLine.split(Constants._READ_SEPARATOR);
 					int pos = 0 ;
@@ -441,14 +421,14 @@ public class account {
 							action = p ;
 							action = Utils.removeQuotes(action) ;
 						}
-						else def = def + p ;
+						//else def = def + p ;
 						pos++ ;
 					}
 					//System.out.println("item:" + item + ", category:" + category + ", vendor:" + vendor + ", desc:" + desc + ", amt:" + amt + ", from:" + from + ", to:" + to + ", group:" + group + ", action:" + action);
 					if (group.length() == 0) group = Constants._DEFAULT_GROUP ;
-					if (ProcessTransaction(lNo, item, desc, amt, from, to, group, action, def) == false) continue;
+					if (ProcessTransaction(lNo, item, desc, amt, from, to, group, action) == false) continue;
 					if (Utils.m_settings.getExportToUse())
-						gpF.prepareToExportGroup(item, category, vendor, desc, amt, from, to, group, action, def) ;
+						gpF.prepareToExportGroup(item, category, vendor, desc, amt, from, to, group, action) ;
 				} // end of while
 				buffReader.close() ;
 
@@ -459,6 +439,65 @@ public class account {
 			}
 		} catch (FileNotFoundException e) {
 			System.out.println("Could not locate a file: " + e.getMessage());
+		}
+	}
+
+	private boolean skipLine(String d) {
+		if (d.length() == 0) return true ; // empty line, skip
+
+		String firstChar = String.valueOf(d.charAt(0));
+		TType t1 = TransactionType.TType.byValue(firstChar);
+		if ( (t1 != null) && (t1.compareTo(TransactionType.TType.Skip) == 0) ) return true; // comment, skip
+
+		return false ;
+	}
+
+	private Class getSourceClass() {
+		//return mint.class ;
+		return ffv.class ;
+	}
+
+	public void ReadAndProcessTransactions2(String fileName) {
+		Utils.m_GroupCollection = null ;
+		GPFormatter gpF = null ;
+		if (Utils.m_settings.getExportToUse()) gpF = new GPFormatter() ;
+		int lNo = 0 ;
+
+		Class<source> sourceClass = getSourceClass() ;
+
+		CsvMapper csvMapper = new CsvMapper();
+		CsvSchema schema = CsvSchema.emptySchema().withHeader();
+		ObjectReader oReader = csvMapper.reader(sourceClass).with(schema);
+
+		try (Reader reader = new FileReader(fileName)) {
+			MappingIterator<source> mi = oReader.readValues(reader);
+			while (mi.hasNext()) {
+				lNo++ ;
+				source current = mi.next();
+				if (skipLine(current.getDate()) == true) continue ;
+
+				String date = current.getDate() ;
+				String category = current.getCategory() ;
+				String vendor = "";//current.getVendor() ;				// mint | ffv (added for compatibility)
+				String desc = current.getDescription() ;
+				String amt = Utils.stripAmount(current.getAmount()) ; 	// mint (added for compatibility) | ffv
+				String from = current.getFrom() ;
+				String to = current.getTo() ;
+				String group = current.getGroup() ;
+				String action = current.getAction() ;
+
+				//System.out.println("item:" + date + ", category:" + category + ", vendor:" + vendor + ", desc:" + desc + ", amt:" + amt + ", from:" + from + ", to:" + to + ", group:" + group + ", action:" + action);
+				if (group.length() == 0) group = Constants._DEFAULT_GROUP ;
+				if (ProcessTransaction(lNo, date, desc, amt, from, to, group, action) == false) continue;
+				if (Utils.m_settings.getExportToUse())
+					gpF.prepareToExportGroup(date, category, vendor, desc, amt, from, to, group, action) ;
+			}
+			buildGroupCsvJsonMap(fileName) ;
+			if (Utils.m_settings.getExportToUse()) gpF.exportToCSVGroup(fileName) ;
+		} catch (FileNotFoundException e) {
+			System.out.println("Could not locate a file: " + e.getMessage());
+		} catch (IOException e) {
+			System.out.println("IOException: " + e.getMessage());
 		}
 	}
 

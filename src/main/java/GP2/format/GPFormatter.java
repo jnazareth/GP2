@@ -62,10 +62,10 @@ public class GPFormatter {
         }
     }
 
-    public void prepareToExportGroup(String item, String category, String vendor, String desc, String amt, String from, String to, String group, String action, String def) {
+    public void prepareToExportGroup(String item, String category, String vendor, String desc, String amt, String from, String to, String group, String action) {
         try {
             Double rate = getGroupRate(group);
-            RowLayout rl = m_export.putRow(item, category, vendor, desc, amt, from, to, group, action, def, rate);
+            RowLayout rl = m_export.putRow(item, category, vendor, desc, amt, from, to, group, action, rate);
         } catch (Exception e) {
 			System.err.println("prepareToExportGroup::Error: " + e.getMessage());
         }

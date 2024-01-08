@@ -140,7 +140,7 @@ public class Export {
 		return templateRow ;
 	}
 
-    RowLayout putRow(String item, String category, String vendor, String desc, String amt, String from, String to, String group, String action, String def, Double rate) {
+    RowLayout putRow(String item, String category, String vendor, String desc, String amt, String from, String to, String group, String action, Double rate) {
         RowLayout row = new RowLayout() ;
 
         boolean bSuppressCheckSum   = Utils.m_settings.getSuppressCStoUse() ;
