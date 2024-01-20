@@ -103,7 +103,8 @@ public class GPAction {
     public static class TransactionType {
         public static enum TType {
             Clearing("$"),
-            Skip("#");
+            Skip("#"),
+            Normal("");
 
             public static final int size;
             private final String value;

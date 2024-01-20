@@ -1,17 +1,17 @@
 package GP2.group;
 
-import GP2.group.GroupAccount._AGroup;
+//import GP2.group.GroupAccount._AGroup;
+import GP2.group.Groups.Group;
 import GP2.person.GPAction;
-import GP2.person.Person;
 import GP2.person.GPAction.ActionItem;
 import GP2.person.GPAction.PGState;
-import GP2.person.GPAction.TransactionType;
 import GP2.person.GPAction.PGState.EntryState;
 import GP2.person.GPAction.PGType.EntryType;
+import GP2.person.GPAction.TransactionType;
+import GP2.person.Person;
+import GP2.utils.Constants;
 import GP2.utils.Utils;
 import GP2.xcur.CrossCurrency;
-import GP2.xcur.CrossCurrency.XCurrencyProperties;
-import GP2.utils.Constants;
 
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -25,13 +25,13 @@ public class GroupProcessor extends Object {
 
 	Hashtable<String, Person> Find_CreateGroup(String sGroupName) {
 		try {
-			if (Utils.m_GroupCollection == null) Utils.m_GroupCollection = new GroupAccount() ;
+			if (Utils.m_Groups == null) Utils.m_Groups = new Groups() ;
 
-			_AGroup aG = Utils.m_GroupCollection.get(sGroupName);
+			Group aG = Utils.m_Groups.get(sGroupName);
 			if (aG == null) {
-				aG = Utils.m_GroupCollection.new _AGroup();
+				aG = Utils.m_Groups.new Group(sGroupName);
 				//System.out.println("new aG:" + sGroupName + ", state" + aG.m_gState);
-				Utils.m_GroupCollection.put(sGroupName, aG) ;
+				Utils.m_Groups.put(sGroupName, aG) ;
 				return aG.getCollection();
 			} else {
 				return aG.getCollection();
@@ -44,8 +44,8 @@ public class GroupProcessor extends Object {
 
     boolean groupExists(String sGroupName) {
 		try {
-			if (Utils.m_GroupCollection == null) return false ;
-			_AGroup aG = Utils.m_GroupCollection.get(sGroupName);
+			if (Utils.m_Groups == null) return false ;
+			Group aG = Utils.m_Groups.get(sGroupName);
 			return ( (aG == null) ? false:true ) ;
 		} catch (Exception e){
 			System.err.println("groupExists::Error:" + e.getMessage());
@@ -55,8 +55,8 @@ public class GroupProcessor extends Object {
 
     boolean personExists(String sGroupName, String sName) {
 		try {
-			if (Utils.m_GroupCollection == null) return false ;
-			_AGroup aG = Utils.m_GroupCollection.get(sGroupName);
+			if (Utils.m_Groups == null) return false ;
+			Group aG = Utils.m_Groups.get(sGroupName);
 			if (aG == null) {
 				return false ;
 			} else {
@@ -75,7 +75,6 @@ public class GroupProcessor extends Object {
 		if (!bGroupExists) {
 			return logGroupPersonError(EntryType.Group, sGroupName) ;
 		} else {
-			Utils.m_bClearing = true ;
 			return bDoNoSkip;
 		}
 	}
@@ -96,7 +95,7 @@ public class GroupProcessor extends Object {
 		return bSkip;		// skip, does not exist.
 	}
 
-	boolean processActions(HashMap<String, LinkedHashSet<ActionItem>> hmActions) {
+	boolean processActions(HashMap<String, LinkedHashSet<ActionItem>> hmActions, TransactionType.TType tt[]) {
 		for (Map.Entry<String, LinkedHashSet<ActionItem>> pair : hmActions.entrySet()) {
 			String sGroupName = pair.getKey() ;
 
@@ -106,15 +105,21 @@ public class GroupProcessor extends Object {
 				boolean bGroupExists = groupExists(sGroupName) ;
 
 				ActionItem item = iterator.next() ;
-				if ((item.ttype != null) &&	(item.ttype.compareTo(TransactionType.TType.Skip) == 0)) return bSkip ;	// skip line
-				if ((item.ttype != null) &&	(item.ttype.compareTo(TransactionType.TType.Clearing) == 0)) return doClearing(sGroupName, bGroupExists) ;
-				if ((item.pgtype != null) && (item.pgtype.compareTo(EntryType.Group) == 0)) {
+				if ((item.ttype != null) &&	(item.ttype.compareTo(TransactionType.TType.Skip) == 0)) {
+					tt[0] = TransactionType.TType.Skip;
+					return bSkip ;	// skip line
+                }
+                if ((item.ttype != null) &&	(item.ttype.compareTo(TransactionType.TType.Clearing) == 0)) {
+					tt[0] = TransactionType.TType.Clearing;
+					return doClearing(sGroupName, bGroupExists) ;
+				}
+                if ((item.pgtype != null) && (item.pgtype.compareTo(EntryType.Group) == 0)) {
 					if ( isEntryStateToggle(item) ) {
 						if (!bGroupExists) {
 							return logGroupPersonError(EntryType.Group, sGroupName) ;
 						} else {
 							Hashtable<String, Person> aGroup = Find_CreateGroup(sGroupName) ;
-							_AGroup aG = Utils.m_GroupCollection.get(sGroupName);
+							Group aG = Utils.m_Groups.get(sGroupName);
 							if (aG != null) aG.m_gState = new PGState(item.state) ;
 						}
 					} else if (isEntryStateAdd(item)) {
@@ -149,7 +154,7 @@ public class GroupProcessor extends Object {
 						}*/
 
 						Hashtable<String, Person> aGroup = Find_CreateGroup(sGroupName) ;
-						_AGroup aG = Utils.m_GroupCollection.get(sGroupName);
+						Group aG = Utils.m_Groups.get(sGroupName);
 						if (aG != null) aG.m_ccurrency = new CrossCurrency(xProperties);
 						//if (aG.m_ccurrency != null) System.out.println("aG.m_xcurrency:" + aG.m_ccurrency);
 					}
@@ -159,10 +164,10 @@ public class GroupProcessor extends Object {
 		return bDoNoSkip ;
 	}
 
-	public boolean doGroupAction(String action, String sGroup) {
+	public boolean doGroupAction(String action, String sGroup, TransactionType.TType tt[]) {
 		String sG = ((sGroup.length() == 0) ? Constants._DEFAULT_GROUP : sGroup) ;
 		HashMap<String, LinkedHashSet<ActionItem>> hmActions = GPAction.breakdownActions(action, sG) ;
-		boolean bProcess = processActions(hmActions) ;
+		boolean bProcess = processActions(hmActions, tt) ;
 		return bProcess;
 	}
 }

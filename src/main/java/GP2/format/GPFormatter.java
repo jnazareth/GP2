@@ -9,7 +9,7 @@ import GP2.xls._SheetProperties;
 import GP2.group.csvFileJSON;
 import GP2.group.groupCsvJsonMapping;
 import GP2.format.Export.RowLayout;
-import GP2.group.GroupAccount._AGroup;
+import GP2.group.Groups.Group;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -27,7 +27,7 @@ public class GPFormatter {
     private String getGroupFormat(String sGroupName) {
         String format = Constants._CURRENCY_FORMAT;
         try {
-            _AGroup aG = Utils.m_GroupCollection.get(sGroupName);
+            Group aG = Utils.m_Groups.get(sGroupName);
             if (aG != null) {
                 CrossCurrency cc = aG.m_ccurrency ;
                 if (cc != null) {
@@ -46,7 +46,7 @@ public class GPFormatter {
     private Double getGroupRate(String sGroupName) {
         Double rate = 1.0d;
         try {
-            _AGroup aG = Utils.m_GroupCollection.get(sGroupName);
+            Group aG = Utils.m_Groups.get(sGroupName);
             if (aG != null) {
                 CrossCurrency cc = aG.m_ccurrency ;
                 if (cc != null) {
@@ -138,13 +138,13 @@ public class GPFormatter {
     }
 
 	public void exportToCSVGroup(String fileName) {
-		if (Utils.m_GroupCollection == null) return ;
+		if (Utils.m_Groups == null) return ;
 
 		_SheetProperties sp = null ;
-		Enumeration<String> keysGroup = Utils.m_GroupCollection.keys();
+		Enumeration<String> keysGroup = Utils.m_Groups.keys();
 		while(keysGroup.hasMoreElements()) {
 			String groupName = keysGroup.nextElement();
-			Hashtable<String, Person> aGroup = Utils.m_GroupCollection.get(groupName) ;
+			Hashtable<String, Person> aGroup = Utils.m_Groups.get(groupName) ;
 
             // TEST: only process default group
             //if (!groupName.equalsIgnoreCase("default")) continue;
