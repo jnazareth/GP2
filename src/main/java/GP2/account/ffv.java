@@ -1,5 +1,7 @@
 package GP2.account;
 
+import GP2.utils.Utils;
+
 public class ffv  extends source {
 	private String Date;
 	private String Category;
@@ -58,7 +60,7 @@ public class ffv  extends source {
 		return Is_Pending;
 	}
 	public String getAmount() {
-		return Amount;
+		return Utils.flipCreditDebit(Amount);
 	}
 	public String getFrom() {
 		return From;

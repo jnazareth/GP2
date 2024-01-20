@@ -6,8 +6,8 @@
 	<groupId>GP2</groupId>
 	<!-- using versioning scheme <major>.<minor>.<revision> -->		
 	<!-- where <major>.<minor> = <artifactId> -->		
-	<artifactId>gp2.0</artifactId>
-	<version>2</version>
+	<artifactId>gp3.0</artifactId>
+	<version>0</version>
 
 	<packaging>jar</packaging>
 	<name>gp2</name>
@@ -47,7 +47,7 @@
 		
 		<!-- custom property to support major.minor.revision -->		
 		<!-- 5: FFV implementation -->		
-	    <revision>5</revision>	
+	    <revision>0</revision>	
 	</properties>
 
 	<dependencies>

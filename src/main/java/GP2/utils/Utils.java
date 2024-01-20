@@ -1,10 +1,9 @@
 package GP2.utils;
 
 import GP2.person.Person;
-import GP2.group.GroupAccount;
+import GP2.group.Groups;
 import GP2.group.groupCsvJsonMapping;
 import GP2.cli.Settings;
-import GP2.input.FTType;
 import GP2.input.FTType.FromToTypes;
 
 import java.util.Hashtable;
@@ -20,9 +19,7 @@ public class Utils {
 
 	// members
 	public static Hashtable<String, Person> /* m_Persons, replaced by Group */ m_System ;
-	//public static Hashtable<String, Hashtable<String, Person>> m_GroupCollection ;
-	public static GroupAccount m_GroupCollection ;
-	public static boolean m_bClearing = false ;
+	public static Groups m_Groups ;
 	public static boolean m_bSys = false ;
 
 	public static groupCsvJsonMapping m_grpCsvJsonMap = null;
@@ -38,12 +35,13 @@ public class Utils {
 		return sb.toString();
 	}
 
-	public static String stripAmount(String inString)
+	public static String flipCreditDebit(String inString)
 	{
 		final String _QUOTE = "\"";
 		final String _LEFT_ROUND = "(";
 		final String _RIGHT_ROUND = ")";
 		final String _DOLLAR = "$";
+		final String _CREDIT = "-";
 
 		int l = inString.indexOf(_QUOTE);
 		int r = inString.lastIndexOf("\"");
@@ -55,8 +53,10 @@ public class Utils {
 		if ((l != -1) && (r != -1)) inString = inString.substring(l+1, r) ;		// debit
 		//System.out.print("\tb" + inString);
 
-		l = inString.indexOf(_DOLLAR);
-		if ((l != -1)) inString = inString.substring(l+1, inString.length()).trim() ;		// $
+		int d = inString.indexOf(_DOLLAR);
+		if ((d != -1)) inString = inString.substring(d+1, inString.length()).trim() ;		// $
+
+		if ((l == -1) && (r == -1)) inString = _CREDIT + inString;			// credit
 
 		return inString;
 	}
