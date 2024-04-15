@@ -4,6 +4,11 @@ import GP2.utils.Constants;
 import GP2.utils.Utils;
 import GP2.group.groupCsvJsonMapping;
 import GP2.json.ReadJson;
+import GP2.format.Export;
+import GP2.format.FormatXLS;
+import GP2.format.Export.ExportKeys;
+import GP2.format.Export.RowLayout;
+import GP2.format.Export.XLSHeaders;
 import GP2.group.csvFileJSON;
 
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -18,6 +23,13 @@ import org.apache.poi.xssf.usermodel.XSSFPivotTable;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.ss.usermodel.Sheet;
+
+import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.ss.util.RegionUtil;
+import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.ss.usermodel.FillPatternType;
 
 // debug - read Pivot
 import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTPivotFields ;
@@ -41,6 +53,7 @@ import java.util.TreeSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.lang.Math;
 
 public class buildXLS {
 
@@ -233,8 +246,11 @@ public class buildXLS {
             String sheetName = groupName ;
             XSSFSheet sheet = workBook.createSheet(sheetName);
             getCSVData(workBook, sheet, outCSVFile, sheetName, sp) ;
-            buildPivot(sheet, sp) ;
 
+            FormatXLS fTable = new FormatXLS() ;
+            fTable.formatTable(workBook, sheet, sp, groupName); 
+
+            buildPivot(sheet, sp) ;
             //dumpPivotTable(sheet);
 
             try (FileOutputStream fileOut = new FileOutputStream(f)) {
@@ -252,7 +268,7 @@ public class buildXLS {
 	private void buildXLSFile(String fName, File f, String key, groupCsvJsonMapping._CSV_JSON cj, _SheetProperties sp) {
 		try {
 			String xlsFile = f.getName() ;
-			String outCSVFile = cj._sCSVFile ;
+            String outCSVFile = cj._sCSVFile ;
 			constructXLS(outCSVFile, xlsFile, key, sp) ;
         } catch (FileNotFoundException fnf) {
         } catch (IOException ioe) {

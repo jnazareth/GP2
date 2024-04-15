@@ -47,7 +47,7 @@
 		
 		<!-- custom property to support major.minor.revision -->		
 		<!-- 5: FFV implementation -->		
-	    <revision>0</revision>	
+	    <revision>1</revision>	
 	</properties>
 
 	<dependencies>

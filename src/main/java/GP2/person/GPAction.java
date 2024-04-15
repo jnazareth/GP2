@@ -158,7 +158,7 @@ public class GPAction {
     }
 
 	public static HashMap<String, LinkedHashSet<ActionItem>> breakdownActions(String sAction, String sGroupName) {
-		String sActionGroupName = Constants._DEFAULT_GROUP;
+		String sActionGroupName = sGroupName ; //= Constants._DEFAULT_GROUP;
 		HashMap<String, LinkedHashSet<ActionItem>> hmActions = new HashMap<String, LinkedHashSet<ActionItem>>();
 		LinkedHashSet<ActionItem> hsActions = new LinkedHashSet<ActionItem>() ;
 
@@ -235,9 +235,10 @@ public class GPAction {
         // dump collection
         /*for (Map.Entry<String, LinkedHashSet<ActionItem>> hm : hmActions.entrySet()) {
             LinkedHashSet<ActionItem> aSet = hm.getValue();
-            System.out.print("aSet.size():" + aSet.size());
+            String k = hm.getKey();
+            System.out.println(k + ", size():" + aSet.size());
             for (ActionItem ele : aSet) {
-                System.out.print("ai:" + ele.toString() + "\t");
+                System.out.print(ele.toString() + "\t");
             }
             System.out.println("");
         }*/
@@ -266,5 +267,8 @@ public class GPAction {
                 xCurrency = c;
             }
 		}
+        @Override public String toString() {
+            return "ActionItem [pgtype=" + this.pgtype + ", ttype=" + this.ttype + ", name=" + this.name + ", state=" + this.state + ", xcType=" + this.xcType + "]";
+        }    
 	}
 }

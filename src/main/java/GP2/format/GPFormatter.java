@@ -104,6 +104,7 @@ public class GPFormatter {
 
     private _SheetProperties exportToCSV(String group) {
 		String outFilename = Utils.m_grpCsvJsonMap._groupMap.get(group)._sCSVFile ;
+
         _SheetProperties sp = new _SheetProperties();
 
         try {

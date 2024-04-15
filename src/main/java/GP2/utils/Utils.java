@@ -48,15 +48,21 @@ public class Utils {
 		if ((l != -1) && (r != -1)) inString = inString.substring(l+1, r) ;		// "
 		//System.out.print("\tq" + inString);
 
-		l = inString.indexOf(_LEFT_ROUND);
-		r = inString.indexOf(_RIGHT_ROUND);
-		if ((l != -1) && (r != -1)) inString = inString.substring(l+1, r) ;		// debit
-		//System.out.print("\tb" + inString);
+		int lr = inString.indexOf(_LEFT_ROUND);
+		int rr = inString.indexOf(_RIGHT_ROUND);
+		if ((lr != -1) && (rr != -1)) inString = inString.substring(lr+1, rr) ;		// debit
+		//System.out.println("\tr" + inString);
+
+		int n = inString.indexOf(_CREDIT);
+		if ((n != -1)) inString = inString.substring(n+1, inString.length()).trim() ;		// -
+		//System.out.print("\tn" + inString);
 
 		int d = inString.indexOf(_DOLLAR);
 		if ((d != -1)) inString = inString.substring(d+1, inString.length()).trim() ;		// $
+		//System.out.print("\td" + inString);
 
-		if ((l == -1) && (r == -1)) inString = _CREDIT + inString;			// credit
+		if ((lr == -1) && (rr == -1) && (n == -1)) inString = _CREDIT + inString;			// credit
+		//System.out.println("\tc" + inString);
 
 		return inString;
 	}

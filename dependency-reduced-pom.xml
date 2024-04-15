@@ -2,9 +2,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>GP2</groupId>
-  <artifactId>gp2.0</artifactId>
+  <artifactId>gp3.0</artifactId>
   <name>gp2</name>
-  <version>2</version>
+  <version>0</version>
   <build>
     <finalName>${project.artifactId}.${revision}</finalName>
     <plugins>
@@ -44,6 +44,25 @@
             <goals>
               <goal>jar</goal>
             </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>3.6.1</version>
+        <executions>
+          <execution>
+            <configuration>
+              <usedDependencies>
+                <dependency>org.apache.poi:poi-ooxml-lite</dependency>
+                <dependency>log4j:log4j</dependency>
+              </usedDependencies>
+              <ignoredUnusedDeclaredDependencies>
+                <ignoredUnusedDeclaredDependency>com.fasterxml.jackson.core:jackson-annotations:jar:*</ignoredUnusedDeclaredDependency>
+                <ignoredUnusedDeclaredDependency>com.fasterxml.jackson.dataformat:jackson-dataformat-xml:jar:*</ignoredUnusedDeclaredDependency>
+                <ignoredUnusedDeclaredDependency>log4j:log4j:jar:*</ignoredUnusedDeclaredDependency>
+              </ignoredUnusedDeclaredDependencies>
+            </configuration>
           </execution>
         </executions>
       </plugin>
@@ -133,22 +152,30 @@
     </dependency>
   </dependencies>
   <properties>
-    <main.class>GP2.gp2</main.class>
+    <fasterxml.jackson.dataformat.yaml.version>2.14.2</fasterxml.jackson.dataformat.yaml.version>
+    <fasterxml.jackson.annotations.version>2.2.0</fasterxml.jackson.annotations.version>
     <apache.poi.version>5.2.0</apache.poi.version>
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <commons-cli.version>1.5.0</commons-cli.version>
-    <jmock.version>2.6.0</jmock.version>
+    <fasterxml.woodstox.woodstox.core.version>6.5.0</fasterxml.woodstox.woodstox.core.version>
     <hamcrest.version>1.3</hamcrest.version>
-    <org.json.version>20220924</org.json.version>
-    <revision>4</revision>
+    <fasterxml.jackson.databind.version>2.2.0</fasterxml.jackson.databind.version>
     <apache.poi.ooxml.version>5.2.0</apache.poi.ooxml.version>
-    <javax.json.version>1.1.4</javax.json.version>
-    <maven.compiler.target>1.8</maven.compiler.target>
     <json-simple.version>1.1.1</json-simple.version>
+    <yaml.snakeyaml.version>2.0</yaml.snakeyaml.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <commons-lang3.version>3.12.0</commons-lang3.version>
     <junit.version>4.13.1</junit.version>
     <commons-io.version>2.11.0</commons-io.version>
+    <main.class>GP2.gp2</main.class>
+    <commons-cli.version>1.5.0</commons-cli.version>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <jmock.version>2.6.0</jmock.version>
+    <fasterxml.jackson.core.version>2.2.0</fasterxml.jackson.core.version>
+    <org.json.version>20220924</org.json.version>
+    <revision>1</revision>
+    <javax.json.version>1.1.4</javax.json.version>
+    <maven.compiler.target>1.8</maven.compiler.target>
+    <codehaus.woodstox.stax2.api.version>4.2.1</codehaus.woodstox.stax2.api.version>
+    <fasterxml.jackson.dataformat.xml.version>2.2.0</fasterxml.jackson.dataformat.xml.version>
   </properties>
 </project>
 

@@ -16,6 +16,7 @@ import GP2.xcur.CrossCurrency;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.Map;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -88,9 +89,9 @@ public class GroupProcessor extends Object {
 
 	static boolean logGroupPersonError(EntryType et, String sName) {
 		if (et.compareTo(EntryType.Group) == 0) {
-			System.err.println("Group specified does not exist. Use: \"" +  sName + "(*:group)\" to create");
+			System.err.println("Error: \"" + sName + "\" group does not exist. Use: \"" +  sName + " (*:group)\" to create");
 		} else if (et.compareTo(EntryType.Self) == 0) {
-			System.err.println("Person specified does not exist. Use: \"" +  sName + "(*:self)\" to create");
+			System.err.println("Error: \"" + sName + "\" person does not exist. Use: \"" +  sName + " (*:self)\" to create");
 		}
 		return bSkip;		// skip, does not exist.
 	}
@@ -168,6 +169,36 @@ public class GroupProcessor extends Object {
 		String sG = ((sGroup.length() == 0) ? Constants._DEFAULT_GROUP : sGroup) ;
 		HashMap<String, LinkedHashSet<ActionItem>> hmActions = GPAction.breakdownActions(action, sG) ;
 		boolean bProcess = processActions(hmActions, tt) ;
+
+		// pull group name from action processing, otherwise this is "default"
+		// https://www.geeksforgeeks.org/how-to-print-all-keys-of-the-linkedhashmap-in-java/
+
+		Set<String> allKeys = hmActions.keySet();
+		if (!allKeys.contains(sGroup)) {
+			System.err.println("Error: " + allKeys + " missing under \"group\". Add to resolve.");
+		}
+
+		/*
+			<blank>	(default)		<blank>, jn (*:self)				no match, null
+			<blank>	(default)		home (*:group), jn (*:self)			no match, not null
+																		default missing under "group". Add to resolve.
+			home					<blank>, jn (*:self)				no match, null
+																		Group specified does not exist. Use: "broadridge.return(*:group)" to create
+																		broadridge.return found in Action
+			home					home (*:group), jn (*:self)			match, not null
+		*/
+
+
+		/*
+			b.r	(*:group), b.r, xrate	b.r = b.r, groups match. good
+			(*:group) b.r, xrate		default != b.r: groups don't match
+			b.r	xrate					if b.r found, good, else group "b.r" does not exist
+			xrate						default group
+		*/
+		/*(if (Utils.m_Groups.get(sGroup) == null) {
+			System.err.println("group \"" + sGroup + "\" not found. add action: \"" +  sGroup + " (*:group)\"" + " to create group." );
+		}*/
+
 		return bProcess;
 	}
 }

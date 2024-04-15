@@ -49,9 +49,9 @@ public class Export {
     }
 
     // members
-    RowLayout header0   = new RowLayout();
-    RowLayout header1   = new RowLayout();
-    RowLayout template  = new RowLayout();
+    public RowLayout header0   = new RowLayout();
+    public RowLayout header1   = new RowLayout();
+    public RowLayout template  = new RowLayout();
     Hashtable<String, ArrayList<RowLayout>> m_exportLinesGroup  ;	// String = groupName (Key)
 
     ArrayList<String> getSortedPersons(String sGroupName) {
@@ -68,7 +68,7 @@ public class Export {
         return al ;
     }
 
-	void buildHeaders(String group) {
+	public void buildHeaders(String group) {
         header0.empty();
         header1.empty();
         template.empty();
@@ -145,6 +145,7 @@ public class Export {
 
         boolean bSuppressCheckSum   = Utils.m_settings.getSuppressCStoUse() ;
 		float fRate = rate.floatValue();
+
         int pos = 1 ;
 		row.addCell(pos++, ExportKeys.keyItem,      item) ;
 		row.addCell(pos++, ExportKeys.keyCategory,  category) ;
@@ -152,8 +153,7 @@ public class Export {
 		row.addCell(pos++, ExportKeys.keyDescription, desc) ;
 
 		String xAmt = String.valueOf(fRate * Float.valueOf(amt)) ;
-		row.addCell(pos++, ExportKeys.keyAmount,    xAmt) ;
-
+        row.addCell(pos++, ExportKeys.keyAmount,    xAmt) ;
 		row.addCell(pos++, ExportKeys.keyFrom,      from) ;
 		row.addCell(pos++, ExportKeys.keyTo,        to) ;
 		row.addCell(pos++, ExportKeys.keyAction,    action) ;
@@ -228,21 +228,21 @@ public class Export {
             m_Cells.add(cl) ;
         }
 
-        CellLayout getCell (String posName) {
+        public CellLayout getCell (String posName) {
             for (CellLayout c : m_Cells) {
                 if (c.xlsPositionName.equalsIgnoreCase(posName)) return c ;
             }
             return null ;
         }
 
-        CellLayout getCell (int pos) {
+        public CellLayout getCell (int pos) {
             for (CellLayout c : m_Cells) {
                 if (c.xlsPosition == pos) return c ;
             }
             return null ;
         }
 
-        CellLayout setValue (int i, String v) {
+        public CellLayout setValue (int i, String v) {
             CellLayout cl = getCell(i) ;
             if (cl != null) {
                 cl.xlsPositionValue = v;
@@ -250,7 +250,7 @@ public class Export {
             }
             return null ;
         }
-        CellLayout setValue (String posName, String v) {
+        public CellLayout setValue (String posName, String v) {
             CellLayout cl = getCell(posName) ;
             if (cl != null) {
                 cl.xlsPositionValue = v;
@@ -267,16 +267,16 @@ public class Export {
             m_Cells.clear();
         }
 
-        void dumpCollection() {
+        public void dumpCollection() {
             for (CellLayout c : m_Cells) {
                 System.out.println(c.xlsPosition + "|" + c.xlsPositionName + "|" + c.xlsPositionValue);
             }
         }
 
         public class CellLayout {
-            int		xlsPosition;
-            String  xlsPositionName;
-            String	xlsPositionValue;
+            public int		xlsPosition;
+            public String   xlsPositionName;
+            public String	xlsPositionValue;
 
             public CellLayout(int x, String n, String v) {
                 xlsPosition = x;

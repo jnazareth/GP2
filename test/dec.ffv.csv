@@ -1,3 +1,126 @@
 date,category,description,institution,account,is_Hidden,is_Pending,amount,from,to,group,action
-Fri 12.01,Auto Service,TJA AUTO CARE LYNDHURST NJ,Citibank Online,Citi Double Cash Card-5554,No,No,($380),jn,jn,default,"jn (*:self), gd (*:self), default (*:group)"
-Fri 12.01,Coffee,DUNKIN LYNDHURST NJ,Citibank Online,Citi Double Cash Card-5554,No,No,($3.51),jn,jn,auto,"jn (*:self), gd (*:self), auto (*:group)"
+Fri 12.01,Groceries,SHOPRITE HOBOKEN S HOBOKEN NJ,Citibank Online,Citi Double Cash Card-5554,No,No,-10.57,jn,jn,default,"jn (*:self), gd (*:self), default (*:group)"
+Fri 12.01,Coffee Shops,DUNKIN LYNDHURST NJ,Citibank Online,Citi Double Cash Card-5554,No,No,-3.51,jn,jn,auto,"jn (*:self), gd (*:self), auto (*:group)"
+Fri 12.01,Coffee Shops,DUNKIN LYNDHURST NJ,Citibank Online,Citi Double Cash Card-5554,No,No,-3.51,jn,jn,auto,
+Fri 12.01,Restaurants,DOMINOS HOBOKEN NJ,Citibank Online,Citi Double Cash Card-5554,No,No,-8.52,jn,jn,,
+Fri 12.01,Auto Service,TJA AUTO CARE LYNDHURST NJ,Citibank Online,Citi Double Cash Card-5554,No,No,-380,jn,jn,auto,
+Fri 12.01,Restaurants,terrys cozy corner,cash,cash,No,No,-5,jn,jn,auto,
+Sat 12.02,Alcohol & Bars,JERSEY CITY BUY RITE JERSEY CITY NJ,Citibank Online,Citi Double Cash Card-5554,No,No,-49.03,jn,jn,,
+Sat 12.02,Restaurants,JERSEY MIKES ONLINE OR MANASQUAN NJ,Citibank Online,Citi Double Cash Card-5554,No,No,-10.13,jn,jn,auto,
+Sat 12.02,Parking,NEWPORT CENTRE W GARAG JESRSEY CITY NJ,Citibank Online,Citi Double Cash Card-5554,No,No,-4,jn,jn,xmas,"jn (*:self), gd (*:self), xmas (*:group)"
+Sat 12.02,Groceries,RANCH MARKET JERSEY CITY NJ,Citibank Online,Citi Double Cash Card-5554,No,No,-32.97,jn,jn,,
+Sun 12.03,Groceries,ALDI NORTH BERGEN NJ,Citibank Online,Citi Double Cash Card-5554,No,No,-27.64,jn,jn,,
+Sun 12.03,Coffee Shops,PAYPAL STARBUCKS WA,Citibank Online,Citi Double Cash Card-5554,No,No,-10,jn,jn,,
+Sun 12.03,Home,Dollar General,cash,cash,No,No,-6.46,jn,jn,xmas,
+Mon 12.04,Groceries,SHOPRITE HOBOKEN S HOBOKEN NJ,Citibank Online,Citi Double Cash Card-5554,No,No,-8.38,jn,jn,,
+Mon 12.04,Public Transport,NJT BUS NEWARK NJ,Citibank Online,Citi Double Cash Card-5554,No,No,-7,jn,jn,,
+Mon 12.04,Groceries,SHOPRITE HOBOKEN S HOBOKEN NJ,Citibank Online,Citi Double Cash Card-5554,No,No,-5.93,jn,jn,,
+Mon 12.04,Gifts & Donations,GIV ST ANN CATHO HOBOKEN NJ,Citibank Online,Citi Double Cash Card-5554,No,No,-20,jn,jn,,
+Tue 12.05,Transfer,ORIG CO NAME:PAYPAL ORIG ID:PAYPALSD11 DESC DATE:231205 CO ENTRY DESCR:TRANSFER SEC:PPD TRACE#:XXXXXXXX9111363 EED:231205 IND ID: IND NAME:GILLIAN NAZARETH TRN:,Bank of America,Bank of America,No,No,1112.9,jn,gd,,#
+Tue 12.05,Shipping & Handling,USPS,Capital One,Capital One Miles,No,No,-13.2,jn,jn,xmas,
+Tue 12.05,Medical,CHANGE AETNA PROVIDER NASHVILLE TN,Citibank Online,Citi Double Cash Card-5554,No,No,-727.41,jn,gd,medical.jill,"jn (*:self), gd (*:self), medical.jill (*:group)"
+Tue 12.05,Medical,CHANGE AETNA PROVIDER NASHVILLE TN,Citibank Online,Citi Double Cash Card-5554,No,No,-65.61,jn,gd,medical.jill,
+Tue 12.05,Income,APA TREAS DES MISC PAY INDN NAZARETH GILLIAN J CO PPD,Bank of America,Adv Plus Banking - 6965,No,No,4.53,jn,jn,,#
+Wed 12.06,Public Transport,NJT BUS NEWARK NJ,Citibank Online,Citi Double Cash Card-5554,No,No,-3.2,jn,jn,xmas,
+Wed 12.06,Restaurants,THE HALF PINT ON THOMP NEW YORK NY,Citibank Online,Citi Double Cash Card-5554,No,No,-57,jn,jn,xmas,
+Wed 12.06,Restaurants,JERSEY MIKES ONLINE OR MANASQUAN NJ,Citibank Online,Citi Double Cash Card-5554,No,No,-11.72,jn,jn,broadridge.return,"jn (*:self), gd (*:self), broadridge.return (*:group)"
+Wed 12.06,Public Transport,MTA PATH SMARTCARD SRT NEW YORK NY,Citibank Online,Citi Double Cash Card-5554,No,No,-11,jn,jn,xmas,
+Wed 12.06,Medical,CHANGE AETNA PROVIDER NASHVILLE TN,Citibank Online,Citi Double Cash Card-5554,No,No,-747.69,jn,gd,medical.jill,
+Wed 12.06,Business Services,NJGOVSERVEW      NJGOVSERVE,Chase,Chase,No,No,-75.5,jn,jn,invictus,"jn (*:self), gd (*:self), invictus (*:group)"
+Thu 12.07,Shipping & Handling,USPS,Capital One,Capital One Miles,No,No,-43.2,jn,jn,xmas,
+Thu 12.07,Restaurants,JERSEY MIKE NEWARK NJ,Citibank Online,Citi Double Cash Card-5554,No,No,-11.72,jn,jn,broadridge.return,
+Fri 12.08,Medical,CHANGE AETNA PROVIDER NASHVILLE TN,Citibank Online,Citi Double Cash Card-5554,No,No,-452.62,jn,gd,medical.jill,
+Fri 12.08,Restaurants,DOMINOS HOBOKEN NJ,Citibank Online,Citi Double Cash Card-5554,No,No,-17.05,jn,jn,,
+Fri 12.08,Income,BRDRIDGE DES DIRECT DEP INDN NAZARETH JOHN CO PPD,Bank of America,Adv Plus Banking - 6965,No,No,6141.33,jn,jn,,#
+Sat 12.09,Groceries,SHOPRITE HOBOKEN S HOBOKEN NJ,Citibank Online,Citi Double Cash Card-5554,No,No,-27.14,jn,jn,,
+Sun 12.10,Public Transport,NJT BUS NEWARK NJ,Citibank Online,Citi Double Cash Card-5554,No,No,-29.5,jn,jn,xmas,
+Sun 12.10,Coffee Shops,PAYPAL STARBUCKS WA,Citibank Online,Citi Double Cash Card-5554,No,No,-10,jn,jn,xmas,
+Sun 12.10,Coffee Shops,PAYPAL STARBUCKS WA,Citibank Online,Citi Double Cash Card-5554,No,No,-10,jn,jn,,
+Sun 12.10,Public Transport,MTA NYCT PAYGO NEW YORK NY,Citibank Online,Citi Double Cash Card-5554,No,No,-2.9,jn,jn,xmas,
+Sun 12.10,Public Transport,MTA NYCT PAYGO NEW YORK NY,Citibank Online,Citi Double Cash Card-5554,No,No,-2.9,jn,jn,xmas,
+Mon 12.11,Groceries,SHOPRITE HOBOKEN S HOBOKEN NJ,Citibank Online,Citi Double Cash Card-5554,No,No,-13.59,jn,jn,,
+Tue 12.12,Income,APA TREAS DES MISC PAY INDN NAZARETH GILLIAN J CO PPD,Bank of America,Adv Plus Banking - 6965,No,No,4.52,jn,jn,,#
+Tue 12.12,Income,APA TREAS DES MISC PAY INDN NAZARETH JOHN CO PPD,Bank of America,Adv Plus Banking - 6965,No,No,12.33,jn,jn,,#
+Wed 12.13,Television,NETFLIX.COM LOS GATOS CA,Citibank Online,Citi Double Cash Card-5554,No,No,-7.45,jn,jn,,
+Wed 12.13,Auto & Transport,NJ MOTOR VEHICLE PAY TRENTON NJ,Citibank Online,Citi Double Cash Card-5554,No,No,-25.05,jn,gd,,
+Tue 12.12,Coffee Shops,DUNKIN NEWARK NJ,Citibank Online,Citi Double Cash Card-5554,No,No,-3.51,jn,jn,broadridge.return,
+Thu 12.14,Clothing,WALMART.COM WALMART.COM AR,Citibank Online,Citi Double Cash Card-5554,No,No,-42.18,jn,jn,,
+Thu 12.14,Television,SLING.COM ENGLEWOOD CO,Citibank Online,Citi Double Cash Card-5554,No,No,-45,jn,jn,,
+Thu 12.14,Public Transport,NJT BUS NEWARK NJ,Citibank Online,Citi Double Cash Card-5554,No,No,-3.5,jn,jn,xmas,
+Fri 12.15,Restaurants,TST**TST* OBAO - HELLS New York USA,Citibank Online,Citi Double Cash Card-5554,No,No,-72.15,jn,jn,xmas,
+Thu 12.14,Public Transport,MTA NYCT PAYGO NEW YORK NY,Citibank Online,Citi Double Cash Card-5554,No,No,-2.9,jn,jn,xmas,
+Fri 12.15,Credit Card Payment,CITIBANK CREDIT CARD BILL PAYMENT,Bank of America,Adv Plus Banking - 6965,No,No,-5020.2,jn,jn,,#
+Fri 12.15,Credit Card Payment,PAYMENT THANK YOU,Citibank Online,Citi Double Cash Card-5554,No,No,5020.2,jn,jn,,#
+Fri 12.15,Gym,STEVENS INSTITUTE OF T HOBOKEN NJ,Citibank Online,Citi Double Cash Card-5554,No,No,-55,jn,jn,,
+Fri 12.15,Restaurants,DOMINOS HOBOKEN NJ,Citibank Online,Citi Double Cash Card-5554,No,No,-17.04,jn,jn,,
+Sat 12.16,Groceries,ALDI NORTH BERGEN NJ,Citibank Online,Citi Double Cash Card-5554,No,No,-52.92,jn,jn,,
+Sat 12.16,Groceries,ALDI NORTH BERGEN NJ,Citibank Online,Citi Double Cash Card-5554,No,No,-26.46,jn,jn,xmas,
+Sat 12.16,Groceries,SAMS CLUB SECAUCUS NJ,Citibank Online,Citi Double Cash Card-5554,No,No,-50.37,jn,jn,,
+Sat 12.16,Groceries,D MART SUPERMARKET JERSEY CITY NJ,Citibank Online,Citi Double Cash Card-5554,No,No,-48.07,jn,jn,,
+Sat 12.16,Groceries,D MART SUPERMARKET JERSEY CITY NJ,Citibank Online,Citi Double Cash Card-5554,No,No,-24.03,jn,jn,xmas,
+Sat 12.16,Clothing,WALMART.COM AR,Citibank Online,Citi Double Cash Card-5554,No,No,-17.2,jn,jn,,
+Sun 12.17,Groceries,SHOPRITE HOBOKEN S HOBOKEN NJ,Citibank Online,Citi Double Cash Card-5554,No,No,-14.18,jn,jn,,
+Sun 12.17,Public Transport,MTA PATH SMARTCARD SRT NEW YORK NY,Citibank Online,Citi Double Cash Card-5554,No,No,-5.5,jn,jn,xmas,
+Sun 12.17,Public Transport,MTA PATH SMARTCARD SRT NEW YORK NY,Citibank Online,Citi Double Cash Card-5554,No,No,-5.5,jn,jn,xmas,
+Sun 12.17,Public Transport,NJT LIGHT NEWARK NJ,Citibank Online,Citi Double Cash Card-5554,No,No,-4.5,jn,jn,xmas,
+Sun 12.17,Public Transport,NJT BUS NEWARK NJ,Citibank Online,Citi Double Cash Card-5554,No,No,-1.6,jn,jn,xmas,
+Mon 12.18,Restaurants,OLIVE TREE CAFE & BAR NEW YORK USA,Citibank Online,Citi Double Cash Card-5554,No,No,-54.44,jn,jn,xmas,
+Mon 12.18,Gifts & Donations,GIV ST ANN CATHO HOBOKEN NJ,Citibank Online,Citi Double Cash Card-5554,No,No,-20,jn,jn,,
+Tue 12.19,Public Transport,NJT BUS NEWARK NJ,Citibank Online,Citi Double Cash Card-5554,No,No,-7,jn,jn,,
+Tue 12.19,Coffee Shops,DUNKIN NEWARK NJ,Citibank Online,Citi Double Cash Card-5554,No,No,-3.51,jn,jn,broadridge.return,
+Tue 12.19,Mobile Phone,OPTIMUM.COM MOBILE NY,Citibank Online,Citi Double Cash Card-5554,No,No,-16.17,jn,gd,,
+Tue 12.19,Income,APA TREAS DES MISC PAY INDN NAZARETH GILLIAN J CO PPD,Bank of America,Adv Plus Banking - 6965,No,No,4.51,jn,jn,,#
+Wed 12.20,Groceries,SHOPRITE HOBOKEN S,Capital One,Capital One Miles,No,No,-18.3,jn,jn,,
+Wed 12.20,Coffee Shops,DUNKIN NEWARK NJ,Citibank Online,Citi Double Cash Card-5554,No,No,-3.51,jn,jn,broadridge.return,
+Wed 12.20,Restaurants,JERSEY MIKE NEWARK NJ,Citibank Online,Citi Double Cash Card-5554,No,No,-11.72,jn,jn,broadridge.return,
+Wed 12.20,Clothing,MACYS COM MASON OH,Citibank Online,Citi Double Cash Card-5554,No,No,-25.49,jn,gd,medical.jill,
+Thu 12.21,Clothing,MACYS COM MASON OH,Citibank Online,Citi Double Cash Card-5554,No,No,-27.53,jn,gd,medical.jill,
+Thu 12.21,Coffee Shops,DUNKIN NEWARK NJ,Citibank Online,Citi Double Cash Card-5554,No,No,-3.08,jn,jn,broadridge.return,
+Thu 12.21,Restaurants,JERSEY MIKE NEWARK NJ,Citibank Online,Citi Double Cash Card-5554,No,No,-11.72,jn,jn,broadridge.return,
+Fri 12.22,Home Supplies,THE HOME DEPOT JERSEY CITY NJ,Citibank Online,Citi Double Cash Card-5554,No,No,-11.34,jn,jn,,
+Fri 12.22,Alcohol & Bars,JERSEY CITY BUY RITE JERSEY CITY NJ,Citibank Online,Citi Double Cash Card-5554,No,No,-63.93,jn,jn,xmas,
+Fri 12.22,Restaurants,DOMINOS HOBOKEN NJ,Citibank Online,Citi Double Cash Card-5554,No,No,-17.04,jn,jn,,
+Fri 12.22,Groceries,SHOPRITE HOBOKEN S HOBOKEN NJ,Citibank Online,Citi Double Cash Card-5554,No,No,-9.87,jn,jn,,
+Fri 12.22,Gas & Fuel,BP BQPS HOBOKEN NJ,Citibank Online,Citi Double Cash Card-5554,No,No,-57.51,jn,jn,,
+Fri 12.22,Income,BRDRIDGE DES DIRECT DEP INDN NAZARETH JOHN CO PPD,Bank of America,Adv Plus Banking - 6965,No,No,6002.32,jn,jn,,#
+Sat 12.23,Pharmacy,CVS PHARMACY,Capital One,Capital One Miles,No,No,-2.24,jn,gd,medical.jill,
+Sat 12.23,Public Transport,MTA METROCARD PATH,Capital One,Capital One Miles,No,No,-10,jn,gd,medical.jill,
+Sun 12.24,Groceries,SHOPRITE HOBOKEN S HOBOKEN NJ,Citibank Online,Citi Double Cash Card-5554,No,No,-11.21,jn,jn,,
+Sun 12.24,Television,OPTIMUM NY,Citibank Online,Citi Double Cash Card-5554,No,No,-96.56,jn,jn,,
+Sun 12.24,Public Transport,NJT BUS NEWARK NJ,Citibank Online,Citi Double Cash Card-5554,No,No,-3.2,jn,jn,xmas,
+Sun 12.24,Public Transport,NJT BUS NEWARK NJ,Citibank Online,Citi Double Cash Card-5554,No,No,-3.2,jn,jn,xmas,
+Sun 12.24,Restaurants,MCDONALDS NEW YORK NY,Citibank Online,Citi Double Cash Card-5554,No,No,-7.71,jn,jn,xmas,
+Sun 12.24,Public Transport,NJT BUS NEWARK USA,Citibank Online,Citi Double Cash Card-5554,No,Yes,-3.2,jn,jn,xmas,
+Mon 12.25,Clothing,BURLINGTON STORES NEW YORK NY,Citibank Online,Citi Double Cash Card-5554,No,No,-10.88,jn,jn,xmas,
+Tue 12.26,Utilities,PUBLIC SERVICE DES PSEG INDN JOHN NAZARETH CO PPD,Bank of America,Adv Plus Banking - 6965,No,No,-62.69,jn,jn,,
+Tue 12.26,Income,APA TREAS DES MISC PAY INDN NAZARETH JOHN CO PPD,Bank of America,Adv Plus Banking - 6965,No,No,20.47,jn,jn,,#
+Tue 12.26,Public Transport,MTA METROCARD PATH,Capital One,Capital One Miles,No,No,-10,jn,gd,medical.jill,
+Tue 12.26,Public Transport,MTA METROCARD PATH,Capital One,Capital One Miles,No,No,-10,jn,gd,medical.jill,
+Tue 12.26,Restaurants,SQ L ARTE DEL GELATO NEW YORK NY,Citibank Online,Citi Double Cash Card-5554,No,No,-7.57,jn,gd,medical.jill,
+Tue 12.26,Public Transport,NJT BUS NEWARK NJ,Citibank Online,Citi Double Cash Card-5554,No,No,-3.2,jn,jn,xmas,
+Tue 12.26,Public Transport,MTA METROCARD PATH NEW YORK NY,Citibank Online,Citi Double Cash Card-5554,No,No,-10,jn,gd,medical.jill,
+Tue 12.26,Public Transport,MTA NYCT PAYGO NEW YORK NY,Citibank Online,Citi Double Cash Card-5554,No,No,-2.9,jn,jn,xmas,
+Tue 12.26,Public Transport,NJT BUS NEWARK NJ,Citibank Online,Citi Double Cash Card-5554,No,No,-1.6,jn,gd,medical.jill,
+Tue 12.26,Income,THANKYOU POINTS REDEEMED TY,Citibank Online,Citi Double Cash Card-5554,No,No,171,jn,jn,,#
+Tue 12.26,Income,"APA  TREAS 310   DES:  MISC PAY ID:RSXXXXX00057270           INDN:Nazareth,John           CO ID:XXXXX36151 PPD",Bank of America,Adv Plus Banking - 6965,No,No,20.47,jn,jn,,#
+Wed 12.27,Credit Card Payment,ELECTRONIC PAYMENT,Capital One,Capital One Miles,No,No,86.94,jn,jn,,#
+Wed 12.27,Restaurants,OLIVE TREE CAFE BAR,Capital One,Capital One Miles,No,No,-73.06,jn,jn,xmas,
+Wed 12.27,Parking,NEWPORT CENTRE W GARAG JESRSEY CITY USA,Citibank Online,Citi Double Cash Card-5554,No,Yes,-4,jn,jn,xmas,
+Wed 12.27,Public Transport,MTA NYCT PAYGO NEW YORK USA,Citibank Online,Citi Double Cash Card-5554,No,Yes,-2.9,jn,jn,xmas,
+Wed 12.27,Clothing,UNIQLO USA LLC NEW YORK USA,Citibank Online,Citi Double Cash Card-5554,No,Yes,-34.8,jn,jn,xmas,
+Wed 12.27,Credit Card Payment,CAPITAL ONE CREDIT CARDS BILL PAYMENT,Bank of America,Adv Plus Banking - 6965,No,No,-86.94,jn,jn,,#
+Wed 12.27,Cash & ATM,BKOFAMERICA ATM WITHDRWL PORT AUTHORITY NEW YORK NY,Bank of America,Adv Plus Banking - 6965,No,No,-120,jn,jn,,
+Thu 12.28,Health Insurance,MERCER HEALTH BENEFITS ADMIN BILL PAYMENT,Bank of America,Adv Plus Banking - 6965,No,No,-61.24,jn,jn,,
+Thu 12.28,Investment Savings,VANGUARD BUY DES INVESTMENT INDN JOHN NAZARETH CO ID VMC PUR WEB,Bank of America,Adv Plus Banking - 6965,No,No,-7500,jn,jn,,#
+Thu 12.28,Health Insurance,MERCER HEALTH BENEFITS ADMIN BILL PAYMENT,Bank of America,Adv Plus Banking - 6965,No,No,-3.5,jn,jn,,
+Thu 12.28,Public Transport,MTA NYCT PAYGO NEW YORK USA,Citibank Online,Citi Double Cash Card-5554,No,Yes,-2.9,jn,jn,,
+Fri 12.29,Home Services,Condor,Bank of America,Adv Plus Banking - 6965,No,No,-208.03,jn,jn,,
+Fri 12.29,Restaurants,Domino's Pizza,Citibank Online,Citi Double Cash Card-5554,No,No,-17.04,jn,jn,,
+Sat 12.30,Groceries,ALDI 60064 NORTH BERGEN USA,Citibank Online,Citi Double Cash Card-5554,No,No,-15.94,jn,jn,xmas,
+Sat 12.30,Groceries,ALDI 60064 NORTH BERGEN USA,Citibank Online,Citi Double Cash Card-5554,No,No,-15.94,jn,jn,,
+Sat 12.30,Home Supplies,Wal-Mart,Citibank Online,Citi Double Cash Card-5554,No,No,-24.96,jn,jn,,
+Sun 12.31,Interest Income,INTEREST CREDIT,Citibank Online,Citi Double Cash Card-5554,No,No,0.01,jn,jn,,#
+Sun 12.31,Medical,QDI*QUEST DIAGNOSTICS 800-631-1388 USA,Citibank Online,Citi Double Cash Card-5554,No,No,-168.88,jn,gd,medical.jill,
+Sat 01.06,Clothing,UNIQLO USA LLC NEW YORK NY,Citibank Online,Citi Double Cash Card-5554,No,No,32.8,jn,jn,xmas,
+Mon 01.08,Clothing,UNIQLO USA LLC NEW YORK NY,Citibank Online,Citi Double Cash Card-5554,No,No,53.92,jn,jn,xmas,
+Thu 01.18,Clothing,DSW. COLUMBUS USA,Citibank Online,Citi Double Cash Card-5554,No,No,53.54,jn,gd,xmas,
