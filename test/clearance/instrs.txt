@@ -1,0 +1,1 @@
+java -jar ../../target/gp3.0.0.jar chetan.ffv.csv -x -Pdir=out

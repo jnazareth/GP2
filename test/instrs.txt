@@ -1,1 +1,2 @@
-java -jar ../target/gp3.0.0.jar dec.ffv.csv -x -Pdir=out2
+java -jar ../target/gp3.0.0.jar feb.ffv.csv -x -Pdir=out2
+java -jar ../target/gp3.0.0.jar feb2.ffv.csv -x -Pdir=out2

@@ -1,0 +1,11 @@
+date,category,description,institution,account,is_Hidden,is_Pending,amount,from,to,group,action
+Fri 02.02,Restaurants/Dining,JERSEY MIKES ONLINE OR MANASQUAN NJ,Citibank Online,Citi Double Cash Card-5554,No,No,-11.72,jn,jn,broadridge.return,"jn (*:self), gd (*:self), broadridge.return (*:group)"
+Tue 02.06,Coffee,DUNKIN NEWARK NJ,Citibank Online,Citi Double Cash Card-5554,No,No,-3.51,jn,jn,broadridge.return,
+Tue 02.06,Fast Food & Convenience,JERSEY MIKES WEB APP MANASQUAN USA,Citibank Online,Citi Double Cash Card-5554,No,Yes,-11.72,jn,jn,broadridge.return,
+Wed 02.07,Public Transport,MTA LIRR ETIX TICKET USA,Citibank Online,Citi Double Cash Card-5554,No,Yes,-13,jn,jn,broadridge.return,
+Wed 02.07,Coffee,BAY SHORE USA,Citibank Online,Citi Double Cash Card-5554,No,Yes,-2.92,jn,jn,broadridge.return,
+Thu 02.08,Rideshare,PAYPAL LYFT TEMP AUTH USA,Citibank Online,Citi Double Cash Card-5554,No,Yes,-35.77,jn,jn,broadridge.return,
+Tue 02.13,Restaurants/Dining,JERSEY MIKES ONLINE OR MANASQUAN NJ,Citibank Online,Citi Double Cash Card-5554,No,No,-11.72,jn,jn,broadridge.return,
+Tue 02.13,Coffee,DUNKIN NEWARK NJ,Citibank Online,Citi Double Cash Card-5554,No,No,-3.51,jn,jn,broadridge.return,
+Thu 02.15,Restaurants/Dining,JERSEY MIKES WEB APP MANASQUAN USA,Citibank Online,Citi Double Cash Card-5554,No,Yes,-11.72,jn,jn,broadridge.return,
+Thu 02.15,Coffee,DUNKIN NEWARK USA,Citibank Online,Citi Double Cash Card-5554,No,Yes,-3.51,jn,jn,broadridge.return,

@@ -1,0 +1,181 @@
+account.java
+
+class account {
+
+	private void doFromTo(String item, int idx, float amt, String in, String sGroupName) {
+		int numAll = getAllActive(sGroupName).size() ;
+		InputProcessor sT = new InputProcessor() ;
+		sT.processFrTo(item, idx, amt, numAll, in) ;
+
+		processSetAll(FTType.FromToType.All, sGroupName, idx, sT) ;
+		processSetRem(FTType.FromToType.Remainder, sGroupName, idx, sT) ;
+		processSetIndiv(FTType.FromToType.Individual, sGroupName, idx, sT) ;
+	}
+
+
+	// new
+	ProcessATransaction() {
+		stripPercentage
+		processFrTo
+	}
+
+	ProcessTransaction() {
+		
+		group.ProcessATransaction(FR)
+		ProcessATransaction(TO)
+		
+
+		doFromTo(item, _FR, fAmt, aFrom, sGroupName) ;
+		doFromTo(item, _TO, fAmt, aTo, sGroupName) ;
+		sumFromTo(action, sGroupName) ;		
+	}
+
+}
+
+_______________________
+GroupAccount (aka "Group")
+	//	should this be renamed "Group" ?
+	hashtable of (groupname, _AGroup)
+	// groupname = default | home | medical.jill | auto | ...
+	// _AGroup = group of "Person"
+		should this be renamed "PersonGroup" ?
+
+
+
+_______________________
+_AGroup (aka "PersonGroup")
+	type = group
+	state = active
+	hashtable of (name, person)
+	
+	// add new member
+	// String m_GroupName ;
+	
+	// constructor (groupName)
+	public _AGroup (String groupName) {
+		m_gType = EntryType.Group ;
+		m_gState = new PGState(EntryState.Add) ;
+		
+		m_GroupName = groupName ;
+	}	
+	
+	// move from account class
+	initFromTo()
+	getActiveCount() {
+		iterate over all Person. Inc if Active()
+		// alternatively, maintain a private count "activeCount" if state changes?
+	}
+	
+	doFromTo() {
+		
+
+	}
+
+
+
+	sumFromTo()
+	
+____________________________________________
+interface ProcessBase {
+	protected process() {
+	}
+}
+
+public static enum TransactionDirection {
+	FROM,
+	TO,
+}
+	
+protected abstract class TransactionDirectionBase {
+	private TransactionDirection keyDirection ;
+	protected processTransactionDirection() {
+	}
+}
+public class FromImpl extends TransactionDirectionBase {
+	private processTransactionDirection() {
+		keyDirection = TransactionDirection.FROM ;
+		// impl
+	}
+}
+public class ToImpl extends TransactionDirectionBase {
+	private processTransactionDirection() {
+		keyDirection = TransactionDirection.TO ;
+		// impl
+	}
+}
+--------------
+protected abstract class FromToTypeBase {
+	private FromToType key ;
+	protected processFromToType() {
+	}
+}
+public class AllImpl extends FromToTypeBase {
+	public processFromToType() {
+		key = FTType.FromToType.All;
+		// All impl
+	}
+}
+public class RemImpl extends FromToTypeBase {
+	public processFromToType() {
+		key = FTType.FromToType.Remainder;
+		// Rem impl
+	}
+}
+public class IndivImpl extends FromToTypeBase {
+	public processFromToType() {
+		key = FTType.FromToType.Individual;
+		// Indiv impl
+	}
+}
+
+class FromToTypeImpl {
+	AllImpl		aImpl ;
+	RemImpl		rImpl ;
+	IndivImpl 	iImpl ;
+}
+
+class Transaction {
+	TransactionDirectionImpl	tdImpl;
+	FromToTypeImpl				ftImpl ;
+
+	
+	void Transaction(TransactionDirection){
+	}
+
+	process() {
+		tdImpl.ftImpl.aImpl.process(this.keyDirection) ;
+		tdImpl.ftImpl.rImpl.process(this.keyDirection) ;
+		tdImpl.ftImpl.iImpl.process(this.keyDirection) ;
+	}
+}
+___________________________
+class Transactions {
+	Transaction	frTransaction(TransactionDirection.FROM);
+	Transaction	toTransaction(TransactionDirection.TO) ;
+	
+	process() {
+		frTransaction.process() ;
+		toTransaction.process() ;
+	}
+}
+
+___________________________
+class TransactionsProcessor (String item, String group) {
+	Transactions aTrans ;
+	
+	aTrans.process();
+}
+
+
+__________________________________________
+each Group has
+	- Person(s) (see _AGroup)
+	- Transactions apply to group
+		each Transaction has:
+		From
+		To
+		
+		each From/To has processing for:
+			All
+			Rem
+			Indiv

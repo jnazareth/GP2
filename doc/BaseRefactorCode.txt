@@ -1,0 +1,48 @@
+				if (((m_tDirection.compareTo(TransactionDirection.FROM) == 0)) && ((m_tType.compareTo(TransactionType.TType.Clearing) != 0))) {
+                    person.incAmount(Person.AccountEntry.PAID, fAmount) ;
+				}
+				if (((m_tDirection.compareTo(TransactionDirection.TO) == 0)) && ((m_tType.compareTo(TransactionType.TType.Clearing) != 0))) {
+					person.incAmount(Person.AccountEntry.TRANSACTION, fAmount) ;
+                    person.incAmount(Person.AccountEntry.SPENT, fAmount) ;
+				}
+				// checksumINDIVIDUALTOTALS bug 3/13
+				if ((m_tType.compareTo(TransactionType.TType.Clearing) == 0)) {
+					if ((m_tDirection.compareTo(TransactionDirection.FROM) == 0)) person.incAmount(Person.AccountEntry.PAID, fAmount) ;
+					if ((m_tDirection.compareTo(TransactionDirection.TO) == 0)) person.incAmount(Person.AccountEntry.PAID, -1*fAmount) ;
+				}
+
+
+				if (m_tType.compareTo(TransactionType.TType.Clearing) != 0) {
+					if (m_tDirection.compareTo(TransactionDirection.FROM) == 0)	person.incAmount(Person.AccountEntry.PAID, fAmount) ;
+					if (m_tDirection.compareTo(TransactionDirection.TO) == 0)  	person.incAmount(Person.AccountEntry.SPENT, fAmount) ;
+				}
+				
+				if (m_tType.compareTo(TransactionType.TType.Clearing) == 0) {
+					if ((m_tDirection.compareTo(TransactionDirection.FROM) == 0)) 	person.incAmount(Person.AccountEntry.PAID, fAmount) ;
+					if ((m_tDirection.compareTo(TransactionDirection.TO) == 0)) 	person.incAmount(Person.AccountEntry.PAID, -1*fAmount) ;
+				}
+_______________________________________
+
+				if ((m_tDirection.compareTo(TransactionDirection.FROM) == 0))		person.incAmount(Person.AccountEntry.FROM, fAmount) ;
+		                if ((m_tDirection.compareTo(TransactionDirection.TO) == 0))		person.incAmount(Person.AccountEntry.TO, fAmount) ;
+				if (m_tType.compareTo(TransactionType.TType.Clearing) != 0) {
+					if (m_tDirection.compareTo(TransactionDirection.FROM) == 0)	person.incAmount(Person.AccountEntry.PAID, fAmount) ;
+					if (m_tDirection.compareTo(TransactionDirection.TO) == 0)  	person.incAmount(Person.AccountEntry.SPENT, fAmount) ;
+				}
+				if (m_tType.compareTo(TransactionType.TType.Clearing) == 0) {
+					if ((m_tDirection.compareTo(TransactionDirection.FROM) == 0)) 	person.incAmount(Person.AccountEntry.PAID, fAmount) ;
+					if ((m_tDirection.compareTo(TransactionDirection.TO) == 0)) 	person.incAmount(Person.AccountEntry.PAID, -1*fAmount) ;
+				}
+				---------
+
+				if ((m_tDirection.compareTo(TransactionDirection.FROM) == 0)) {
+					person.incAmount(Person.AccountEntry.FROM, fAmount) ;
+					if (m_tType.compareTo(TransactionType.TType.Clearing) != 0) person.incAmount(Person.AccountEntry.PAID, fAmount) ;
+					if (m_tType.compareTo(TransactionType.TType.Clearing) == 0) person.incAmount(Person.AccountEntry.PAID, fAmount) ;
+				}
+
+		                if ((m_tDirection.compareTo(TransactionDirection.TO) == 0)) {
+					person.incAmount(Person.AccountEntry.TO, fAmount) ;		                
+					if (m_tType.compareTo(TransactionType.TType.Clearing) != 0) person.incAmount(Person.AccountEntry.SPENT, fAmount) ;
+					if (m_tType.compareTo(TransactionType.TType.Clearing) == 0) person.incAmount(Person.AccountEntry.PAID, -1*fAmount) ;
+				}
