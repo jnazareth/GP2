@@ -34,16 +34,16 @@ public abstract class source {
 	public String getAction() {
 		return Action;
 	}
-	public void setDate(String date) {
+	public void setDate(String Date) {
 		this.Date = Date;
 	}
-	public void setCategory(String category) {
+	public void setCategory(String Category) {
 		this.Category = Category;
 	}
 	public void setDescription(String Description) {
 		this.Description = Description;
 	}
-	public void setAmount(String amount) {
+	public void setAmount(String Amount) {
 		this.Amount = Amount;
 	}
 	public void setFrom(String From) {

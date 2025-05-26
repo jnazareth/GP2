@@ -1,30 +1,27 @@
 package GP2.cli;
 
 import GP2.utils.Constants;
-
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-
 import java.io.File;
 
 public class Settings {
 
-    private File[]  inputs;
-    _CLIParamater   _xls    = new _CLIParamater(); 
-    _CLIParamater   _map    = new _CLIParamater();
-    _CLIParamater   _dir    = new _CLIParamater();
-    _CLIParamater   _clean  = new _CLIParamater();
-    _CLIParamater   _export = new _CLIParamater();
-    _CLIParamater   _json   = new _CLIParamater();
-    _CLIParamater   _suppressCS   = new _CLIParamater();
+    private File[] inputs;
+    private final _CLIParamater _xls = new _CLIParamater();
+    private final _CLIParamater _map = new _CLIParamater();
+    private final _CLIParamater _dir = new _CLIParamater();
+    private final _CLIParamater _clean = new _CLIParamater();
+    private final _CLIParamater _export = new _CLIParamater();
+    private final _CLIParamater _json = new _CLIParamater();
+    private final _CLIParamater _suppressCS = new _CLIParamater();
 
-    public boolean  bCheckSumTransaction = false;
-    public boolean  bCheckSumGroupTotals = false;
-    public boolean  bCheckSumIndividualTotals = false;
+    public boolean bCheckSumTransaction = false;
+    public boolean bCheckSumGroupTotals = false;
+    public boolean bCheckSumIndividualTotals = false;
 
     public File[] getInputs() {
         return inputs;
     }
+
     public void setInputs(File[] inputs) {
         this.inputs = inputs;
     }
@@ -32,175 +29,140 @@ public class Settings {
     public _CLIParamater getPropertyXLS() {
         return _xls;
     }
-    public _CLIParamater setPropertyXLS(String n, String v, Boolean b, File h) {
-        if (_xls == null) _xls = new _CLIParamater() ;
-        if (n != null) _xls.sPropertyName = n ;
-        if (v != null) _xls.sPropertyValue = v ;
-        _xls.bPropertyUsed = b ;
-    	if (h != null) _xls.hFile = h ;
-    	return _xls ;
+
+    public _CLIParamater setPropertyXLS(String name, String value, Boolean used, File file) {
+        return setProperty(_xls, name, value, used, file, null);
     }
 
     public _CLIParamater getPropertyMapFile() {
         return _map;
     }
-    public _CLIParamater setPropertyMapFile(String n, String v, Boolean b, File h) {
-        if (_map == null) _map = new _CLIParamater() ;
-        if (n != null) _map.sPropertyName = n ;
-        if (v != null) _map.sPropertyValue = v ;
-        _map.bPropertyUsed = b ;
-    	if (h != null) _map.hFile = h ;
-    	return _map ;
+
+    public _CLIParamater setPropertyMapFile(String name, String value, Boolean used, File file) {
+        return setProperty(_map, name, value, used, file, null);
     }
 
     public _CLIParamater getPropertyDir() {
         return _dir;
     }
-    public _CLIParamater setPropertyDir(String n, String v, Boolean b, File h) {
-        if (_dir == null) _dir = new _CLIParamater() ;
-        if (n != null) _dir.sPropertyName = n ;
-        if (v != null) _dir.sPropertyValue = v ;
-        _dir.bPropertyUsed = b ;
-    	if (h != null) _dir.hFile = h ;
-    	return _dir ;
+
+    public _CLIParamater setPropertyDir(String name, String value, Boolean used, File file) {
+        return setProperty(_dir, name, value, used, file, null);
     }
 
     public _CLIParamater getPropertyClean() {
         return _clean;
     }
-    public _CLIParamater setPropertyClean(String n, String v, Boolean b) {
-        if (_clean == null) _clean = new _CLIParamater() ;
-        if (n != null) _clean.sPropertyName = n ;
-        if (v != null) _clean.sPropertyValue = v ;
-        _clean.bPropertyUsed = b ;
-    	return _clean ;
+
+    public _CLIParamater setPropertyClean(String name, String value, Boolean used) {
+        return setProperty(_clean, name, value, used, null, null);
     }
 
     public _CLIParamater getPropertyExport() {
         return _export;
     }
-    public _CLIParamater setPropertyExport(String n, Boolean bV, Boolean b) {
-        if (_export == null) _export = new _CLIParamater() ;
-        if (n != null) _export.sPropertyName = n ;
-        _export.bPropertyValue = bV ;
-        _export.bPropertyUsed = b ;
-    	return _export ;
+
+    public _CLIParamater setPropertyExport(String name, Boolean value, Boolean used) {
+        return setProperty(_export, name, null, used, null, value);
     }
 
     public _CLIParamater getPropertyJson() {
         return _json;
     }
-    public _CLIParamater setPropertyJson(String n, Boolean bV, Boolean b) {
-        if (_json == null) _json = new _CLIParamater() ;
-        if (n != null) _json.sPropertyName = n ;
-        _json.bPropertyValue = bV ;
-        _json.bPropertyUsed = b ;
-    	return _json ;
+
+    public _CLIParamater setPropertyJson(String name, Boolean value, Boolean used) {
+        return setProperty(_json, name, null, used, null, value);
     }
 
     public _CLIParamater getPropertySuppressCS() {
         return _suppressCS;
     }
-    public _CLIParamater setPropertySuppressCS(String n, Boolean bV, Boolean b) {
-        if (_suppressCS == null) _suppressCS = new _CLIParamater() ;
-        if (n != null) _suppressCS.sPropertyName = n ;
-        _suppressCS.bPropertyValue = bV ;
-        _suppressCS.bPropertyUsed = b ;
-    	return _suppressCS ;
+
+    public _CLIParamater setPropertySuppressCS(String name, Boolean value, Boolean used) {
+        return setProperty(_suppressCS, name, null, used, null, value);
     }
 
     public boolean getSuppressCStoUse() {
-        Boolean b = true;
-        if ( (this._suppressCS.bPropertyUsed) ) b = this._suppressCS.bPropertyValue ;
-        return b ;
+        return _suppressCS.bPropertyUsed ? _suppressCS.bPropertyValue : true;
     }
 
     public String getDirToUse() {
-        String sDir = Constants.OUT_FOLDER ;
-        if ( (this._dir.bPropertyUsed) && (this._dir.sPropertyValue != null) ) sDir = this._dir.sPropertyValue ;
-        return sDir ;
+        return _dir.bPropertyUsed && _dir.sPropertyValue != null ? _dir.sPropertyValue : Constants.OUT_FOLDER;
     }
 
     public String getCleanPatterns() {
-        String sPattern =   Constants.DELETE_FILE_WC1 + Constants._ITEM_SEPARATOR +
-                            Constants.DELETE_FILE_WC2 + Constants._ITEM_SEPARATOR +
-                            Constants.DELETE_FILE_WC3 + Constants._ITEM_SEPARATOR +
-                            Constants.DELETE_FILE_WC4 + Constants._ITEM_SEPARATOR +
-                            Constants.DELETE_FILE_WC5 ;
-        if ( (this._clean.bPropertyUsed) && (this._clean.sPropertyValue != null) ) sPattern = this._clean.sPropertyValue ;
-        return sPattern ;
-    }    
-    
-	private String makeMapFileName (String csvFile) {
-		return (csvFile + Constants.OUT_MAP_EXTENSION) ;
-	}
+        String defaultPattern = String.join(Constants._ITEM_SEPARATOR,
+                Constants.DELETE_FILE_WC1, Constants.DELETE_FILE_WC2,
+                Constants.DELETE_FILE_WC3, Constants.DELETE_FILE_WC4, Constants.DELETE_FILE_WC5);
+        return _clean.bPropertyUsed && _clean.sPropertyValue != null ? _clean.sPropertyValue : defaultPattern;
+    }
+
+    private String makeMapFileName(String csvFile) {
+        return csvFile + Constants.OUT_MAP_EXTENSION;
+    }
 
     public String getMapFileToUse(String fName) {
-        String sMap = makeMapFileName(fName) ; 
-        if ( (this._map.bPropertyUsed) && (this._map.sPropertyValue != null) ) sMap = this._map.sPropertyValue ;
-        return sMap ;
+        return _map.bPropertyUsed && _map.sPropertyValue != null ? _map.sPropertyValue : makeMapFileName(fName);
     }
 
     public String getXLSToUse(String fName) {
-        String sXLS = fName + Constants.OUT_XLS_EXTENSION ;
-        if ( (this._xls.bPropertyUsed) && (this._xls.sPropertyValue != null) ) sXLS = this._xls.sPropertyValue ;
-        return sXLS ;
-    }    
+        return _xls.bPropertyUsed && _xls.sPropertyValue != null ? _xls.sPropertyValue : fName + Constants.OUT_XLS_EXTENSION;
+    }
 
     public Boolean getExportToUse() {
-        Boolean b = true;
-        if ( (this._export.bPropertyUsed) ) b = this._export.bPropertyValue ;
-        return b ;
+        return _export.bPropertyUsed ? _export.bPropertyValue : true;
     }
 
     public Boolean getJsonToUse() {
-        Boolean b = true;
-        if ( (this._json.bPropertyUsed) ) b = this._json.bPropertyValue ;
-        return b ;
+        return _json.bPropertyUsed ? _json.bPropertyValue : true;
     }
-
-    public void dump() {
-        System.out.print("inputs:[");
-        for (int i = 0; i < inputs.length; i++) System.out.print("," + inputs[i]);
-        System.out.print("]");
-        //System.out.print(" xlsFile:[" + xlsFile + "]");
-        if (_xls != null) _xls.dump() ;
-        if (_map != null) _map.dump() ;
-        if (_dir != null) _dir.dump() ;
-        if (_clean != null) _clean.dump() ;       
-        System.out.println("");
-    }
-
 
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+        StringBuilder sb = new StringBuilder();
+        sb.append("inputs:[");
+        if (inputs != null) {
+            for (File input : inputs) {
+                sb.append(",").append(input);
+            }
+        }
+        sb.append("]");
+        appendParamaterToString(sb, _xls, _map, _dir, _clean);
+        sb.append("\n");
+        return sb.toString();
+    }
+
+    private void appendParamaterToString(StringBuilder sb, _CLIParamater... params) {
+        for (_CLIParamater param : params) {
+            if (param != null) {
+                sb.append(param);
+            }
+        }
+    }
+
+    private _CLIParamater setProperty(_CLIParamater param, String name, String value, Boolean used, File file, Boolean boolValue) {
+        if (name != null) param.sPropertyName = name;
+        if (value != null) param.sPropertyValue = value;
+        param.bPropertyUsed = used;
+        if (file != null) param.hFile = file;
+        if (boolValue != null) param.bPropertyValue = boolValue;
+        return param;
     }
 
     public class _CLIParamater {
-        String  sPropertyName = "" ;
-        String  sPropertyValue = null ;
+        String sPropertyName = "";
+        String sPropertyValue = null;
         Boolean bPropertyValue = false;
-        Boolean bPropertyUsed = false ;
-        File    hFile = null ;
-
-        private _CLIParamater() {
-        }
-
-        private _CLIParamater(String n, String v, Boolean b, File h, Boolean bV) {
-            sPropertyName = n ;
-            if (v != null) sPropertyValue = new String(v) ;
-            bPropertyUsed = b ;
-            if (h != null) hFile = h ;
-        }
+        Boolean bPropertyUsed = false;
+        File hFile = null;
 
         public boolean IsPropertyUsed() {
             return bPropertyUsed;
         }
 
-        public void dump () {
-            System.out.print(" [" + sPropertyName + "," + sPropertyValue + "," + bPropertyUsed + "," + hFile + "," + bPropertyValue + "]");
+        @Override
+        public String toString() {
+            return " [" + sPropertyName + "," + sPropertyValue + "," + bPropertyUsed + "," + hFile + "," + bPropertyValue + "]";
         }
     }
-
 }

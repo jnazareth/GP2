@@ -19,20 +19,15 @@ public class groupCsvJsonMapping extends Object{
 		return _groupMap ;
 	}
 
-    public void dumpCollection () {
-		try {
-			if (this._groupMap != null) {
-				//System.out.println("dumpCollection ============") ;
-				for(String key: _groupMap.keySet()) {
-					System.out.println(key);
-					_CSV_JSON cj = _groupMap.get(key) ;
-					cj.dumpCollection() ;
-				}
-			}
-		} catch (Exception e) {
-			System.err.println("Error:dumpCollection2::" + e.getMessage()) ;
-		}
-		return ;
+	@Override public String toString() {
+		StringBuilder sb = new StringBuilder();
+		if (this._groupMap != null) _groupMap.forEach( (k, v) -> sb.append(_groupMap.get(k).toString()) ) ;
+		return sb.toString();
+	}
+
+	public groupCsvJsonMapping orElse(Object object) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'orElse'");
 	}
 
     // --------------------------------------------------------------------------
@@ -49,11 +44,8 @@ public class groupCsvJsonMapping extends Object{
 			_sheetProperties = sp;
         }
 
-        public void dumpCollection() {
-            System.out.print("\t[" + _sCSVFile + "][" + _sCSVJSONFile + "][") ;
-            _oCSVFileJSON.dump("dump") ;
-            System.out.print("]") ;
-			return ;
+		@Override public String toString() {
+            return "\t[" + _sCSVFile + "][" + _sCSVJSONFile + "][" + _oCSVFileJSON.toString() + "]" ;
 		}
     }
 }

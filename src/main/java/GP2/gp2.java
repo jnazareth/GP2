@@ -1,54 +1,76 @@
 package GP2;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import GP2.cli.gpcli;
 import GP2.utils.Utils;
 
-/*
--------------------
-history
--------------------
-v2.0: major enhancement: XLS automation
-v21: Refactor cleanup. Remove multiple classes.
-v20: InputProcessor, -clean, Person(EnumMap) implementation. Refactored.
-v19: read separator switched to comma & quoted strings from tab
-v18: control header
-v17: group implementation
-v16: cleanup: created separete account, removed static declarations
-v15: added category & vendor
-v14: bug fix individual transaction amt
-v13: added additional header, fixed sys formatting
-v12: individual transaction amounts added
-v11: added optional "sys" formatting
-v10: "sys" account added to output
-v9: csv formatting fixed (padding tabs)
-v8: "sys" transaction implementation
-v7: introducted individual checksum
-v6: "percentage" transaction, correct implementation
-v5: discard: "percentage" transaction, poor implementation
-v4: "clearing" transaction implementation
-v2: export to csv implementation
-*/
+class GPThread extends Thread {
+    private static final Logger logger = LogManager.getLogger(GPThread.class);
 
-// Import log4j classes.
-//import org.apache.logging.log4j.Logger;
-//import org.apache.logging.log4j.LogManager;
-//import org.apache.logging.log4j.LogEx
+    String[] sArgs;
+    public GPThread(String[] sA) {
+        sArgs = sA;
+    }
 
-public class gp2
-{
-    //private static final Logger logger = LogManager.getLogger(gp2.class);
-
-	// ----------------------------------------------------
-	// main
-	// ----------------------------------------------------
-	public static void main (String[] args)
-	throws Exception
-	{
-        //logger.trace("Entering application.");
-
+    // Override the run method
+    @Override
+    public void run() {
         gpcli gCLI = new gpcli();
-        Utils.m_settings = gCLI.parseCommandLine(args);
+        Utils.m_settings = gCLI.parseCommandLine(sArgs);
+        gCLI.processCommandLine();
+    }
+}
 
-		gCLI.processCommandLine();
+public class gp2 {
+    private static final Logger logger = LogManager.getLogger(gp2.class);
+
+	// Method to display a rotating spinner with colors
+	private static void displaySpinner(int index, long elapsedTime) {
+		char[] spinnerChars = {'|', '/', '-', '\\'};
+		String[] colors = {
+			"\u001B[31m", // Red
+			"\u001B[32m", // Green
+			"\u001B[33m", // Yellow
+			"\u001B[34m"  // Blue
+		};
+		String resetColor = "\u001B[0m"; // Reset color
+
+		// Select color based on the spinner index
+		String color = colors[index % colors.length];
+		System.out.print("\r" + color + spinnerChars[index % spinnerChars.length] + resetColor + " " + elapsedTime + " ms");
 	}
+
+    // ----------------------------------------------------
+    // main
+    // ----------------------------------------------------
+    public static void main(String[] args) throws Exception {
+        long startTime = System.currentTimeMillis();
+        long elapsedTime = 0L;
+
+        GPThread gT = new GPThread(args);
+        gT.start();
+
+        int spinnerIndex = 0;
+        // Update the spinner while the thread is running
+        while (gT.isAlive()) {
+            long currentTime = System.currentTimeMillis();
+            elapsedTime = currentTime - startTime;
+            displaySpinner(spinnerIndex++, elapsedTime);
+            Thread.sleep(100); // Update every 100 milliseconds
+        }
+
+        // Wait for all threads to finish
+        try {
+            gT.join();
+        } catch (InterruptedException e) {
+            logger.error("Error: {}", e.getMessage());
+        }
+
+        long d = 1000; // to seconds
+        double t = (double) elapsedTime / d;
+        System.out.print("\r" + " ".repeat(50));	// blank out spinner
+        System.out.printf("\relapsed: %.3fs", t);
+    }
 }

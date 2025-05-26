@@ -8,120 +8,168 @@ import GP2.person.Person;
 import GP2.utils.Utils;
 
 public class Transaction {
-	public enum TransactionDirection {
-        FROM (0),
-        TO (1);
-    
+
+    public enum TransactionDirection {
+        FROM(0),
+        TO(1);
+
         private final int value;
+
         TransactionDirection(int value) {
             this.value = value;
         }
     }
-    
-    String                  m_groupName;
-    TransactionType.TType   m_tType ;
-    amountAllocations       fromAllocations ;
-    amountAllocations       toAllocations ;
 
-	public Transaction(String gName, String from, String to, String amt, TransactionType.TType tt) {
-		m_groupName = gName;
+    private String m_groupName;
+    private TransactionType.TType m_tType;
+    private AmountAllocations fromAllocations;
+    private AmountAllocations toAllocations;
+
+    /**
+     * Constructor to initialize Transaction with group and allocation details.
+     * 
+     * @param gName Group name
+     * @param from From allocation string
+     * @param to To allocation string
+     * @param amt Amount string
+     * @param tt Transaction type
+     */
+    public Transaction(String gName, String from, String to, String amt, TransactionType.TType tt) {
+        m_groupName = gName;
         m_tType = tt;
+        float fAmt = parseAmount(amt);
 
-		float fAmt = 0.0f ;
-		try {
-			fAmt = Float.parseFloat(amt) ;
-		} catch (NumberFormatException e) {
-		}
-
-        fromAllocations = new amountAllocations(TransactionDirection.FROM, gName, from, fAmt, tt);
-        toAllocations = new amountAllocations(TransactionDirection.TO, gName, to, fAmt, tt);
+        fromAllocations = new AmountAllocations(TransactionDirection.FROM, gName, from, fAmt, tt);
+        toAllocations = new AmountAllocations(TransactionDirection.TO, gName, to, fAmt, tt);
     }
 
+    /**
+     * Parse the amount from string to float.
+     * 
+     * @param amt Amount string
+     * @return Parsed float amount
+     */
+    private float parseAmount(String amt) {
+        try {
+            return Float.parseFloat(amt);
+        } catch (NumberFormatException e) {
+            return 0.0f;
+        }
+    }
+
+    /**
+     * Initialize the transaction by resetting amounts for each person in the group.
+     */
     public void init() {
-		try {
-			Hashtable<String, Person> aGroup = Utils.m_Groups.get(m_groupName).getCollection() ;
-			Enumeration<String> keysPeople = aGroup.keys();
-			while(keysPeople.hasMoreElements()) {
-				Person person = aGroup.get(keysPeople.nextElement());
-				person.m_amount.put(Person.AccountEntry.FROM, 0.0f);
-				person.m_amount.put(Person.AccountEntry.TO, 0.0f);
-				person.m_amount.put(Person.AccountEntry.TRANSACTION, 0.0f);
-				person.m_amount.put(Person.AccountEntry.checksumTRANSACTION, 0.0f);
-				person.m_amount.put(Person.AccountEntry.checksumGROUPTOTALS, 0.0f);
-				person.m_amount.put(Person.AccountEntry.checksumINDIVIDUALTOTALS, 0.0f);
-				aGroup.put(person.m_name, person) ;
-			}
-		} catch (Exception e) {
-			System.err.println("Error:Transaction::init()::" + e.getMessage()) ;
-		}
-	}
+        try {
+            Hashtable<String, Person> group = Utils.m_Groups.get(m_groupName).getCollection();
+            for (Person person : group.values()) {
+                resetPersonAmounts(person);
+                group.put(person.m_name, person);
+            }
+        } catch (Exception e) {
+            System.err.println("Error: Transaction::init()::" + e.getMessage());
+        }
+    }
 
+    /**
+     * Reset the amounts for a person.
+     * 
+     * @param person Person object
+     */
+    private void resetPersonAmounts(Person person) {
+        person.m_amount.put(Person.AccountEntry.FROM, 0.0f);
+        person.m_amount.put(Person.AccountEntry.TO, 0.0f);
+        person.m_amount.put(Person.AccountEntry.TRANSACTION, 0.0f);
+        person.m_amount.put(Person.AccountEntry.checksumTRANSACTION, 0.0f);
+        person.m_amount.put(Person.AccountEntry.checksumGROUPTOTALS, 0.0f);
+        person.m_amount.put(Person.AccountEntry.checksumINDIVIDUALTOTALS, 0.0f);
+    }
+
+    /**
+     * Process the transaction allocations.
+     */
     public void process() {
-		try {
-			fromAllocations.process();
-			toAllocations.process();
-		} catch (Exception e) {
-			System.err.println("Error:Transaction::process()::" + e.getMessage()) ;
-		}
-	}
+        try {
+            fromAllocations.process();
+            toAllocations.process();
+        } catch (Exception e) {
+            System.err.println("Error: Transaction::process()::" + e.getMessage());
+        }
+    }
 
-	private void ComputeCheckSums(TransactionType.TType tType, String sGroupName, Float[] cs) {
-		try {
-			Hashtable<String, Person> aGroup = Utils.m_Groups.get(sGroupName).getCollection() ;
-			Enumeration<String> keysPeople = aGroup.keys();
-			Float f = 0.0f, t = 0.0f;			Float s = 0.0f, p = 0.0f;
-			Float csT = 0.0f ;					Float csGT = 0.0f ;
-			while(keysPeople.hasMoreElements()) {
-				Person person = aGroup.get(keysPeople.nextElement());
-				if (person.isActive()) {
-					f += person.m_amount.get(Person.AccountEntry.FROM) ;
-					t += person.m_amount.get(Person.AccountEntry.TO) ;
-					if (!(tType.compareTo(TransactionType.TType.Clearing) == 0)) {
-						s += person.m_amount.get(Person.AccountEntry.SPENT) ;
-						p += person.m_amount.get(Person.AccountEntry.PAID) ;
-					}
-				}
-			}
-			csT = (f + ((-1)*t)) ;				csGT = (s + ((-1)*p)) ;
-			cs[0] = Utils.truncate(csT).floatValue() ;
-			cs[1] = Utils.truncate(csGT).floatValue() ;
-		} catch (Exception e) {
-			System.err.println("Error:Transaction::ComputeCheckSums()::" + e.getMessage()) ;
-		}
-	}
+    /**
+     * Compute checksums for the transaction.
+     * 
+     * @param tType Transaction type
+     * @param sGroupName Group name
+     * @param cs Checksum array
+     */
+    private void computeCheckSums(TransactionType.TType tType, String sGroupName, Float[] cs) {
+        try {
+            Hashtable<String, Person> group = Utils.m_Groups.get(sGroupName).getCollection();
+            float fromSum = 0.0f, toSum = 0.0f, spentSum = 0.0f, paidSum = 0.0f;
 
+            for (Person person : group.values()) {
+                if (person.isActive()) {
+                    fromSum += person.m_amount.get(Person.AccountEntry.FROM);
+                    toSum += person.m_amount.get(Person.AccountEntry.TO);
+                    if (tType != TransactionType.TType.Clearing) {
+                        spentSum += person.m_amount.get(Person.AccountEntry.SPENT);
+                        paidSum += person.m_amount.get(Person.AccountEntry.PAID);
+                    }
+                }
+            }
+
+            cs[0] = Utils.truncate(fromSum - toSum).floatValue();
+            cs[1] = Utils.truncate(spentSum - paidSum).floatValue();
+        } catch (Exception e) {
+            System.err.println("Error: Transaction::computeCheckSums()::" + e.getMessage());
+        }
+    }
+
+    /**
+     * Sum the transaction amounts and update checksums.
+     */
     public void sum() {
-		try {
-			Hashtable<String, Person> aGroup = Utils.m_Groups.get(m_groupName).getCollection() ;
-			Enumeration<String> keysPeople = aGroup.keys();
-			Float checkSums[] = {0.0f, 0.0f} ;
-			while(keysPeople.hasMoreElements()) {
-				Person person = aGroup.get(keysPeople.nextElement());
-				if (person.isActive()) {
-					ComputeCheckSums(m_tType, m_groupName, checkSums) ;
-					Float csT = checkSums[0] ;	Float csGT = checkSums[1] ;
+        try {
+            Hashtable<String, Person> group = Utils.m_Groups.get(m_groupName).getCollection();
+            Float[] checkSums = {0.0f, 0.0f};
 
-					Float f = person.m_amount.get(Person.AccountEntry.FROM) ;
-					Float t = person.m_amount.get(Person.AccountEntry.TO) ;
-					Float transactionSum = (f + ((-1)*t)) ;
-					person.incAmount(Person.AccountEntry.OWE_OWED, transactionSum) ;
+            for (Person person : group.values()) {
+                if (person.isActive()) {
+                    computeCheckSums(m_tType, m_groupName, checkSums);
+                    updatePersonSums(person, checkSums);
+                    group.put(person.m_name, person);
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Error: Transaction::sum()::" + e.getMessage());
+        }
+    }
 
-					Float i = person.m_amount.get(Person.AccountEntry.OWE_OWED) + person.m_amount.get(Person.AccountEntry.SPENT);
-					Float o = person.m_amount.get(Person.AccountEntry.PAID);
-					Float csIT = (i + ((-1)*o)) ;
+    /**
+     * Update the sums and checksums for a person.
+     * 
+     * @param person Person object
+     * @param checkSums Checksum array
+     */
+    private void updatePersonSums(Person person, Float[] checkSums) {
+        float fromAmount = person.m_amount.get(Person.AccountEntry.FROM);
+        float toAmount = person.m_amount.get(Person.AccountEntry.TO);
+        float transactionSum = fromAmount - toAmount;
+        person.incrementAmount(Person.AccountEntry.OWE_OWED, transactionSum);
 
-					person.m_amount.put(Person.AccountEntry.checksumTRANSACTION, csT) ;
-					person.m_amount.put(Person.AccountEntry.checksumGROUPTOTALS, csGT) ;
-					person.m_amount.put(Person.AccountEntry.checksumINDIVIDUALTOTALS, csIT) ;
+        float individualSum = person.m_amount.get(Person.AccountEntry.OWE_OWED) + person.m_amount.get(Person.AccountEntry.SPENT);
+        float paidAmount = person.m_amount.get(Person.AccountEntry.PAID);
+        float individualChecksum = individualSum - paidAmount;
 
-					Utils.m_settings.bCheckSumTransaction 		= (csT != 0.0f) ;
-					Utils.m_settings.bCheckSumGroupTotals 		= (csGT != 0.0f) ;
-					Utils.m_settings.bCheckSumIndividualTotals 	= (csIT != 0.0f) ;
-				}
-				aGroup.put(person.m_name, person) ;
-			}
-		} catch (Exception e) {
-			System.err.println("Error:Transaction::sum()::" + e.getMessage()) ;
-		}
+        person.m_amount.put(Person.AccountEntry.checksumTRANSACTION, checkSums[0]);
+        person.m_amount.put(Person.AccountEntry.checksumGROUPTOTALS, checkSums[1]);
+        person.m_amount.put(Person.AccountEntry.checksumINDIVIDUALTOTALS, individualChecksum);
+
+        Utils.m_settings.bCheckSumTransaction = (checkSums[0] != 0.0f);
+        Utils.m_settings.bCheckSumGroupTotals = (checkSums[1] != 0.0f);
+        Utils.m_settings.bCheckSumIndividualTotals = (individualChecksum != 0.0f);
     }
 }

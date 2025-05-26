@@ -18,65 +18,63 @@ public class Person extends Object {
 		checksumGROUPTOTALS,
 		checksumINDIVIDUALTOTALS;
 
-		public static final int size;
-		static { size = values().length; }
+        public static final int SIZE = values().length;
 	}
 
 	// members
 	public String	m_name;
 	public EnumMap<AccountEntry, Float> m_amount = new EnumMap<AccountEntry, Float>(AccountEntry.class);
-	private EntryType m_gType ;
-	public PGState m_gState ;
+	@SuppressWarnings("unused")
+	private EntryType m_groupType ;
+	public PGState m_groupState ;
 
-	// methods
-	private void initAmounts() {
-		for (AccountEntry ae : AccountEntry.values()) {
-			m_amount.put(ae, 0.0f) ;
-		}
+    // Constructors
+    public Person() {
+        this("", false);
     }
 
-	public Person() {
-		m_name = "" ;
-		initAmounts() ;
+    public Person(String name, boolean active) {
+        this(name, active ? EntryState.Enable : EntryState.Disable);
+    }
 
-		m_gType = EntryType.Self ;
-		m_gState = new PGState(EntryState.Disable) ;
+    public Person(String name, EntryState entryState) {
+        this.m_name = name;
+        initializeAmounts();
+        this.m_groupType = EntryType.Self;
+        this.m_groupState = new PGState(entryState);
+    }
+
+    // Initialize all account entries to zero
+    private void initializeAmounts() {
+        for (AccountEntry entry : AccountEntry.values()) {
+            m_amount.put(entry, 0.0f);
+        }
+    }
+
+    public Float incrementAmount(AccountEntry entry, float value) {
+		return m_amount.put( entry, (value + m_amount.get(entry)) ) ;
 	}
 
-	public Person(String name, boolean active) {
-		m_name = name ;
-		initAmounts() ;
-
-		m_gType = EntryType.Self ;
-		if (active) m_gState = new PGState(EntryState.Enable) ;
-		else m_gState = new PGState(EntryState.Disable);
-	}
-
-	public Person(String name, EntryState es) {
-		m_name = name ;
-		initAmounts() ;
-
-		m_gType = EntryType.Self ;
-		m_gState = new PGState(es);
-	}
-
-	public Float incAmount(AccountEntry ae, float f) {
-		return m_amount.put( ae, (f + m_amount.get(ae)) ) ;
-	}
-
-	public Float decAmount(AccountEntry ae, float f) {
-		return m_amount.put( ae, (f - m_amount.get(ae)) ) ;
+    public Float decrementAmount(AccountEntry entry, float value) {
+		return m_amount.put( entry, (value - m_amount.get(entry)) ) ;
 	}
 
 	public boolean isActive() {
-		return m_gState.getActive();
+		return m_groupState.isActive();
 	}
 
-	public String toString() {
-		String sAmtsE = "" ;
-		for (AccountEntry ae : AccountEntry.values()) {
-			sAmtsE += (ae.ordinal() + "::" + ae.name() + "::" + m_amount.get(ae) + "\n") ;
-		}
-		return m_name + "," + sAmtsE ;
-	}
+    // Override toString to provide a detailed string representation
+    @Override
+    public String toString() {
+        StringBuilder amountsString = new StringBuilder();
+        for (AccountEntry entry : AccountEntry.values()) {
+            amountsString.append(entry.ordinal())
+                         .append("::")
+                         .append(entry.name())
+                         .append("::")
+                         .append(m_amount.get(entry))
+                         .append("\n");
+        }
+        return m_name + "," + amountsString.toString();
+    }
 } // end of class
