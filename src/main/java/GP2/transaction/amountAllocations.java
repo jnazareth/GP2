@@ -6,36 +6,77 @@ import GP2.person.GPAction.TransactionType;
 import GP2.transaction.Transaction.TransactionDirection;
 import GP2.utils.Utils;
 
-public class amountAllocations extends amountAllocationsBase {
-    InputProcessor          iProcessor = new InputProcessor();
+public class AmountAllocations extends AmountAllocationsBase {
+    private InputProcessor iProcessor;
+    private AllAllocation allAllocation;
+    private RemainderAllocation remAllocation;
+    private IndividualAllocation indivAllocation;
 
-    AllAllocation           allAllocation ;
-    RemainderAllocation     remAllocation ;
-    IndividualAllocation    indivAllocation ;
+    /**
+     * Constructor to initialize allocations and process input.
+     * 
+     * @param td Transaction direction
+     * @param gName Group name
+     * @param in Input string
+     * @param amt Amount
+     * @param tt Transaction type
+     */
+    public AmountAllocations(TransactionDirection td, String gName, String in, float amt, TransactionType.TType tt) {
+        initializeAllocations(td, gName, tt);
+        processInput(gName, in, amt);
+    }
 
-    public amountAllocations(TransactionDirection td, String gName, String in, float amt, TransactionType.TType tt) {
+    /**
+     * Initialize allocation objects.
+     * 
+     * @param td Transaction direction
+     * @param gName Group name
+     * @param tt Transaction type
+     */
+    private void initializeAllocations(TransactionDirection td, String gName, TransactionType.TType tt) {
+        iProcessor = new InputProcessor();
         allAllocation = new AllAllocation(td, gName, tt);
         remAllocation = new RemainderAllocation(td, gName, tt);
         indivAllocation = new IndividualAllocation(td, gName, tt);
-
-        int numActive = Utils.m_Groups.get(gName).getAllActiveCount(gName);
-
-        String s = percentageToAmounts(amt, in) ;
-        iProcessor.processFrTo("", 0, amt, numActive, s) ;
     }
 
-    private String percentageToAmounts(float amt, String in) {
-		if (in.indexOf(FromToTypes.Percentage) == -1) return in;
-		return Utils.stripPercentge(amt, in) ;
-	}
+    /**
+     * Process input and calculate allocations.
+     * 
+     * @param gName Group name
+     * @param in Input string
+     * @param amt Amount
+     */
+    private void processInput(String gName, String in, float amt) {
+        int numActive = Utils.m_Groups.get(gName).getAllActiveCount(gName);
+        String processedInput = convertPercentageToAmounts(amt, in);
+        iProcessor.processFrTo("", 0, amt, numActive, processedInput);
+    }
 
+    /**
+     * Convert percentage values in input to amounts.
+     * 
+     * @param amt Amount
+     * @param in Input string
+     * @return Processed input string
+     */
+    private String convertPercentageToAmounts(float amt, String in) {
+        if (in.indexOf(FromToTypes.Percentage) == -1) {
+            return in;
+        }
+        return Utils.stripPercentge(amt, in);
+    }
+
+    /**
+     * Process all allocations.
+     */
     protected void process() {
         try {
             allAllocation.process(iProcessor);
             remAllocation.process(iProcessor);
             indivAllocation.process(iProcessor);
         } catch (Exception e) {
-            System.err.println("Error:amountAllocations::process()::" + e.getMessage()) ;
+            System.err.println("Error: AmountAllocations::process()::" + e.getMessage());
         }
     }
 }

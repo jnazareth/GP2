@@ -11,40 +11,72 @@ import GP2.person.GPAction.TransactionType;
 import GP2.transaction.Transaction.TransactionDirection;
 import GP2.utils.Utils;
 
-public abstract class amountAllocationsBase {
-	String                  m_groupName ;
-    TransactionDirection    m_tDirection ;
-    FTType.FromToType       m_keyAllocation;
-	TransactionType.TType	m_tType;
+public abstract class AmountAllocationsBase {
+    protected String m_groupName;
+    protected TransactionDirection m_tDirection;
+    protected FTType.FromToType m_keyAllocation;
+    protected TransactionType.TType m_tType;
 
-    protected void putIndivAmount(String sGroupName, float fAmount, HashSet<String> indiv) {
-		try {
-			Hashtable<String, Person> aGroup = Utils.m_Groups.get(sGroupName).getCollection() ;
-			Enumeration<String> keysPeople = aGroup.keys();
-			while(keysPeople.hasMoreElements()){
-				Person person = aGroup.get(keysPeople.nextElement());
-				if ( !(indiv.contains(person.m_name)) ) continue ;
-                if ((m_tDirection.compareTo(TransactionDirection.FROM) == 0)) person.incAmount(Person.AccountEntry.FROM, fAmount) ;
-                if ((m_tDirection.compareTo(TransactionDirection.TO) == 0)) person.incAmount(Person.AccountEntry.TO, fAmount) ;
-				if (((m_tDirection.compareTo(TransactionDirection.FROM) == 0)) && ((m_tType.compareTo(TransactionType.TType.Clearing) != 0))) {
-                    person.incAmount(Person.AccountEntry.PAID, fAmount) ;
-				}
-				if (((m_tDirection.compareTo(TransactionDirection.TO) == 0)) && ((m_tType.compareTo(TransactionType.TType.Clearing) != 0))) {
-                    person.incAmount(Person.AccountEntry.TRANSACTION, fAmount) ;
-                    person.incAmount(Person.AccountEntry.SPENT, fAmount) ;
-				}
-				// checksumINDIVIDUALTOTALS bug 3/13
-				if ((m_tType.compareTo(TransactionType.TType.Clearing) == 0)) {
-					if ((m_tDirection.compareTo(TransactionDirection.FROM) == 0)) person.incAmount(Person.AccountEntry.PAID, fAmount) ;
-					if ((m_tDirection.compareTo(TransactionDirection.TO) == 0)) person.incAmount(Person.AccountEntry.PAID, -1*fAmount) ;
-				}
-				aGroup.put(person.m_name, person) ;
-			}
-		} catch (Exception e) {
-			System.err.println("Error:amountAllocationsBase::putIndivAmount::" + e.getMessage()) ;
-		}
-	}
+    /**
+     * Allocate individual amounts to persons in the group.
+     * 
+     * @param groupName Name of the group
+     * @param amount Amount to allocate
+     * @param individuals Set of individual names to allocate amounts to
+     */
+    protected void allocateIndividualAmounts(String groupName, float amount, HashSet<String> individuals) {
+        try {
+            Hashtable<String, Person> group = Utils.m_Groups.get(groupName).getCollection();
+            Enumeration<String> personKeys = group.keys();
 
-    protected void process(InputProcessor ip) {  
+            while (personKeys.hasMoreElements()) {
+                Person person = group.get(personKeys.nextElement());
+                if (!individuals.contains(person.m_name)) continue;
+
+                updatePersonAmounts(person, amount);
+                group.put(person.m_name, person);
+            }
+        } catch (Exception e) {
+            System.err.println("Error: AmountAllocationsBase::allocateIndividualAmounts::" + e.getMessage());
+        }
+    }
+
+    /**
+     * Update the amounts for a person based on transaction direction and type.
+     * 
+     * @param person Person object to update
+     * @param amount Amount to update
+     */
+    private void updatePersonAmounts(Person person, float amount) {
+        if (m_tDirection == TransactionDirection.FROM) {
+            person.incrementAmount(Person.AccountEntry.FROM, amount);
+            if (m_tType != TransactionType.TType.Clearing) {
+                person.incrementAmount(Person.AccountEntry.PAID, amount);
+            }
+        } else if (m_tDirection == TransactionDirection.TO) {
+            person.incrementAmount(Person.AccountEntry.TO, amount);
+            if (m_tType != TransactionType.TType.Clearing) {
+                person.incrementAmount(Person.AccountEntry.TRANSACTION, amount);
+                person.incrementAmount(Person.AccountEntry.SPENT, amount);
+            }
+        }
+
+        // Handle clearing type transactions
+        if (m_tType == TransactionType.TType.Clearing) {
+            if (m_tDirection == TransactionDirection.FROM) {
+                person.incrementAmount(Person.AccountEntry.PAID, amount);
+            } else if (m_tDirection == TransactionDirection.TO) {
+                person.incrementAmount(Person.AccountEntry.PAID, -amount);
+            }
+        }
+    }
+
+    /**
+     * Process method to be implemented by subclasses.
+     * 
+     * @param ip Input processor
+     */
+    protected void process(InputProcessor ip) {
+        // To be implemented by subclasses
     }
 }

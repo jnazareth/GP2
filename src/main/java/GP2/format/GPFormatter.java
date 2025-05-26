@@ -4,159 +4,177 @@ import GP2.utils.Constants;
 import GP2.utils.Utils;
 import GP2.xcur.CrossCurrency;
 import GP2.xcur.CrossCurrency.Currencies;
-import GP2.person.Person;
-import GP2.xls._SheetProperties;
 import GP2.group.csvFileJSON;
 import GP2.group.groupCsvJsonMapping;
 import GP2.format.Export.RowLayout;
 import GP2.group.Groups.Group;
+import GP2.thread.GPExecutor;
+import GP2.xls._SheetProperties;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
+import java.io.FileOutputStream;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.Hashtable;
 
-import org.apache.commons.io.FileUtils ;
-import java.io.FileOutputStream ;
-import java.io.File;
+import org.apache.commons.io.FileUtils;
 
 public class GPFormatter {
-    private Export m_export = new Export() ;
+    private Export m_export = new Export();
 
-    private String getGroupFormat(String sGroupName) {
+    private String getGroupFormat(String groupName) {
         String format = Constants._CURRENCY_FORMAT;
         try {
-            Group aG = Utils.m_Groups.get(sGroupName);
-            if (aG != null) {
-                CrossCurrency cc = aG.m_ccurrency ;
-                if (cc != null) {
-                    Currencies xCurrency = cc.m_xcurrency;
-                    Currencies cCurrency = cc.m_currency;
-                    format = ((cCurrency.compareTo(xCurrency) != 0) ? xCurrency.format : cCurrency.format) ;
+            Group group = Utils.m_Groups.get(groupName);
+            if (group != null) {
+                CrossCurrency crossCurrency = group.m_ccurrency;
+                if (crossCurrency != null) {
+                    Currencies xCurrency = crossCurrency.xCurrency;
+                    Currencies cCurrency = crossCurrency.currency;
+                    format = (cCurrency.compareTo(xCurrency) != 0) ? xCurrency.format : cCurrency.format;
                 }
             }
-            return format ;
         } catch (Exception e) {
-			System.err.println("getGroupFormat::Error: " + e.getMessage());
-            return format ;
+            System.err.println("getGroupFormat::Error: " + e.getMessage());
         }
+        return format;
     }
 
-    private Double getGroupRate(String sGroupName) {
+    private Double getGroupRate(String groupName) {
         Double rate = 1.0d;
         try {
-            Group aG = Utils.m_Groups.get(sGroupName);
-            if (aG != null) {
-                CrossCurrency cc = aG.m_ccurrency ;
-                if (cc != null) {
-                    Currencies cBase = cc.m_xcurrency;
-                    Currencies cCurrency = cc.m_currency;
-                    rate = ((cBase.compareTo(cCurrency) != 0) ? cc.m_rate : rate) ;
+            Group group = Utils.m_Groups.get(groupName);
+            if (group != null) {
+                CrossCurrency crossCurrency = group.m_ccurrency;
+                if (crossCurrency != null) {
+                    Currencies baseCurrency = crossCurrency.xCurrency;
+                    Currencies targetCurrency = crossCurrency.currency;
+                    rate = (baseCurrency.compareTo(targetCurrency) != 0) ? crossCurrency.rate : rate;
                 }
             }
-            return rate ;
         } catch (Exception e) {
-			System.err.println("getGroupRate::Error: " + e.getMessage());
-            return rate ;
+            System.err.println("getGroupRate::Error: " + e.getMessage());
         }
+        return rate;
     }
 
     public void prepareToExportGroup(String item, String category, String vendor, String desc, String amt, String from, String to, String group, String action) {
         try {
             Double rate = getGroupRate(group);
-            RowLayout rl = m_export.putRow(item, category, vendor, desc, amt, from, to, group, action, rate);
+            m_export.putRow(item, category, vendor, desc, amt, from, to, group, action, rate);
         } catch (Exception e) {
-			System.err.println("prepareToExportGroup::Error: " + e.getMessage());
+            System.err.println("prepareToExportGroup::Error: " + e.getMessage());
         }
     }
 
-    private _SheetProperties buildSP(String group, int rC, int hC) {
-        _SheetProperties sp = new _SheetProperties();
+    private _SheetProperties buildSheetProperties(String group, int rowCount, int headerCount) {
+        _SheetProperties sheetProperties = new _SheetProperties();
         try {
-            String outFilename = Utils.m_grpCsvJsonMap._groupMap.get(group)._sCSVFile ;
-            sp.setCsvFileName(outFilename) ;
-            sp.setlHeaders(hC) ;
-            RowLayout.CellLayout cl = m_export.header1.getCell(Export.ExportKeys.keyAmount) ;
-            if (cl != null) sp.amountLocation = cl.xlsPosition;
-            sp.maxColums = m_export.header1.length();
-            String sAmountFormat = getGroupFormat(group) ;
-            sp.setsFormat(sAmountFormat);
-            sp.setsFormatFormat(sAmountFormat);
-            ArrayList<String> persons = m_export.getSortedPersons(group);
-
-            //System.out.println("persons.size:" + persons.size());
-            cl = m_export.header1.getCell(Export.ExportKeys.keyTransactions + Constants._ID_SEPARATOR + persons.get(1)) ;
-            if (cl != null) {
-                sp.personLocation = cl.xlsPosition-1;
-                sp.pivotColumnStart = sp.personLocation ;
-                sp.pivotColumnEnd = sp.pivotColumnStart + (persons.size()-1) ;
-            }
-            sp.maxRows = rC ;
-            sp.build() ;
-
-            return sp ;
+            String csvFileName = Utils.m_grpCsvJsonMap._groupMap.get(group)._sCSVFile;
+            sheetProperties.setCsvFileName(csvFileName);
+            sheetProperties.setlHeaders(headerCount);
+            setAmountLocation(sheetProperties);
+            sheetProperties.maxColums = m_export.header1.length();
+            String amountFormat = getGroupFormat(group);
+            sheetProperties.setsFormat(amountFormat);
+            sheetProperties.setsFormatFormat(amountFormat);
+            setPersonLocation(sheetProperties, group);
+            sheetProperties.maxRows = rowCount;
+            sheetProperties.build();
         } catch (Exception e) {
-            System.err.println("buildSP::Error: " + e.getMessage());
-            return sp;
+            System.err.println("buildSheetProperties::Error: " + e.getMessage());
+        }
+        return sheetProperties;
+    }
+
+    private void setAmountLocation(_SheetProperties sheetProperties) {
+        RowLayout.CellLayout cellLayout = m_export.header1.getCell(Export.ExportKeys.keyAmount);
+        if (cellLayout != null) {
+            sheetProperties.amountLocation = cellLayout.xlsPosition;
+        }
+    }
+
+    private void setPersonLocation(_SheetProperties sheetProperties, String group) {
+        ArrayList<String> persons = m_export.getSortedPersons(group);
+        RowLayout.CellLayout cellLayout = m_export.header1.getCell(Export.ExportKeys.keyTransactions + Constants._ID_SEPARATOR + persons.get(1));
+        if (cellLayout != null) {
+            sheetProperties.personLocation = cellLayout.xlsPosition - 1;
+            sheetProperties.pivotColumnStart = sheetProperties.personLocation;
+            sheetProperties.pivotColumnEnd = sheetProperties.pivotColumnStart + (persons.size() - 1);
         }
     }
 
     private _SheetProperties exportToCSV(String group) {
-		String outFilename = Utils.m_grpCsvJsonMap._groupMap.get(group)._sCSVFile ;
-
-        _SheetProperties sp = new _SheetProperties();
-
+        _SheetProperties sheetProperties = new _SheetProperties();
         try {
-			String dirToUse = Utils.m_settings.getDirToUse() ;
-            File f = new File(dirToUse, outFilename);
-            FileOutputStream foS = FileUtils.openOutputStream(f) ;
-            FileWriter fw = new FileWriter(foS.getFD()) ;
+            String csvFileName = Utils.m_grpCsvJsonMap._groupMap.get(group)._sCSVFile;
+            File file = new File(Utils.m_settings.getDirToUse(), csvFileName);
+            try (FileOutputStream fileOutputStream = FileUtils.openOutputStream(file);
+                 FileWriter fileWriter = new FileWriter(fileOutputStream.getFD());
+                 BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
 
-			// Create file
-			FileWriter fstream = fw;
-			BufferedWriter out = new BufferedWriter(fstream);
-			int rowCounter = 0, headerCounter = 0 ;
-
-            m_export.buildHeaders(group);
-            out.write(m_export.toCSVLine(m_export.header0));	out.newLine();  headerCounter++ ;
-			out.write(m_export.toCSVLine(m_export.header1));    out.newLine();  headerCounter++ ;
-
-            ArrayList<RowLayout> exportLines = m_export.m_exportLinesGroup.get(group) ;
-			for (RowLayout rowToExport : exportLines) {
-                RowLayout rl = m_export.buildRow(group, rowToExport) ;
-                out.write(m_export.toCSVLine(rl));		out.newLine();
-                rowCounter++ ;
+                int rowCounter = 0, headerCounter = 0;
+                m_export.buildHeaders(group);
+                headerCounter = writeHeaders(bufferedWriter, headerCounter);
+                rowCounter = writeRows(bufferedWriter, group, rowCounter);
+                sheetProperties = buildSheetProperties(group, rowCounter, headerCounter);
             }
-            sp = buildSP(group, rowCounter, headerCounter);
-
-            // close all file handles
-			out.close();    fstream.close() ;   fw.close() ;    foS.close() ;
-        } catch (Exception e){
-			System.err.println("exportToCSV::Error: " + e.getMessage());
-		}
-        return sp ;
+        } catch (Exception e) {
+            System.err.println("exportToCSV::Error: " + e.getMessage());
+        }
+        return sheetProperties;
     }
 
-	public void exportToCSVGroup(String fileName) {
-		if (Utils.m_Groups == null) return ;
+    private int writeHeaders(BufferedWriter bufferedWriter, int headerCounter) throws Exception {
+        bufferedWriter.write(m_export.toCSVLine(m_export.header0));
+        bufferedWriter.newLine();
+        headerCounter++;
+        bufferedWriter.write(m_export.toCSVLine(m_export.header1));
+        bufferedWriter.newLine();
+        headerCounter++;
+        return headerCounter;
+    }
 
-		_SheetProperties sp = null ;
-		Enumeration<String> keysGroup = Utils.m_Groups.keys();
-		while(keysGroup.hasMoreElements()) {
-			String groupName = keysGroup.nextElement();
-			Hashtable<String, Person> aGroup = Utils.m_Groups.get(groupName) ;
+    private int writeRows(BufferedWriter bufferedWriter, String group, int rowCounter) throws Exception {
+        ArrayList<RowLayout> exportLines = m_export.m_exportLinesGroup.get(group);
+        for (RowLayout rowToExport : exportLines) {
+            RowLayout rowLayout = m_export.buildRow(group, rowToExport);
+            bufferedWriter.write(m_export.toCSVLine(rowLayout));
+            bufferedWriter.newLine();
+            rowCounter++;
+        }
+        return rowCounter;
+    }
 
-            // TEST: only process default group
-            //if (!groupName.equalsIgnoreCase("default")) continue;
-            //System.out.println("groupName:" + groupName);
-            sp = exportToCSV(groupName) ;
+    public void exportToCSVGroup() {
+        if (Utils.m_Groups == null) return;
 
-            // update map
-			groupCsvJsonMapping._CSV_JSON cj = Utils.m_grpCsvJsonMap._groupMap.get(groupName) ;
-			csvFileJSON csvFile = new csvFileJSON() ;
-			csvFile = sp.toCsvFileJSON();
-			Utils.m_grpCsvJsonMap.addItem(groupName, cj._sCSVFile, cj._sCSVJSONFile, csvFile, sp) ;
-		}
+        Enumeration<String> groupKeys = Utils.m_Groups.keys();
+        while (groupKeys.hasMoreElements()) {
+            String groupName = groupKeys.nextElement();
+            _SheetProperties sheetProperties = exportToCSV(groupName);
+            updateGroupMap(groupName, sheetProperties);
+        }
+    }
+
+    private void updateGroupMap(String groupName, _SheetProperties sheetProperties) {
+        groupCsvJsonMapping._CSV_JSON csvJson = Utils.m_grpCsvJsonMap._groupMap.get(groupName);
+        csvFileJSON csvFile = sheetProperties.toCsvFileJSON();
+        Utils.m_grpCsvJsonMap.addItem(groupName, csvJson._sCSVFile, csvJson._sCSVJSONFile, csvFile, sheetProperties);
+    }
+
+    public void exportToCSVGroup2() {
+        if (Utils.m_Groups == null) return;
+
+        GPExecutor executor = new GPExecutor(Utils.m_Groups.size());
+        Enumeration<String> groupKeys = Utils.m_Groups.keys();
+        while (groupKeys.hasMoreElements()) {
+            String groupName = groupKeys.nextElement();
+            executor.add(new GPFormatThread(groupName));
+        }
+        executor.launch();
+        executor.collect();
+        executor.shutdown();
     }
 }

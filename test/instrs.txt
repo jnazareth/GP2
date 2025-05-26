@@ -1,2 +1,49 @@
-java -jar ../target/gp3.0.0.jar feb.ffv.csv -x -Pdir=out2
-java -jar ../target/gp3.0.0.jar feb2.ffv.csv -x -Pdir=out2
+java -jar ../target/gp4.0.1.jar apr.taxes.ffv.csv -x -Pdir=out
+java -jar ../target/gp4.0.1.jar apr.ffv.csv -x -Pdir=out
+
+
+// LoC
+find src -name \*.java | xargs wc -l
+   286 src/main/java/GP2/account/account.java
+   119 src/main/java/GP2/account/ffv.java
+   103 src/main/java/GP2/account/mint.java
+    64 src/main/java/GP2/account/source.java
+   222 src/main/java/GP2/cli/gpcli.java
+   167 src/main/java/GP2/cli/Settings.java
+   264 src/main/java/GP2/cli/_CommandLine.java
+   327 src/main/java/GP2/format/Export.java
+   181 src/main/java/GP2/format/FormatXLS.java
+   179 src/main/java/GP2/format/GPFormatter.java
+   125 src/main/java/GP2/format/GPFormatThread.java
+    75 src/main/java/GP2/gp2.java
+   155 src/main/java/GP2/group/csvFileJSON.java
+    51 src/main/java/GP2/group/groupCsvJsonMapping.java
+   174 src/main/java/GP2/group/GroupProcessor2.java
+   104 src/main/java/GP2/group/Groups.java
+    54 src/main/java/GP2/input/FTType.java
+   205 src/main/java/GP2/input/InputProcessor.java
+    21 src/main/java/GP2/json/JSONKeys.java
+   131 src/main/java/GP2/json/ReadJson2.java
+    72 src/main/java/GP2/json/WriteJson3.java
+    52 src/main/java/GP2/json/WriteJsonMap.java
+   261 src/main/java/GP2/person/GPAction.java
+    80 src/main/java/GP2/person/Person.java
+    69 src/main/java/GP2/thread/GPExecutor.java
+    55 src/main/java/GP2/transaction/AllAllocation.java
+    81 src/main/java/GP2/transaction/AmountAllocations.java
+    81 src/main/java/GP2/transaction/AmountAllocationsBase.java
+    60 src/main/java/GP2/transaction/IndividualAllocation.java
+   110 src/main/java/GP2/transaction/RemainderAllocation.java
+   174 src/main/java/GP2/transaction/Transaction.java
+    49 src/main/java/GP2/utils/Constants.java
+   144 src/main/java/GP2/utils/fileUtils.java
+   153 src/main/java/GP2/utils/Utils.java
+   109 src/main/java/GP2/xcur/CrossCurrency.java
+   235 src/main/java/GP2/xls/buildXLS.java
+    62 src/main/java/GP2/xls/_Coordinates.java
+   177 src/main/java/GP2/xls/_SheetProperties.java
+  5031 total
+
+
+
+
