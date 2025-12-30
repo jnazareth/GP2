@@ -18,7 +18,7 @@ public class Export {
         final String H_INDIVIDUAL_TOTALS	        = "individual \"spent\"" ;
         final static String H_ITEM			        = "Item" ;
         final String H_CATEGORY				        = "Category" ;
-        final String H_VENDOR				        = "Vendor" ;
+        final String H_SUBCATEGORY			        = "SubCategory" ;
         final String H_DESCRIPTION			        = "Description" ;
         final String H_AMOUNT				        = "Amount" ;
         final String H_FROM					        = "From" ;
@@ -33,7 +33,7 @@ public class Export {
     public interface ExportKeys {
         final String keyItem                        = "item" ;
         final String keyCategory                    = "category" ;
-        final String keyVendor                      = "vendor" ;
+        final String keySubCategory                 = "subcategory" ;
         final String keyDescription                 = "description" ;
         final String keyAmount                      = "amount" ;
         final String keyFrom                        = "from" ;
@@ -78,7 +78,7 @@ public class Export {
         int pos = 1 ;
 		header1.addCell(pos++, ExportKeys.keyItem,      XLSHeaders.H_ITEM) ;
 		header1.addCell(pos++, ExportKeys.keyCategory,  XLSHeaders.H_CATEGORY) ;
-		header1.addCell(pos++, ExportKeys.keyVendor,    XLSHeaders.H_VENDOR) ;
+		header1.addCell(pos++, ExportKeys.keySubCategory,    XLSHeaders.H_SUBCATEGORY) ;
 		header1.addCell(pos++, ExportKeys.keyDescription, XLSHeaders.H_DESCRIPTION) ;
 		header1.addCell(pos++, ExportKeys.keyAmount,    XLSHeaders.H_AMOUNT) ;
 		header1.addCell(pos++, ExportKeys.keyFrom,      XLSHeaders.H_FROM) ;
@@ -140,7 +140,7 @@ public class Export {
 		return templateRow ;
 	}
 
-    RowLayout putRow(String item, String category, String vendor, String desc, String amt, String from, String to, String group, String action, Double rate) {
+    RowLayout putRow(String item, String category, String subcategory, String desc, String amt, String from, String to, String group, String action, Double rate) {
         RowLayout row = new RowLayout() ;
 
         boolean bSuppressCheckSum   = Utils.m_settings.getSuppressCStoUse() ;
@@ -149,7 +149,7 @@ public class Export {
         int pos = 1 ;
 		row.addCell(pos++, ExportKeys.keyItem,      item) ;
 		row.addCell(pos++, ExportKeys.keyCategory,  category) ;
-        row.addCell(pos++, ExportKeys.keyVendor,    vendor) ;
+        row.addCell(pos++, ExportKeys.keySubCategory,    subcategory) ;
 		row.addCell(pos++, ExportKeys.keyDescription, desc) ;
 
 		String xAmt = String.valueOf(fRate * Float.valueOf(amt)) ;

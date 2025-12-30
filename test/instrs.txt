@@ -1,2 +1,5 @@
-java -jar ../target/gp3.0.0.jar feb.ffv.csv -x -Pdir=out2
-java -jar ../target/gp3.0.0.jar feb2.ffv.csv -x -Pdir=out2
+java -jar ../target/gp4.0.2.jar nov.ffv2.csv -x -Pdir=out2 -Fjson=false
+
+mvn clean -f pom.xml
+mvn compile -f pom.xml
+mvn package -f pom.xml

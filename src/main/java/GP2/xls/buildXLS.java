@@ -142,7 +142,7 @@ public class buildXLS {
                     }
                     rowNum++ ;
                 }
-                buffReader.close() ;    
+                buffReader.close() ;
                 fileReader.close();
             } catch (IOException e) {
                 System.out.println("There was a problem reading:" + outCSVFile);
@@ -193,7 +193,8 @@ public class buildXLS {
         }
 
         XSSFPivotTable pivotTable = sheet.createPivotTable(source, position);
-        pivotTable.addRowLabel(1);
+        int SubCategoryCol = 2 ;
+        pivotTable.addRowLabel(SubCategoryCol);
 
         final int numberFormat = sProperties.getsFormatFormat();	//7 ;
         final String sAmtFormat = sProperties.getsFormatFormatAsString();
@@ -221,7 +222,7 @@ public class buildXLS {
             //ctPivotField.setSubtotalTop(false);
             //ctPivotField.setSubtotalCaption("x");
             //ctPivotField.setSumSubtotal(true);
-            
+
             //ctPivotField.dump();
             //ctPivotField.setShowAll(true);
             CTItems ctPivotFieldItems  = ctPivotField.getItems();
@@ -248,7 +249,7 @@ public class buildXLS {
             getCSVData(workBook, sheet, outCSVFile, sheetName, sp) ;
 
             FormatXLS fTable = new FormatXLS() ;
-            fTable.formatTable(workBook, sheet, sp, groupName); 
+            fTable.formatTable(workBook, sheet, sp, groupName);
 
             buildPivot(sheet, sp) ;
             //dumpPivotTable(sheet);

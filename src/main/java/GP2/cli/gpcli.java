@@ -16,13 +16,13 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
 public class gpcli {
-    final String LAUNCHER = System.getProperty("application.launcher", "java -jar gp3.0.0.jar");
+    final String LAUNCHER = System.getProperty("application.launcher", "java -jar gp4.0.2.jar");
     final String UNKNOWN_VERSION = "?.?";
 
     public Settings parseCommandLine(String[] args) {
         Utils.m_settings = new Settings();
 
-        String version = versionFrom("/META-INF/maven/GP2/gp3.0/pom.properties");
+        String version = versionFrom("/META-INF/maven/GP2/gp4.0/pom.properties");
                 new _CommandLine(
                     LAUNCHER,
                     version,

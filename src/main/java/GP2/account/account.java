@@ -88,7 +88,8 @@ public class account {
 
 	private Class getSourceClass() {
 		//return mint.class ;
-		return ffv.class ;
+		//return ffv.class ;
+		return ffv2.class ;
 	}
 
 	public void ReadAndProcessTransactions2(String fileName) {
@@ -112,7 +113,8 @@ public class account {
 
 				String date = current.getDate() ;
 				String category = current.getCategory() ;
-				String vendor = "";//current.getVendor() ;				// mint | ffv (added for compatibility)
+				//String vendor = "";//current.getVendor() ;				// mint | ffv (added for compatibility)
+				String subcategory = current.getSubCategory() ;
 				String desc = current.getDescription() ;
 				String amt = current.getAmount() ;
 				String from = current.getFrom() ;
@@ -124,7 +126,7 @@ public class account {
 				if (group.length() == 0) group = Constants._DEFAULT_GROUP ;
 				if (ProcessTransaction(lNo, date, desc, amt, from, to, group, action) == false) continue;
 				if (Utils.m_settings.getExportToUse())
-					gpF.prepareToExportGroup(date, category, vendor, desc, amt, from, to, group, action) ;
+					gpF.prepareToExportGroup(date, category, subcategory, desc, amt, from, to, group, action) ;
 			}
 			buildGroupCsvJsonMap(fileName) ;
 			if (Utils.m_settings.getExportToUse()) gpF.exportToCSVGroup(fileName) ;
