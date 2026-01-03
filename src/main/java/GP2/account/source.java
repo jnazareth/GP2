@@ -66,6 +66,6 @@ public abstract class source {
 		this.Action = action;
 	}
 	@Override public String toString() {
-		return "source [date=" + Date + ", category=" + Category + ", subcategory=" + SubCategory + "description=" + Description + ", amount=" + Amount + "]";
+return "source [date=" + Date + ", category=" + Category + ", subcategory=" + SubCategory + ", description=" + Description + ", amount=" + Amount + "]";
 	}
 }
