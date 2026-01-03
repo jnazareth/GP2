@@ -152,16 +152,16 @@ public class gpcli {
 
     private boolean processClean() {
         try {
-            if (!Utils.m_settings._clean.IsPropertyUsed()) return false ;    // not used
+            if (!Utils.m_settings.getPropertyClean().IsPropertyUsed()) return false ;    // not used
 
             String dirToUse = Utils.m_settings.getDirToUse() ;
             String sPatterns[] = Utils.m_settings.getCleanPatterns().split(Constants._ITEM_SEPARATOR);
-            for (int i = 0; i < sPatterns.length; i++) fileUtils.deleteFile(dirToUse, sPatterns[i]) ;
+            for (int i = 0; i < sPatterns.length; i++) fileUtils.deleteFilesByPattern(dirToUse, sPatterns[i]) ;
 
             // delete directory, if specifed & empty
             Path path = Paths.get(dirToUse);
-            if ( (Utils.m_settings._dir.IsPropertyUsed()) && (fileUtils.isEmpty(path)) ) {
-                return fileUtils.deleteDirectory(path.toFile()) ;
+            if ( (Utils.m_settings.getPropertyDir().IsPropertyUsed()) && (fileUtils.isDirectoryEmpty(path)) ) {
+                return fileUtils.deleteDirectoryRecursively(path.toFile()) ;
             }
         } catch (IOException ioe) {
 			System.err.println("Exception::" + ioe.getMessage()) ;
@@ -200,7 +200,7 @@ public class gpcli {
 		File[] inputs = Utils.m_settings.getInputs();
 		for (File filename : inputs) {
 			myAccount.ReadAndProcessTransactions2(filename.getName()) ;
-            myAccount.writeJson(filename.getName()) ;
+            myAccount.writeJson3(filename.getName()) ;
             myAccount.buildXLS(filename.getName()) ;
 		}
         processClean() ;

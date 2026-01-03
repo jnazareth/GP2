@@ -7,6 +7,7 @@ import GP2.person.GPAction.PGType.EntryType;
 import GP2.xcur.CrossCurrency;
 
 import java.util.Hashtable;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
 
@@ -29,16 +30,17 @@ public class Groups extends Object {
 		return m_Groups.size();
 	}
 
-	public void dumpCollection() {
-		Enumeration<String> keysGroup = this.m_Groups.keys();
-		while(keysGroup.hasMoreElements()) {
-			String groupName = keysGroup.nextElement();
-            System.out.print(groupName + "\t::");
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
 
-			Group aG = this.get(groupName);
-			aG.dumpCollection() ;
-            System.out.println("");
+		for (String groupName : Collections.list(this.m_Groups.keys())) {
+			sb.append(groupName).append("\t::")
+			.append(this.get(groupName).toString())
+			.append("\n");
 		}
+
+		return sb.toString();
 	}
 
 // --------------------------------------------------------------------------------------
@@ -68,7 +70,7 @@ public class Groups extends Object {
 		}
 
 		public boolean isActive() {
-			return m_gState.getActive();
+			return m_gState.isActive();
 		}
 
 		public HashSet<String> getAllActive(String gName) {
@@ -85,15 +87,18 @@ public class Groups extends Object {
 		public int getAllActiveCount(String gName) {
 			return getAllActive(gName).size();
 		}
+		
+		@Override
+		public String toString() {
+			StringBuilder sb = new StringBuilder();
+			sb.append(m_GroupName).append("::\n");
 
-		public void dumpCollection() {
-            System.out.println(m_GroupName + "::");
-            Enumeration<String> keysPeople = m_aGroup.keys();
-            while(keysPeople.hasMoreElements()){
-                Person Person = m_aGroup.get(keysPeople.nextElement());
-                System.out.print(Person.m_name + "\t");
-            }
-			return ;
-		}
+			for (String key : Collections.list(m_aGroup.keys())) {
+				Person person = m_aGroup.get(key);
+				sb.append(person.m_name).append("\t");
+			}
+
+			return sb.toString();
+		}		
     }
 }

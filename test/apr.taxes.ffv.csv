@@ -1,0 +1,2 @@
+date,category,description,institution,account,is_Hidden,is_Pending,amount,from,to,group,action
+Sun 13.Apr,Taxes,UNIVERSAL TAX CRANFORD NJ,Citibank Online,Citi Double Cash Card-1351,No,No,-320,jn,jn,taxes,"jn (*:self), gd (*:self), taxes (*:group)"

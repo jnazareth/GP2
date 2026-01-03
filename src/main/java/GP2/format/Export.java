@@ -4,14 +4,10 @@ import GP2.utils.Constants;
 import GP2.utils.Utils;
 import GP2.person.Person;
 
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Collections;
+import java.util.*;
 
 public class Export {
+
     public interface XLSHeaders {
         final String H_TRANSACTION_AMOUNTS	        = "transaction amounts" ;
         final String H_OWE					        = "(you owe) / owed to you" ;
@@ -48,32 +44,31 @@ public class Export {
         final String keyCheckSumIndividualTotals    = "checksumIndividualTotals" ;
     }
 
-    // members
-    public RowLayout header0   = new RowLayout();
-    public RowLayout header1   = new RowLayout();
-    public RowLayout template  = new RowLayout();
-    Hashtable<String, ArrayList<RowLayout>> m_exportLinesGroup  ;	// String = groupName (Key)
+    // Members
+    public RowLayout header0 = new RowLayout();
+    public RowLayout header1 = new RowLayout();
+    public RowLayout template = new RowLayout();
+    public Hashtable<String, ArrayList<RowLayout>> m_exportLinesGroup;
 
-    ArrayList<String> getSortedPersons(String sGroupName) {
-        ArrayList<String> al = new ArrayList<String>() ;
+    public ArrayList<String> getSortedPersons(String groupName) {
+        ArrayList<String> personNames = new ArrayList<>();
+        Hashtable<String, Person> group = Utils.m_Groups.get(groupName).getCollection();
+        List<String> sortedKeys = new ArrayList<>(group.keySet());
+        Collections.sort(sortedKeys);
 
-        Hashtable<String, Person> aGroup = Utils.m_Groups.get(sGroupName).getCollection() ;
-        List<String> mapKeys = new ArrayList<String>(aGroup.keySet());
-		Collections.sort(mapKeys);
-        Iterator<String> iter = mapKeys.iterator();
-		while (iter.hasNext()) {
-			Person person = aGroup.get(iter.next());
-            al.add(person.m_name);
+        for (String key : sortedKeys) {
+            personNames.add(group.get(key).m_name);
         }
-        return al ;
+        return personNames;
     }
 
-	public void buildHeaders(String group) {
+    public void buildHeaders(String group) {
         header0.empty();
         header1.empty();
         template.empty();
 
-        boolean bSuppressCheckSum   = Utils.m_settings.getSuppressCStoUse() ;
+        boolean suppressCheckSum = Utils.m_settings.getSuppressCStoUse();
+        int pos = 1;
 
         int pos = 1 ;
 		header1.addCell(pos++, ExportKeys.keyItem,      XLSHeaders.H_ITEM) ;
@@ -85,50 +80,83 @@ public class Export {
 		header1.addCell(pos++, ExportKeys.keyTo,        XLSHeaders.H_TO) ;
 		header1.addCell(pos++, ExportKeys.keyAction,    XLSHeaders.H_ACTION) ;
 
+    private int addPersonHeaders(String group, int pos, boolean suppressCheckSum) {
         ArrayList<String> persons = getSortedPersons(group);
-        header0.addCell(pos, ExportKeys.keyTransactions, XLSHeaders.H_TRANSACTION_AMOUNTS) ;
-		for (String p : persons) header1.addCell(pos++, ExportKeys.keyTransactions  + Constants._ID_SEPARATOR + p, p) ;
-        header0.addCell(pos, ExportKeys.keyOwe, XLSHeaders.H_OWE) ;
-        for (String p : persons) header1.addCell(pos++, ExportKeys.keyOwe  + Constants._ID_SEPARATOR + p, p) ;
-        if ( (!bSuppressCheckSum) || (Utils.m_settings.bCheckSumTransaction) )
-            header1.addCell(pos++, ExportKeys.keyCheckSumTransaction, XLSHeaders.H_CHECKSUM_TRANSACTION) ;
-        header0.addCell(pos, ExportKeys.keySpent, XLSHeaders.H_INDIVIDUAL_TOTALS) ;
-        for (String p : persons) header1.addCell(pos++, ExportKeys.keySpent  + Constants._ID_SEPARATOR + p, p) ;
-        if ( (!bSuppressCheckSum) || (Utils.m_settings.bCheckSumGroupTotals) )
-            header1.addCell(pos++, ExportKeys.keyCheckSumGroupTotals, XLSHeaders.H_CHECKSUM_GROUPTOTALS) ;
-        header0.addCell(pos, ExportKeys.keyPaid, XLSHeaders.H_INDIVIDUAL_PAID) ;
-        for (String p : persons) header1.addCell(pos++, ExportKeys.keyPaid  + Constants._ID_SEPARATOR + p, p) ;
-        if ( (!bSuppressCheckSum) || (Utils.m_settings.bCheckSumIndividualTotals) ) {
-            header0.addCell(pos, ExportKeys.keyCheckSumIndividualTotals, XLSHeaders.H_CHECKSUM_INDIVIDUALTOTALS) ;
-            for (String p : persons) header1.addCell(pos++, ExportKeys.keyCheckSumIndividualTotals  + Constants._ID_SEPARATOR + p, p) ;
-        }
+
+        pos = addTransactionHeaders(pos, persons);
+        pos = addOweHeaders(pos, persons);
+        pos = addSpentHeaders(pos, persons, suppressCheckSum);
+        pos = addPaidHeaders(pos, persons, suppressCheckSum);
+
+        return pos;
     }
 
-	String toCSVLine(RowLayout rl) {
-		String sLine = "" ;
-        int pos = 1 ;
+    private int addTransactionHeaders(int pos, ArrayList<String> persons) {
+        header0.addCell(pos, ExportKeys.keyTransactions, XLSHeaders.H_TRANSACTION_AMOUNTS);
+        for (String person : persons) {
+            header1.addCell(pos++, ExportKeys.keyTransactions + Constants._ID_SEPARATOR + person, person);
+        }
+        return pos;
+    }
+
+    private int addOweHeaders(int pos, ArrayList<String> persons) {
+        header0.addCell(pos, ExportKeys.keyOwe, XLSHeaders.H_OWE);
+        for (String person : persons) {
+            header1.addCell(pos++, ExportKeys.keyOwe + Constants._ID_SEPARATOR + person, person);
+        }
+        return pos;
+    }
+
+    private int addSpentHeaders(int pos, ArrayList<String> persons, boolean suppressCheckSum) {
+        header0.addCell(pos, ExportKeys.keySpent, XLSHeaders.H_INDIVIDUAL_TOTALS);
+        for (String person : persons) {
+            header1.addCell(pos++, ExportKeys.keySpent + Constants._ID_SEPARATOR + person, person);
+        }
+        if (!suppressCheckSum || Utils.m_settings.bCheckSumGroupTotals) {
+            header1.addCell(pos++, ExportKeys.keyCheckSumGroupTotals, XLSHeaders.H_CHECKSUM_GROUPTOTALS);
+        }
+        return pos;
+    }
+
+    private int addPaidHeaders(int pos, ArrayList<String> persons, boolean suppressCheckSum) {
+        header0.addCell(pos, ExportKeys.keyPaid, XLSHeaders.H_INDIVIDUAL_PAID);
+        for (String person : persons) {
+            header1.addCell(pos++, ExportKeys.keyPaid + Constants._ID_SEPARATOR + person, person);
+        }
+        if (!suppressCheckSum || Utils.m_settings.bCheckSumIndividualTotals) {
+            header0.addCell(pos, ExportKeys.keyCheckSumIndividualTotals, XLSHeaders.H_CHECKSUM_INDIVIDUALTOTALS);
+            for (String person : persons) {
+                header1.addCell(pos++, ExportKeys.keyCheckSumIndividualTotals + Constants._ID_SEPARATOR + person, person);
+            }
+        }
+        return pos;
+    }
+
+    public String toCSVLine(RowLayout rl) {
+        StringBuilder sLine = new StringBuilder();
+        int pos = 1;
         for (RowLayout.CellLayout c : rl.m_Cells) {
             while (pos < c.xlsPosition) {
-                sLine += Constants._TAB_SEPARATOR ;
-                pos++ ;
+                sLine.append(Constants._TAB_SEPARATOR);
+                pos++;
             }
-            sLine += c.xlsPositionValue + Constants._TAB_SEPARATOR ;
+            sLine.append(c.xlsPositionValue).append(Constants._TAB_SEPARATOR);
             pos++;
         }
-		return sLine ;
-	}
+        return sLine.toString();
+    }
 
-	RowLayout buildTemplate(String group) {
-		if (template.length() != 0) return template ;
-        template = new RowLayout(header1) ;
-		for (int i = 1; i <= template.length(); i++) {
-			template.setValue(i, Constants._TAB_SEPARATOR);	// init
-		}
-		return template ;
-	}
+    public RowLayout buildTemplate(String group) {
+        if (template.length() != 0) return template;
+        template = new RowLayout(header1);
+        for (int i = 1; i <= template.length(); i++) {
+            template.setValue(i, Constants._TAB_SEPARATOR); // init
+        }
+        return template;
+    }
 
-	RowLayout buildRow(String group, RowLayout line) {
-		RowLayout templateRow = buildTemplate(group) ;
+    public RowLayout buildRow(String group, RowLayout line) {
+        RowLayout templateRow = buildTemplate(group);
         for (RowLayout.CellLayout c : templateRow.m_Cells) {
             try {
                 RowLayout.CellLayout lineCell = line.getCell(c.xlsPositionName);
@@ -175,35 +203,28 @@ public class Export {
             if ( (!bSuppressCheckSum) || (Utils.m_settings.bCheckSumIndividualTotals) )
                 row.addCell(pos++, ExportKeys.keyCheckSumIndividualTotals +         Constants._ID_SEPARATOR + person.m_name,    Utils.roundAmount(csIndividualTotals * fRate)) ;
         }
-        if ( (!bSuppressCheckSum) || (Utils.m_settings.bCheckSumTransaction) )
-            row.addCell(pos++, ExportKeys.keyCheckSumTransaction, Utils.roundAmount(csTransaction * fRate)) ;
-        if ( (!bSuppressCheckSum) || (Utils.m_settings.bCheckSumGroupTotals) )
-            row.addCell(pos++, ExportKeys.keyCheckSumGroupTotals, Utils.roundAmount(csGroupTotals * fRate)) ;
-
-            // Create / Add to Collection
-		if (m_exportLinesGroup == null) m_exportLinesGroup = new Hashtable<String, ArrayList<RowLayout>>() ;
-		ArrayList<RowLayout> aGrp = m_exportLinesGroup.get(group) ;
-		if (aGrp == null) {
-			aGrp = new ArrayList<RowLayout>() ;
-			aGrp.add(row) ;
-			m_exportLinesGroup.put(group, aGrp) ;
-		} else {
-			aGrp.add(row) ;
-		}
-
-        return row ;
     }
 
-    void dumpCollection() {
-		Enumeration<String> keysGroup = m_exportLinesGroup.keys();
-		while(keysGroup.hasMoreElements()) {
-			String groupName = keysGroup.nextElement();
-			ArrayList<RowLayout> rList = m_exportLinesGroup.get(groupName) ;
-			System.out.println(groupName + ": ");
+    private void addRowToCollection(String group, RowLayout row) {
+        if (m_exportLinesGroup == null) {
+            m_exportLinesGroup = new Hashtable<>();
+        }
+        m_exportLinesGroup.computeIfAbsent(group, k -> new ArrayList<>()).add(row);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        Enumeration<String> keysGroup = m_exportLinesGroup.keys();
+        while (keysGroup.hasMoreElements()) {
+            String groupName = keysGroup.nextElement();
+            ArrayList<RowLayout> rList = m_exportLinesGroup.get(groupName);
+            sb.append(groupName).append(": \n");
             for (RowLayout rl : rList) {
-                rl.dumpCollection();
+                sb.append(rl.toString()).append("\n");
             }
         }
+        return sb.toString();
     }
 
     /*
@@ -211,12 +232,12 @@ public class Export {
      */
 
     public class RowLayout {
-		ArrayList<CellLayout> m_Cells  = new ArrayList<CellLayout>();
+        ArrayList<CellLayout> m_Cells = new ArrayList<>();
 
         public RowLayout(RowLayout rl) {
             for (CellLayout c : rl.m_Cells) {
-                CellLayout cl = rl.getCell(c.xlsPositionName) ;
-                this.addCell(cl.xlsPosition, cl.xlsPositionName, cl.xlsPositionValue) ;
+                CellLayout cl = rl.getCell(c.xlsPositionName);
+                this.addCell(cl.xlsPosition, cl.xlsPositionName, cl.xlsPositionValue);
             }
         }
 
@@ -224,59 +245,63 @@ public class Export {
         }
 
         void addCell(int xlsPos, String xlsKey, String sValue) {
-            CellLayout cl = new CellLayout(xlsPos, xlsKey, sValue) ;
-            m_Cells.add(cl) ;
+            CellLayout cl = new CellLayout(xlsPos, xlsKey, sValue);
+            m_Cells.add(cl);
         }
 
-        public CellLayout getCell (String posName) {
+        public CellLayout getCell(String posName) {
             for (CellLayout c : m_Cells) {
-                if (c.xlsPositionName.equalsIgnoreCase(posName)) return c ;
+                if (c.xlsPositionName.equalsIgnoreCase(posName)) return c;
             }
-            return null ;
+            return null;
         }
 
-        public CellLayout getCell (int pos) {
+        public CellLayout getCell(int pos) {
             for (CellLayout c : m_Cells) {
-                if (c.xlsPosition == pos) return c ;
+                if (c.xlsPosition == pos) return c;
             }
-            return null ;
+            return null;
         }
 
-        public CellLayout setValue (int i, String v) {
-            CellLayout cl = getCell(i) ;
+        public CellLayout setValue(int i, String v) {
+            CellLayout cl = getCell(i);
             if (cl != null) {
                 cl.xlsPositionValue = v;
-                return cl ;
+                return cl;
             }
-            return null ;
+            return null;
         }
-        public CellLayout setValue (String posName, String v) {
-            CellLayout cl = getCell(posName) ;
+
+        public CellLayout setValue(String posName, String v) {
+            CellLayout cl = getCell(posName);
             if (cl != null) {
                 cl.xlsPositionValue = v;
-                return cl ;
+                return cl;
             }
-            return null ;
+            return null;
         }
 
         public int length() {
             return m_Cells.size();
         }
 
-        public void empty(){
+        public void empty() {
             m_Cells.clear();
         }
 
-        public void dumpCollection() {
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
             for (CellLayout c : m_Cells) {
-                System.out.println(c.xlsPosition + "|" + c.xlsPositionName + "|" + c.xlsPositionValue);
+                sb.append(c.xlsPosition).append("|").append(c.xlsPositionName).append("|").append(c.xlsPositionValue).append("\n");
             }
+            return sb.toString();
         }
 
         public class CellLayout {
-            public int		xlsPosition;
-            public String   xlsPositionName;
-            public String	xlsPositionValue;
+            public int xlsPosition;
+            public String xlsPositionName;
+            public String xlsPositionValue;
 
             public CellLayout(int x, String n, String v) {
                 xlsPosition = x;

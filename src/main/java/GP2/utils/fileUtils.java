@@ -2,142 +2,144 @@ package GP2.utils;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.json.JsonObject;
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.Files;
 import java.nio.file.DirectoryStream;
-import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.FileVisitor;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.nio.file.SimpleFileVisitor;
-
-import org.apache.commons.io.FileUtils ;
-
-import java.io.FileOutputStream ;
-import java.io.FileInputStream ;
+import org.apache.commons.io.FileUtils;
+import org.json.simple.JSONObject;
+import java.io.FileOutputStream;
+import java.io.FileInputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class fileUtils {
-    public static List<String> searchWithWc(Path rootDir, String pattern) throws IOException {
-	    List<String> matchesList = new ArrayList<String>();
 
-        FileVisitor<Path> matcherVisitor = new SimpleFileVisitor<Path>() {
+    // Search for files matching a pattern in a directory
+    public static List<String> searchFilesWithPattern(Path rootDir, String pattern) throws IOException {
+        List<String> matchedFiles = new ArrayList<>();
+        PathMatcher matcher = FileSystems.getDefault().getPathMatcher(pattern);
+
+        FileVisitor<Path> fileVisitor = new SimpleFileVisitor<Path>() {
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attribs) throws IOException {
-                FileSystem fs = FileSystems.getDefault();
-                PathMatcher matcher = fs.getPathMatcher(pattern);
-                Path name = file.getFileName();
-                if (matcher.matches(name)) {
-					//System.out.println( "matches \t\t" + name.toString() );
-                    matchesList.add(name.toString());
+                if (matcher.matches(file.getFileName())) {
+                    matchedFiles.add(file.getFileName().toString());
                 }
                 return FileVisitResult.CONTINUE;
             }
         };
-        Files.walkFileTree(rootDir, matcherVisitor);
-        return matchesList;
+
+        Files.walkFileTree(rootDir, fileVisitor);
+        return matchedFiles;
     }
 
-	public static List<String> getFilesToDelete(String path, String pattern)
-	{
-		List<String> actual = null ;
-		try {
-			Path filesPath = FileSystems.getDefault().getPath(path);
-			return searchWithWc(filesPath , pattern);
-		} catch (Exception e) {
-			System.err.println("Exception::" + e.getMessage()) ;
-			return actual ;
-		}
-	}
+    // Get list of files to delete based on a pattern
+    public static List<String> getFilesToDelete(String directoryPath, String pattern) {
+        try {
+            Path path = FileSystems.getDefault().getPath(directoryPath);
+            return searchFilesWithPattern(path, pattern);
+        } catch (IOException e) {
+            System.err.println("Exception::" + e.getMessage());
+            return new ArrayList<>();
+        }
+    }
 
-	public static boolean deleteAFile (String folder, List<String> files2d)
-	{
-		final File dir = new File(folder) ;
-		final File[] list = dir.listFiles( new FilenameFilter() {
-			@Override
-			public boolean accept( final File dir, final String name ) {
-				return files2d.contains(name) ;
-			}
-		} );
-		for ( final File file : list ) {
-			if ( !file.delete() ) {
-				System.err.println( "Can't remove " + file.getAbsolutePath() );
-			} else
-				System.out.println(file + " deleted");
-		}
-		return true ;
-	}
+    // Delete specified files in a folder
+    public static boolean deleteFiles(String folderPath, List<String> filesToDelete) {
+        File directory = new File(folderPath);
+        File[] files = directory.listFiles((dir, name) -> filesToDelete.contains(name));
 
-	public static void deleteFile (String path, String pattern)
-	{
-		List<String> f = getFilesToDelete(path, pattern) ;
-		deleteAFile(path, f) ;
-	}
+        if (files != null) {
+            for (File file : files) {
+                if (!file.delete()) {
+                    System.err.println("Can't remove " + file.getAbsolutePath());
+                } else {
+                    System.out.println(file + " deleted");
+                }
+            }
+        }
+        return true;
+    }
 
-	public static File getFile(String fileName)
-	throws FileNotFoundException
-	{
-		File aFile = new File(fileName);
-		if (aFile.exists()) return aFile;
-		else throw new FileNotFoundException("File  " + fileName + " does not exist.");
-	}
+    // Delete files matching a pattern in a directory
+    public static void deleteFilesByPattern(String directoryPath, String pattern) {
+        List<String> filesToDelete = getFilesToDelete(directoryPath, pattern);
+        deleteFiles(directoryPath, filesToDelete);
+    }
 
-	public static boolean isEmpty(Path path) throws IOException {
-		if (Files.isDirectory(path)) {
-			try (DirectoryStream<Path> directory = Files.newDirectoryStream(path)) {
-				return !directory.iterator().hasNext();
-			}
-		}
-		return false;
-	}
+    // Get a file by name, throw exception if not found
+    public static File getFile(String fileName) throws FileNotFoundException {
+        File file = new File(fileName);
+        if (file.exists()) {
+            return file;
+        } else {
+            throw new FileNotFoundException("File " + fileName + " does not exist.");
+        }
+    }
 
-	public static boolean deleteDirectory(File directoryToBeDeleted) {
-		File[] allContents = directoryToBeDeleted.listFiles();
-		if (allContents != null) {
-			for (File file : allContents) {
-				deleteDirectory(file);
-			}
-		}
-		return directoryToBeDeleted.delete();
-	}	
+    // Check if a directory is empty
+    public static boolean isDirectoryEmpty(Path directoryPath) throws IOException {
+        if (Files.isDirectory(directoryPath)) {
+            try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(directoryPath)) {
+                return !directoryStream.iterator().hasNext();
+            }
+        }
+        return false;
+    }
 
-	public static FileWriter getFileWriter(String fName) {
-		FileWriter fWriter = null ;
+    // Recursively delete a directory
+    public static boolean deleteDirectoryRecursively(File directory) {
+        File[] contents = directory.listFiles();
+        if (contents != null) {
+            for (File file : contents) {
+                deleteDirectoryRecursively(file);
+            }
+        }
+        return directory.delete();
+    }
 
-		try {
-			String outFilename = fName;
-			String dirToUse = Utils.m_settings.getDirToUse() ;
-			File f = new File(dirToUse, outFilename);
-			FileOutputStream foS = FileUtils.openOutputStream(f) ;
-			FileWriter fw = new FileWriter(foS.getFD()) ;
-			fWriter = fw;
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return fWriter ;
-	}
+    // Get a FileWriter for a file
+    public static FileWriter createFileWriter(String fileName) {
+        try {
+            String directory = Utils.m_settings.getDirToUse();
+            File file = new File(directory, fileName);
+            FileOutputStream fileOutputStream = FileUtils.openOutputStream(file);
+            return new FileWriter(fileOutputStream.getFD());
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
-	public static FileReader getFileReader(String fName) {
-		FileReader fReader = null ;
-		try {
-			String inFilename = fName;
-			String dirToUse = Utils.m_settings.getDirToUse() ;
-            File f = new File(dirToUse, inFilename);
-            FileInputStream fiS = FileUtils.openInputStream(f) ;
-            FileReader fr = new FileReader(fiS.getFD()) ;
-            fReader = fr ;
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-		}
-		return fReader ;
-	}
-
+    // Get a FileReader for a file
+    public static FileReader createFileReader(String fileName) {
+        try {
+            String directory = Utils.m_settings.getDirToUse();
+            File file = new File(directory, fileName);
+            FileInputStream fileInputStream = FileUtils.openInputStream(file);
+            return new FileReader(fileInputStream.getFD());
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    // Write a JSON object to a file
+    public static void writeJsonToFile(String fileName, JsonObject jsonObject) {
+        try (FileWriter file = createFileWriter(fileName)) {
+            JSONObject json = new JSONObject(jsonObject);
+            file.write(json.toJSONString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

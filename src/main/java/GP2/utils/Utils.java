@@ -8,7 +8,7 @@ import GP2.input.FTType.FromToTypes;
 
 import java.util.Hashtable;
 import java.math.BigDecimal;
-
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.Collections;
 import java.util.ArrayList;
@@ -68,34 +68,33 @@ public class Utils {
 	}
 
 	public static String stripPercentge(float amt, String in) {
-		String sOut = "" ;
-		String sIn[] = in.split(Constants._ITEM_SEPARATOR) ;
+        StringBuilder sOut = new StringBuilder();
+        String[] sIn = in.split(Constants._ITEM_SEPARATOR);
 
-		String eachName = "" ;
-		float eachPer = 0.0f ;
-		for (int i = 0; i < sIn.length; i++) {
-			eachName = "";	eachPer = 0 ;
-			String sEach[] = sIn[i].split(Constants._AMT_INDICATOR) ;
-			for (int k = 0; k < sEach.length; k++) {
-				int pLoc = -1 ;
-				if ((pLoc = sEach[k].indexOf(FromToTypes.Percentage)) == -1) {
-					try {
-						eachPer = Float.parseFloat(sEach[k]) ;
-						sOut += Constants._AMT_INDICATOR + sEach[k] ;
-					} catch (NumberFormatException e) {
-						eachName = sEach[k].trim() ;
-						if (sOut == "") sOut += sEach[k] ;
-						else sOut += Constants._ITEM_SEPARATOR + sEach[k] ;
-					}
-				} else {
-					eachPer = Float.parseFloat(sEach[k].substring(0, pLoc)) ;
-					float fAmt = amt * eachPer / 100 ;
-					sOut += Constants._AMT_INDICATOR + String.valueOf(fAmt) ;
-				}
-			}
-			return sOut ;
-		}
-		return sOut ;
+        for (String item : sIn) {
+            String[] sEach = item.split(Constants._AMT_INDICATOR);
+            for (String part : sEach) {
+                int pLoc = part.indexOf(FromToTypes.Percentage);
+                if (pLoc == -1) {
+                    try {
+                        @SuppressWarnings("unused")
+						float eachPer = Float.parseFloat(part);
+                        sOut.append(Constants._AMT_INDICATOR).append(part);
+                    } catch (NumberFormatException e) {
+                        if (sOut.length() == 0) {
+                            sOut.append(part);
+                        } else {
+                            sOut.append(Constants._ITEM_SEPARATOR).append(part);
+                        }
+                    }
+                } else {
+                    float eachPer = Float.parseFloat(part.substring(0, pLoc));
+                    float fAmt = amt * eachPer / 100;
+                    sOut.append(Constants._AMT_INDICATOR).append(fAmt);
+                }
+            }
+        }
+        return sOut.toString();
 	}
 
 
@@ -104,7 +103,7 @@ public class Utils {
 		try {
 			int decimalPlace = 2 ;
 			BigDecimal bd = new BigDecimal(f);
-			bd = bd.setScale(decimalPlace, BigDecimal.ROUND_HALF_UP);
+			bd = bd.setScale(decimalPlace, RoundingMode.HALF_UP);
 			return bd.toString() ;
 		} catch (NumberFormatException e) {
 			return e.getMessage() ;

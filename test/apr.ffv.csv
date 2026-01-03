@@ -1,0 +1,57 @@
+date,category,description,institution,account,is_Hidden,is_Pending,amount,from,to,group,action
+Tue 01.Apr,Restaurants/Dining,DELI NEW YORK NY,Citibank Online,Citi Double Cash Card-1351,No,No,-14.42,jn,jn,broadridge.return,"jn (*:self), gd (*:self), broadridge.return (*:group)"
+Tue 01.Apr,Income,APA TREAS DES MISC PAY INDN NAZARETH GILLIAN J CO PPD,Bank of America,Adv Plus Banking - 6965,No,No,3.61,jn,jn,,#
+Tue 01.Apr,Income,APA TREAS DES MISC PAY INDN NAZARETH JOHN CO PPD,Bank of America,Adv Plus Banking - 6965,No,No,9.85,jn,jn,,#
+Tue 01.Apr,Household Services,SIXTY PROPERTY WEB PMTS,TD Bank,TD CONVENIENCE CHECKING,No,No,-443.13,jn,jn,420.madison,"jn (*:self), gd (*:self), 420.madison (*:group)"
+Wed 02.Apr,Transfers,WIRE TYPE FX OUT DATE TIME ET FX AED BNF ALAN SEQUEIRA ID BNF BK EMIRA TES NBD BANK PJSC ID EBILAEAD PMT JI LL SHOPPING POP GDS FXREF TE2102,Bank of America,Adv Plus Banking - 6965,No,No,-14.01,jn,jn,,#
+Wed 02.Apr,Mortgage & Rent,UNFCU CKWTH,TD Bank,TD CONVENIENCE CHECKING,No,No,-2610.3,jn,jn,420.madison,
+Thu 03.Apr,Restaurants/Dining,IRON BAR AND GRILL NEW YORK NY,Citibank Online,Citi Double Cash Card-1351,No,No,-35.08,jn,jn,broadridge.return,
+Thu 03.Apr,Shopping,AMAZON MARK SEATTLE WA,Citibank Online,Citi Double Cash Card-1351,No,No,-27.57,jn,jn,default,"jn (*:self), gd (*:self), default (*:group)"
+Thu 03.Apr,Coffee,DUNKIN NEW YORK NY,Citibank Online,Citi Double Cash Card-1351,No,No,-7.62,jn,jn,broadridge.return,
+Thu 03.Apr,Coffee,DUNKIN NEW YORK NY,Citibank Online,Citi Double Cash Card-1351,No,No,-4.3,jn,jn,broadridge.return,
+Thu 03.Apr,Transfers,WIRE TYPE FX OUT DATE TIME ET FX AED BNF ALAN SEQUEIRA ID BNF BK EMIRA TES NBD BANK PJSC ID EBILAEAD PMT JI LL SHOPPING POP GDS FXREF TE2102,Bank of America,Adv Plus Banking - 6965,No,No,-1089.76,jn,jn,,#
+Fri 04.Apr,Groceries,SAMS CLUB SECAUCUS NJ,Citibank Online,Citi Double Cash Card-1351,No,No,-88.65,jn,jn,,
+Fri 04.Apr,Groceries,SHOPRITE HOBOKEN S HOBOKEN NJ,Citibank Online,Citi Double Cash Card-1351,No,No,-30.75,jn,jn,,
+Sat 05.Apr,Groceries,TRADER JOES HOBOKEN NJ,Citibank Online,Citi Double Cash Card-1351,No,No,-14.13,jn,jn,,
+Sat 05.Apr,Groceries,SHOPRITE HOBOKEN S HOBOKEN NJ,Citibank Online,Citi Double Cash Card-1351,No,No,-6.07,jn,jn,,
+Sat 05.Apr,Groceries,SHOPRITE HOBOKEN S HOBOKEN NJ,Citibank Online,Citi Double Cash Card-1351,No,No,-3.58,jn,jn,,
+Sat 05.Apr,Coffee,DUNKIN HOBOKEN NJ,Citibank Online,Citi Double Cash Card-1351,No,No,-3.83,jn,jn,,
+Sat 05.Apr,Shopping,WALMART,Capital One,Capital One Miles,No,No,-13.14,jn,jn,,
+Sun 06.Apr,"Phone, Internet & Cable",TMOBILE PREPD AUTOPY WA,Citibank Online,Citi Double Cash Card-1351,No,No,-15.99,jn,gd,invictus,"jn (*:self), gd (*:self), invictus (*:group)"
+Sun 06.Apr,Groceries,AAPKA BIG BAZAAR JERSEY CITY NJ,Citibank Online,Citi Double Cash Card-1351,No,No,-16.04,jn,jn,,
+Mon 07.Apr,Groceries,SHOPRITE HOBOKEN S HOBOKEN NJ,Citibank Online,Citi Double Cash Card-1351,No,No,-11.47,jn,jn,,
+Mon 07.Apr,Charity,GIV ST ANN CATHO HOBOKEN NJ,Citibank Online,Citi Double Cash Card-1351,No,No,-20,jn,jn,,
+Tue 08.Apr,Tolls,NJ EZPASS NEWARK NJ,Citibank Online,Citi Double Cash Card-1351,No,No,-25,jn,jn,,
+Tue 08.Apr,Coffee,DUNKIN NEW YORK NY,Citibank Online,Citi Double Cash Card-1351,No,No,-4.3,jn,jn,broadridge.return,
+Tue 08.Apr,Restaurants/Dining,DELI NEW YORK NY,Citibank Online,Citi Double Cash Card-1351,No,No,-14.42,jn,jn,,
+Tue 08.Apr,Income,APA TREAS DES MISC PAY INDN NAZARETH GILLIAN J CO PPD,Bank of America,Adv Plus Banking - 6965,No,No,3.63,jn,jn,,#
+Tue 08.Apr,Income,APA TREAS DES MISC PAY INDN NAZARETH JOHN CO PPD,Bank of America,Adv Plus Banking - 6965,No,No,6000,jn,jn,,#
+Tue 08.Apr,Mortgage & Rent,ZG YOUR RENTAL RENT L5,TD Bank,TD CONVENIENCE CHECKING,No,No,2950,jn,jn,420.madison,
+Wed 09.Apr,Public Transport,NJT TH ST HOBOKEN NJ,Citibank Online,Citi Double Cash Card-1351,No,No,-2.55,jn,jn,,
+Wed 09.Apr,Gas & Fuel,BP BQPS HOBOKEN NJ,Citibank Online,Citi Double Cash Card-1351,No,No,-42.78,jn,jn,,
+Wed 09.Apr,Public Transport,PATH TAPP PAYGO CP NEW JERSEY NJ,Citibank Online,Citi Double Cash Card-1351,No,No,-3,jn,gd,invictus,
+Wed 09.Apr,Public Transport,PATH TAPP PAYGO CP NEW JERSEY NJ,Citibank Online,Citi Double Cash Card-1351,No,No,-3,jn,gd,invictus,
+Thu 10.Apr,Other,CHECK,Bank of America,Adv Plus Banking - 6965,No,No,-784,jn,jn,,#
+Thu 10.Apr,Bank Fee,FOREIGN FEE,Citibank Online,Citi Double Cash Card-1351,No,No,-1.24,jn,jn,,#
+Thu 10.Apr,Restaurants/Dining,IRON BAR AND GRILL NEW YORK USA,Citibank Online,Citi Double Cash Card-1351,No,Yes,-29.08,jn,jn,broadridge.return,
+Thu 10.Apr,Coffee,DUNKIN NEW YORK USA,Citibank Online,Citi Double Cash Card-1351,No,Yes,-3.97,jn,jn,broadridge.return,
+Fri 11.Apr,Restaurants/Dining,CAMPINO RESTAURANT,Capital One,Capital One Miles,No,No,-34.67,jn,gd,,
+Fri 11.Apr,Restaurants/Dining,DOMINOS HOBOKEN USA,Citibank Online,Citi Double Cash Card-1351,No,Yes,-8.52,jn,jn,,
+Fri 11.Apr,Shopping,ENORMOUSDEALS LLC SALT LAKE CIT USA,Citibank Online,Citi Double Cash Card-1351,No,Yes,-9.69,jn,jn,,
+Sat 12.Apr,Groceries,ALDI NORTH BERGEN NJ,Citibank Online,Citi Double Cash Card-1351,No,No,-26.08,jn,jn,,
+Sat 12.Apr,Home Supplies,DOLLAR TREE UNION CITY NJ,Citibank Online,Citi Double Cash Card-1351,No,No,-5.12,jn,jn,,
+Sun 13.Apr,Taxes,UNIVERSAL TAX CRANFORD NJ,Citibank Online,Citi Double Cash Card-1351,No,No,-320.00,jn,jn,taxes,"jn (*:self), gd (*:self), taxes (*:group)"
+Sun 13.Apr,"Phone, Internet & Cable",SLING.COM ENGLEWOOD CO,Citibank Online,Citi Double Cash Card-1351,No,No,-50.99,jn,jn,,
+Sun 13.Apr,"Phone, Internet & Cable",NETFLIX.COM LOS GATOS CA,Citibank Online,Citi Double Cash Card-1351,No,No,-8.52,jn,jn,,
+Mon 14.Apr,Credit Card Payment,PAYMENT THANK YOU,Citibank Online,Citi Double Cash Card-1351,No,No,1088.34,jn,jn,,#
+Mon 14.Apr,Business,NJGOVSERVEW DES NJGOVSERVE ID INDN JOHN B NAZARETH CO WEB,Bank of America,Adv Plus Banking - 6965,No,No,-75.50,jn,jn,saluzinho,"jn (*:self), gd (*:self), saluzinho (*:group)"
+Mon 14.Apr,Credit Card Payment,CITIBANK CREDIT CARD BILL PAYMENT,Bank of America,Adv Plus Banking - 6965,No,No,-1088.34,jn,jn,,#
+Mon 14.Apr,Hair & Nails,ZELLE PAYMENT TO JUST FOR MEN BARBER SHOP UNISEX SD LLC CONF DSYROQDW,Bank of America,Adv Plus Banking - 6965,No,No,-25.00,jn,jn,,
+Tue 15.Apr,State Tax,NEW JERSEY TGI P DES INDN NAZARETH CO WEB PMT INFO TXP T NAZA,Bank of America,Adv Plus Banking - 6965,No,No,-2549.00,jn,jn,taxes,
+Tue 15.Apr,Mortgage & Rent,UNFCU ID INDN JOHN NAZARETH CO PPD PMT INFO PRINCIPAL PYMNT,Bank of America,Adv Plus Banking - 6965,No,No,-3000.00,jn,jn,420.madison,
+Tue 15.Apr,Federal Tax,IRS DES USATAXPYMT INDN JOHN B GILLIAN NAZAR CO PPD,Bank of America,Adv Plus Banking - 6965,No,No,-7513.00,jn,jn,taxes,
+Tue 15.Apr,Income,APA TREAS DES MISC PAY INDN NAZARETH JOHN CO PPD,Bank of America,Adv Plus Banking - 6965,No,No,16.51,jn,jn,,#
+Tue 15.Apr,Public Transport,PABT,Capital One,Capital One Miles,No,No,-4.00,jn,jn,,
+Tue 15.Apr,Public Transport,NJT BUS,Capital One,Capital One Miles,No,No,-8.00,jn,jn,,
+Tue 15.Apr,Coffee,DD BR DEER PK USA,Citibank Online,Citi Double Cash Card-1351,No,Yes,-3.69,jn,jn,broadridge.return,
+Tue 15.Apr,Coffee,DUNKIN HOBOKEN USA,Citibank Online,Citi Double Cash Card-1351,No,Yes,-4.25,jn,jn,broadridge.return,
