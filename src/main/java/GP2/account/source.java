@@ -3,18 +3,22 @@ package GP2.account;
 public abstract class source {
 	protected String Date;
 	protected String Category;
-	private String Description;
+	protected String SubCategory;
+	protected String Description;
 	protected String Amount;
-	private String From;
-	private String To;
-	private String Group;
-	private String Action;
+	protected String From;
+	protected String To;
+	protected String Group;
+	protected String Action;
 
 	public String getDate() {
 		return Date;
 	}
 	public String getCategory() {
 		return Category;
+	}
+	public String getSubCategory() {
+		return SubCategory;
 	}
 	public String getDescription() {
 		return Description;
@@ -34,31 +38,34 @@ public abstract class source {
 	public String getAction() {
 		return Action;
 	}
-	public void setDate(String Date) {
-		this.Date = Date;
+	public void setDate(String date) {
+		this.Date = date;
 	}
-	public void setCategory(String Category) {
-		this.Category = Category;
+	public void setCategory(String category) {
+		this.Category = category;
 	}
-	public void setDescription(String Description) {
-		this.Description = Description;
+	public void setSubCategory(String sub_category) {
+		this.SubCategory = sub_category;
 	}
-	public void setAmount(String Amount) {
-		this.Amount = Amount;
+	public void setDescription(String description) {
+		this.Description = description;
 	}
-	public void setFrom(String From) {
-		this.From = From;
+	public void setAmount(String amount) {
+		this.Amount = amount;
 	}
-	public void setTo(String To) {
-		this.To = To;
+	public void setFrom(String from) {
+		this.From = from;
 	}
-	public void setGroup(String Group) {
-		this.Group = Group;
+	public void setTo(String to) {
+		this.To = to;
 	}
-	public void setAction(String Action) {
-		this.Action = Action;
+	public void setGroup(String group) {
+		this.Group = group;
+	}
+	public void setAction(String action) {
+		this.Action = action;
 	}
 	@Override public String toString() {
-		return "source [date=" + Date+ ", category=" + Category + "description=" + Description + ", amount=" + Amount + "]";
+return "source [date=" + Date + ", category=" + Category + ", subcategory=" + SubCategory + ", description=" + Description + ", amount=" + Amount + "]";
 	}
 }

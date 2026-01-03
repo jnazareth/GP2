@@ -6,7 +6,6 @@
 	<groupId>GP2</groupId>
 	<!-- using versioning scheme <major>.<minor>.<revision> -->		
 	<!-- where <major>.<minor> = <artifactId> -->		
-	<!-- CAUTION: if major OR minor version canged, update: gpcli.jaja, line 24 -->		
 	<artifactId>gp4.0</artifactId>
 	<version>0</version>
 
@@ -18,14 +17,10 @@
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 
-		<junit.version>4.13.1</junit.version>
-		<jmock.version>2.6.0</jmock.version>
-		<hamcrest.version>1.3</hamcrest.version>
-
 		<!-- json -->
 		<commons-cli.version>1.5.0</commons-cli.version>
 		<commons-lang3.version>3.12.0</commons-lang3.version>
-		<commons-io.version>2.11.0</commons-io.version>
+		<commons-io.version>2.12.0</commons-io.version>
 		<json-simple.version>1.1.1</json-simple.version>
 		<org.json.version>20220924</org.json.version>
 		<javax.json.version>1.1.4</javax.json.version>
@@ -39,16 +34,12 @@
 		<fasterxml.jackson.core.version>2.2.0</fasterxml.jackson.core.version>
 		<fasterxml.jackson.annotations.version>2.2.0</fasterxml.jackson.annotations.version>
 		<fasterxml.jackson.dataformat.xml.version>2.2.0</fasterxml.jackson.dataformat.xml.version>
-		<codehaus.woodstox.stax2.api.version>4.2.1</codehaus.woodstox.stax2.api.version>
-		<fasterxml.woodstox.woodstox.core.version>6.5.0</fasterxml.woodstox.woodstox.core.version>
-		<fasterxml.jackson.dataformat.yaml.version>2.14.2</fasterxml.jackson.dataformat.yaml.version>
-		<yaml.snakeyaml.version>2.0</yaml.snakeyaml.version>
 
 		<main.class>GP2.gp2</main.class>
 		
 		<!-- custom property to support major.minor.revision -->		
 		<!-- 5: FFV implementation -->		
-	    <revision>1</revision>	
+	    <revision>2</revision>
 	</properties>
 
 	<dependencies>
@@ -131,72 +122,6 @@
 			<artifactId>jackson-dataformat-xml</artifactId>
 			<version>${fasterxml.jackson.dataformat.xml.version}</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.codehaus.woodstox/stax2-api -->		
-		<dependency>
-			<groupId>org.codehaus.woodstox</groupId>
-			<artifactId>stax2-api</artifactId>
-			<version>${codehaus.woodstox.stax2.api.version}</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.fasterxml.woodstox/woodstox-core -->		
-		<dependency>
-			<groupId>com.fasterxml.woodstox</groupId>
-			<artifactId>woodstox-core</artifactId>
-			<version>${fasterxml.woodstox.woodstox.core.version}</version>
-		</dependency>
-
-		<!-- Jackson - YAML -->
-		<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.dataformat/jackson-dataformat-yaml -->
-		<dependency>
-			<groupId>com.fasterxml.jackson.dataformat</groupId>
-			<artifactId>jackson-dataformat-yaml</artifactId>
-			<version>${fasterxml.jackson.dataformat.yaml.version}</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.yaml/snakeyaml -->
-		<dependency>
-			<groupId>org.yaml</groupId>
-			<artifactId>snakeyaml</artifactId>
-			<version>${yaml.snakeyaml.version}</version>
-		</dependency>
-
-		<!-- Log4J -->
-		<!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
-		<dependency>
-		    <groupId>org.apache.logging.log4j</groupId>
-		    <artifactId>log4j-core</artifactId>
-		    <version>2.24.3</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api -->
-		<dependency>
-		    <groupId>org.apache.logging.log4j</groupId>
-		    <artifactId>log4j-api</artifactId>
-		    <version>2.24.3</version>
-		</dependency>
-
-		<!-- == Testing ===================================== -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>${junit.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.hamcrest</groupId>
-			<artifactId>hamcrest-all</artifactId>
-			<version>${hamcrest.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.jmock</groupId>
-			<artifactId>jmock-junit4</artifactId>
-			<version>${jmock.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.jmock</groupId>
-			<artifactId>jmock-legacy</artifactId>
-			<version>${jmock.version}</version>
-			<scope>test</scope>
-		</dependency>
 	</dependencies>
 
 	<build>
@@ -273,7 +198,7 @@
 
  			<plugin>
 				<artifactId>maven-shade-plugin</artifactId>
-				<version>2.3</version>
+				<version>3.6.0</version>	
 				<executions>
 					<execution>
 						<phase>package</phase>

@@ -16,7 +16,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
 public class gpcli {
-    final String LAUNCHER = System.getProperty("application.launcher", "java -jar gp4.0.1.jar");
+    final String LAUNCHER = System.getProperty("application.launcher", "java -jar gp4.0.2.jar");
     final String UNKNOWN_VERSION = "?.?";
 
     public Settings parseCommandLine(String[] args) {

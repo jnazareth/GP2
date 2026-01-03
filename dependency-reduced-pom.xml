@@ -68,7 +68,7 @@
       </plugin>
       <plugin>
         <artifactId>maven-shade-plugin</artifactId>
-        <version>2.3</version>
+        <version>3.6.0</version>
         <executions>
           <execution>
             <phase>package</phase>
@@ -95,87 +95,23 @@
       </plugin>
     </plugins>
   </build>
-  <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.13.1</version>
-      <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>hamcrest-core</artifactId>
-          <groupId>org.hamcrest</groupId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.hamcrest</groupId>
-      <artifactId>hamcrest-all</artifactId>
-      <version>1.3</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.jmock</groupId>
-      <artifactId>jmock-junit4</artifactId>
-      <version>2.6.0</version>
-      <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>jmock</artifactId>
-          <groupId>org.jmock</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>junit-dep</artifactId>
-          <groupId>junit</groupId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.jmock</groupId>
-      <artifactId>jmock-legacy</artifactId>
-      <version>2.6.0</version>
-      <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>objenesis</artifactId>
-          <groupId>org.objenesis</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>cglib-nodep</artifactId>
-          <groupId>cglib</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>jmock</artifactId>
-          <groupId>org.jmock</groupId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-  </dependencies>
   <properties>
-    <fasterxml.jackson.dataformat.yaml.version>2.14.2</fasterxml.jackson.dataformat.yaml.version>
     <fasterxml.jackson.annotations.version>2.2.0</fasterxml.jackson.annotations.version>
     <apache.poi.version>5.2.0</apache.poi.version>
-    <fasterxml.woodstox.woodstox.core.version>6.5.0</fasterxml.woodstox.woodstox.core.version>
-    <hamcrest.version>1.3</hamcrest.version>
     <fasterxml.jackson.databind.version>2.2.0</fasterxml.jackson.databind.version>
     <apache.poi.ooxml.version>5.2.0</apache.poi.ooxml.version>
     <json-simple.version>1.1.1</json-simple.version>
-    <yaml.snakeyaml.version>2.0</yaml.snakeyaml.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <commons-lang3.version>3.12.0</commons-lang3.version>
-    <junit.version>4.13.1</junit.version>
-    <commons-io.version>2.11.0</commons-io.version>
+    <commons-io.version>2.12.0</commons-io.version>
     <main.class>GP2.gp2</main.class>
-    <commons-cli.version>1.5.0</commons-cli.version>
     <maven.compiler.source>1.8</maven.compiler.source>
-    <jmock.version>2.6.0</jmock.version>
+    <commons-cli.version>1.5.0</commons-cli.version>
     <fasterxml.jackson.core.version>2.2.0</fasterxml.jackson.core.version>
     <org.json.version>20220924</org.json.version>
-    <revision>1</revision>
+    <revision>2</revision>
     <javax.json.version>1.1.4</javax.json.version>
     <maven.compiler.target>1.8</maven.compiler.target>
-    <codehaus.woodstox.stax2.api.version>4.2.1</codehaus.woodstox.stax2.api.version>
     <fasterxml.jackson.dataformat.xml.version>2.2.0</fasterxml.jackson.dataformat.xml.version>
   </properties>
 </project>
-

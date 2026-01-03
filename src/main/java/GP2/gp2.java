@@ -68,9 +68,10 @@ public class gp2 {
             logger.error("Error: {}", e.getMessage());
         }
 
+        // Calculate and display elapsed time
         long d = 1000; // to seconds
         double t = (double) elapsedTime / d;
         System.out.print("\r" + " ".repeat(50));	// blank out spinner
-        System.out.printf("\relapsed: %.3fs", t);
+        System.out.printf("\rElapsed time: %.3f seconds", t);
     }
 }

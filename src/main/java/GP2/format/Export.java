@@ -9,39 +9,39 @@ import java.util.*;
 public class Export {
 
     public interface XLSHeaders {
-        String H_TRANSACTION_AMOUNTS = "transaction amounts";
-        String H_OWE = "(you owe) / owed to you";
-        String H_INDIVIDUAL_TOTALS = "individual \"spent\"";
-        String H_ITEM = "Item";
-        String H_CATEGORY = "Category";
-        String H_VENDOR = "Vendor";
-        String H_DESCRIPTION = "Description";
-        String H_AMOUNT = "Amount";
-        String H_FROM = "From";
-        String H_TO = "To";
-        String H_ACTION = "Action";
-        String H_CHECKSUM_TRANSACTION = "cs(Transaction)";
-        String H_CHECKSUM_GROUPTOTALS = "cs(GroupTotals)";
-        String H_INDIVIDUAL_PAID = "individual \"paid\"";
-        String H_CHECKSUM_INDIVIDUALTOTALS = "cs(IndividualTotals)";
+        final String H_TRANSACTION_AMOUNTS	        = "transaction amounts" ;
+        final String H_OWE					        = "(you owe) / owed to you" ;
+        final String H_INDIVIDUAL_TOTALS	        = "individual \"spent\"" ;
+        final static String H_ITEM			        = "Item" ;
+        final String H_CATEGORY				        = "Category" ;
+        final String H_SUBCATEGORY			        = "SubCategory" ;
+        final String H_DESCRIPTION			        = "Description" ;
+        final String H_AMOUNT				        = "Amount" ;
+        final String H_FROM					        = "From" ;
+        final String H_TO					        = "To" ;
+        final String H_ACTION				        = "Action" ;
+        final String H_CHECKSUM_TRANSACTION			= "cs(Transaction)" ;
+        final String H_CHECKSUM_GROUPTOTALS         = "cs(GroupTotals)" ;
+        final String H_INDIVIDUAL_PAID		        = "individual \"paid\"" ;
+        final String H_CHECKSUM_INDIVIDUALTOTALS	= "cs(IndividualTotals)" ;
     }
 
     public interface ExportKeys {
-        String keyItem = "item";
-        String keyCategory = "category";
-        String keyVendor = "vendor";
-        String keyDescription = "description";
-        String keyAmount = "amount";
-        String keyFrom = "from";
-        String keyTo = "to";
-        String keyAction = "action";
-        String keyTransactions = "transactions";
-        String keyOwe = "owe";
-        String keyCheckSumTransaction = "checksumTransaction";
-        String keySpent = "spent";
-        String keyCheckSumGroupTotals = "checksumGroupTotals";
-        String keyPaid = "paid";
-        String keyCheckSumIndividualTotals = "checksumIndividualTotals";
+        final String keyItem                        = "item" ;
+        final String keyCategory                    = "category" ;
+        final String keySubCategory                 = "subcategory" ;
+        final String keyDescription                 = "description" ;
+        final String keyAmount                      = "amount" ;
+        final String keyFrom                        = "from" ;
+        final String keyTo                          = "to" ;
+        final String keyAction                      = "action" ;
+        final String keyTransactions                = "transactions" ;
+        final String keyOwe                         = "owe" ;
+        final String keyCheckSumTransaction         = "checksumTransaction" ;
+        final String keySpent                       = "spent" ;
+        final String keyCheckSumGroupTotals         = "checksumGroupTotals" ;
+        final String keyPaid                        = "paid" ;
+        final String keyCheckSumIndividualTotals    = "checksumIndividualTotals" ;
     }
 
     // Members
@@ -70,21 +70,15 @@ public class Export {
         boolean suppressCheckSum = Utils.m_settings.getSuppressCStoUse();
         int pos = 1;
 
-        pos = addStandardHeaders(pos);
-        pos = addPersonHeaders(group, pos, suppressCheckSum);
-    }
-
-    private int addStandardHeaders(int pos) {
-        header1.addCell(pos++, ExportKeys.keyItem, XLSHeaders.H_ITEM);
-        header1.addCell(pos++, ExportKeys.keyCategory, XLSHeaders.H_CATEGORY);
-        header1.addCell(pos++, ExportKeys.keyVendor, XLSHeaders.H_VENDOR);
-        header1.addCell(pos++, ExportKeys.keyDescription, XLSHeaders.H_DESCRIPTION);
-        header1.addCell(pos++, ExportKeys.keyAmount, XLSHeaders.H_AMOUNT);
-        header1.addCell(pos++, ExportKeys.keyFrom, XLSHeaders.H_FROM);
-        header1.addCell(pos++, ExportKeys.keyTo, XLSHeaders.H_TO);
-        header1.addCell(pos++, ExportKeys.keyAction, XLSHeaders.H_ACTION);
-        return pos;
-    }
+        int pos = 1 ;
+		header1.addCell(pos++, ExportKeys.keyItem,      XLSHeaders.H_ITEM) ;
+		header1.addCell(pos++, ExportKeys.keyCategory,  XLSHeaders.H_CATEGORY) ;
+		header1.addCell(pos++, ExportKeys.keySubCategory,    XLSHeaders.H_SUBCATEGORY) ;
+		header1.addCell(pos++, ExportKeys.keyDescription, XLSHeaders.H_DESCRIPTION) ;
+		header1.addCell(pos++, ExportKeys.keyAmount,    XLSHeaders.H_AMOUNT) ;
+		header1.addCell(pos++, ExportKeys.keyFrom,      XLSHeaders.H_FROM) ;
+		header1.addCell(pos++, ExportKeys.keyTo,        XLSHeaders.H_TO) ;
+		header1.addCell(pos++, ExportKeys.keyAction,    XLSHeaders.H_ACTION) ;
 
     private int addPersonHeaders(String group, int pos, boolean suppressCheckSum) {
         ArrayList<String> persons = getSortedPersons(group);
@@ -171,52 +165,43 @@ public class Export {
                 System.err.println("buildRow Error: " + ioobe.getMessage());
             }
         }
-        return templateRow;
-    }
+		return templateRow ;
+	}
 
-    public RowLayout putRow(String item, String category, String vendor, String desc, String amt, String from, String to, String group, String action, Double rate) {
-        RowLayout row = new RowLayout();
-        boolean suppressCheckSum = Utils.m_settings.getSuppressCStoUse();
-        float fRate = rate.floatValue();
-        int pos = 1;
+    RowLayout putRow(String item, String category, String subcategory, String desc, String amt, String from, String to, String group, String action, Double rate) {
+        RowLayout row = new RowLayout() ;
 
-        addStandardRowCells(row, item, category, vendor, desc, amt, from, to, action, fRate, pos);
-        addPersonRowCells(row, group, fRate, suppressCheckSum, pos);
+        boolean bSuppressCheckSum   = Utils.m_settings.getSuppressCStoUse() ;
+		float fRate = rate.floatValue();
 
-        addRowToCollection(group, row);
-        return row;
-    }
+        int pos = 1 ;
+		row.addCell(pos++, ExportKeys.keyItem,      item) ;
+		row.addCell(pos++, ExportKeys.keyCategory,  category) ;
+        row.addCell(pos++, ExportKeys.keySubCategory,    subcategory) ;
+		row.addCell(pos++, ExportKeys.keyDescription, desc) ;
 
-    private void addStandardRowCells(RowLayout row, String item, String category, String vendor, String desc, String amt, String from, String to, String action, float fRate, int pos) {
-        row.addCell(pos++, ExportKeys.keyItem, item);
-        row.addCell(pos++, ExportKeys.keyCategory, category);
-        row.addCell(pos++, ExportKeys.keyVendor, vendor);
-        row.addCell(pos++, ExportKeys.keyDescription, desc);
-        row.addCell(pos++, ExportKeys.keyAmount, String.valueOf(fRate * Float.parseFloat(amt)));
-        row.addCell(pos++, ExportKeys.keyFrom, from);
-        row.addCell(pos++, ExportKeys.keyTo, to);
-        row.addCell(pos++, ExportKeys.keyAction, action);
-    }
+		String xAmt = String.valueOf(fRate * Float.valueOf(amt)) ;
+        row.addCell(pos++, ExportKeys.keyAmount,    xAmt) ;
+		row.addCell(pos++, ExportKeys.keyFrom,      from) ;
+		row.addCell(pos++, ExportKeys.keyTo,        to) ;
+		row.addCell(pos++, ExportKeys.keyAction,    action) ;
 
-    private void addPersonRowCells(RowLayout row, String group, float fRate, boolean suppressCheckSum, int pos) {
-        Hashtable<String, Person> groupCollection = Utils.m_Groups.get(group).getCollection();
-        List<String> sortedKeys = new ArrayList<>(groupCollection.keySet());
-        Collections.sort(sortedKeys);
-
-        for (String key : sortedKeys) {
-            Person person = groupCollection.get(key);
-            addPersonCells(row, person, fRate, suppressCheckSum, pos);
-        }
-    }
-
-    private void addPersonCells(RowLayout row, Person person, float fRate, boolean suppressCheckSum, int pos) {
-        row.addCell(pos++, ExportKeys.keyTransactions + Constants._ID_SEPARATOR + person.m_name, Utils.roundAmount(person.m_amount.get(Person.AccountEntry.TRANSACTION) * fRate));
-        row.addCell(pos++, ExportKeys.keyOwe + Constants._ID_SEPARATOR + person.m_name, Utils.roundAmount(person.m_amount.get(Person.AccountEntry.OWE_OWED) * fRate));
-        row.addCell(pos++, ExportKeys.keySpent + Constants._ID_SEPARATOR + person.m_name, Utils.roundAmount(person.m_amount.get(Person.AccountEntry.SPENT) * fRate));
-        row.addCell(pos++, ExportKeys.keyPaid + Constants._ID_SEPARATOR + person.m_name, Utils.roundAmount(person.m_amount.get(Person.AccountEntry.PAID) * fRate));
-
-        if (!suppressCheckSum || Utils.m_settings.bCheckSumIndividualTotals) {
-            row.addCell(pos++, ExportKeys.keyCheckSumIndividualTotals + Constants._ID_SEPARATOR + person.m_name, Utils.roundAmount(person.m_amount.get(Person.AccountEntry.checksumINDIVIDUALTOTALS) * fRate));
+		float csTransaction = 0, csGroupTotals = 0, csIndividualTotals = 0 ;
+        Hashtable<String, Person> aGroup = Utils.m_Groups.get(group).getCollection() ;
+        List<String> mapKeys = new ArrayList<String>(aGroup.keySet());
+        Collections.sort(mapKeys);
+        Iterator<String> iter = mapKeys.iterator();
+        while (iter.hasNext()) {
+            Person person = aGroup.get(iter.next());
+            row.addCell(pos++, ExportKeys.keyTransactions + Constants._ID_SEPARATOR + person.m_name,    Utils.roundAmount(person.m_amount.get(Person.AccountEntry.TRANSACTION) * fRate)) ;
+            row.addCell(pos++, ExportKeys.keyOwe +          Constants._ID_SEPARATOR + person.m_name,    Utils.roundAmount(person.m_amount.get(Person.AccountEntry.OWE_OWED) * fRate)) ;
+            csTransaction = person.m_amount.get(Person.AccountEntry.checksumTRANSACTION) * fRate ;
+            row.addCell(pos++, ExportKeys.keySpent +        Constants._ID_SEPARATOR + person.m_name,    Utils.roundAmount(person.m_amount.get(Person.AccountEntry.SPENT) * fRate)) ;
+            csGroupTotals = person.m_amount.get(Person.AccountEntry.checksumGROUPTOTALS) * fRate ;
+            row.addCell(pos++, ExportKeys.keyPaid +         Constants._ID_SEPARATOR + person.m_name,    Utils.roundAmount(person.m_amount.get(Person.AccountEntry.PAID) * fRate)) ;
+            csIndividualTotals = person.m_amount.get(Person.AccountEntry.checksumINDIVIDUALTOTALS) * fRate ;
+            if ( (!bSuppressCheckSum) || (Utils.m_settings.bCheckSumIndividualTotals) )
+                row.addCell(pos++, ExportKeys.keyCheckSumIndividualTotals +         Constants._ID_SEPARATOR + person.m_name,    Utils.roundAmount(csIndividualTotals * fRate)) ;
         }
     }
 

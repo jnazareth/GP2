@@ -70,7 +70,10 @@ public class buildXLS {
                         cell.setCellStyle(cellStyle);
                     }
                 }
-                rowNum++;
+                buffReader.close() ;
+                fileReader.close();
+            } catch (IOException e) {
+                System.out.println("There was a problem reading:" + outCSVFile);
             }
         } catch (IOException e) {
             System.out.println("Error reading CSV file: " + outCSVFile);
@@ -108,7 +111,8 @@ public class buildXLS {
         CellReference position = new CellReference(lastRow + 2, firstCol + 1);
 
         XSSFPivotTable pivotTable = sheet.createPivotTable(source, position);
-        pivotTable.addRowLabel(1);
+        int SubCategoryCol = 2 ;
+        pivotTable.addRowLabel(SubCategoryCol);
 
         final int numberFormat = sProperties.getsFormatFormat();
         final String sAmtFormat = sProperties.getsFormatFormatAsString();
@@ -161,7 +165,10 @@ public class buildXLS {
             XSSFSheet sheet = workBook.createSheet(groupName);
             getCSVData(workBook, sheet, outCSVFile, sp);
 
-            new FormatXLS().formatTable(workBook, sheet, sp, groupName);
+            FormatXLS fTable = new FormatXLS() ;
+            fTable.formatTable(workBook, sheet, sp, groupName);
+
+            //new FormatXLS().formatTable(workBook, sheet, sp, groupName);
             buildPivot(sheet, sp);
 
             try (FileOutputStream fileOut = new FileOutputStream(xlsFile)) {
